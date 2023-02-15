@@ -5,6 +5,7 @@ import {
 } from "./renderer/datasource-parameters/jdbc-datasource-parameters/jdbc-datasource-parameters.component";
 import {IonicModule} from "@ionic/angular";
 import {FormsModule} from "@angular/forms";
+import {CodemirrorModule} from "@ctrl/ngx-codemirror";
 
 
 
@@ -15,10 +16,11 @@ import {FormsModule} from "@angular/forms";
   exports: [
     JdbcDatasourceParametersComponent
   ],
-  imports: [
-    CommonModule,
-    IonicModule,
-    FormsModule
-  ]
+    imports: [
+        CommonModule,
+        IonicModule,
+        FormsModule,
+        CodemirrorModule
+    ]
 })
 export class ComponentsModule { }

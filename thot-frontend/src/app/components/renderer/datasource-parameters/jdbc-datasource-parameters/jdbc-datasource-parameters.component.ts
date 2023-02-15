@@ -3,6 +3,7 @@ import {DataSourceService} from "../../../../services/api/data-source.service";
 import {AlertController} from "@ionic/angular";
 import {DatasourceParametersComponent} from "../datasource-parameters-component";
 import {ScreenMessageService} from "../../../../services/screen-message.service";
+import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 
 @Component({
   selector: 'app-jdbc-datasource-parameters',
@@ -27,6 +28,7 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
   @Input()
   detectedProperties: string[] = []
   checkError: string | null = null;
+  q = 'select * from users;';
 
   constructor(
     private dataSourceService: DataSourceService,
@@ -119,5 +121,8 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
     request.parameters = this.queryParams;
     request.properties = this.detectedProperties;
     return this.dataSourceService.updateParameters('jdbc', request)
+  }
+
+  codeLoaded(component: CodemirrorComponent) {
   }
 }

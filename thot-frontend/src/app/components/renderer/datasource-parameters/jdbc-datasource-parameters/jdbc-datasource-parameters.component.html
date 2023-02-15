@@ -11,19 +11,34 @@
     <ion-label>Datasource Password</ion-label>
     <ion-input name="password" [(ngModel)]="jdbcDatasourceParameters.password" type="password"></ion-input>
   </ion-item>
-  <ion-item>
+
+  <div class="ion-margin">
+
     <ion-label>Query</ion-label>
-    <ion-textarea style="min-height: 200px" name="query" [(ngModel)]="jdbcDatasourceParameters.query"
-                  (keyup)="detectQueryParameters()"></ion-textarea>
-    <ion-note slot="helper" *ngIf="queryParams.length > 0">
-      Detected parameters: {{queryParams.join(",")}}
-    </ion-note>
-    <ion-note slot="helper" *ngIf="checkError">
-      <ion-text color="danger">
-        {{checkError}}
-      </ion-text>
-    </ion-note>
-  </ion-item>
+  </div>
+  <div class="ion-margin-horizontal">
+    <ngx-codemirror (codeMirrorLoaded)="codeLoaded($event)" name="query"
+                    (keyup)="detectQueryParameters()"
+                    [(ngModel)]="jdbcDatasourceParameters.query"
+                    [options]="{
+    theme: 'default',
+    autoRefresh: true,
+    mode: 'sql',
+    inputStyle: 'textarea',
+    lineNumbers: true
+  }" [autoFocus]="true"
+    ></ngx-codemirror>
+  </div>
+  <ion-note slot="helper" *ngIf="queryParams.length > 0">
+    Detected parameters: {{queryParams.join(",")}}
+  </ion-note>
+  <ion-note slot="helper" *ngIf="checkError">
+    <ion-text color="danger">
+      {{checkError}}
+    </ion-text>
+  </ion-note>
+  <ion-item-divider></ion-item-divider>
+
 
 </form>
 
