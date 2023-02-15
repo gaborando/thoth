@@ -6,15 +6,15 @@ import {DomSanitizer} from "@angular/platform-browser";
 import {environment} from "../../../../environments/environment";
 import {ClientService} from "../../../services/api/client.service";
 import {ScreenMessageService} from "../../../services/api/screen-message.service";
+import {ListPage} from "../../../common/utils/ui-patterns/list-page";
 
 @Component({
   selector: 'app-template-list',
   templateUrl: './template-list.page.html',
   styleUrls: ['./template-list.page.scss'],
 })
-export class TemplateListPage implements OnInit {
+export class TemplateListPage extends ListPage<Template> implements OnInit {
 
-  templates: Template[] | undefined;
   private drawIoWindow: Window | null = null;
 
   constructor(private templateService: TemplateService,
@@ -22,10 +22,11 @@ export class TemplateListPage implements OnInit {
               private clientService: ClientService,
               private screenMessageService: ScreenMessageService,
               private loadingController: LoadingController) {
+    super(templateService);
   }
 
-  async ngOnInit() {
-    this.templates = (await this.templateService.findAll()).content;
+  ngOnInit() {
+    return super.loadPageData();
   }
 
   async createTemplate() {
@@ -53,7 +54,7 @@ export class TemplateListPage implements OnInit {
     const resp = await alert.onDidDismiss();
     if (!resp.role) {
       const t = await this.templateService.create(resp.data.values.name);
-      this.templates?.push(t);
+      this.elements?.push(t);
       return this.openEditor(t);
     }
   }
@@ -118,8 +119,10 @@ export class TemplateListPage implements OnInit {
   }
 
   removeTemplate(template: Template) {
-    this.templates = this.templates?.filter(t => t.id !== template.id);
-    return this.templateService.delete(template.id);
+    return this.screenMessageService.showDeleteAlert(async () => {
+      await this.templateService.delete(template.id);
+      this.elements = this.elements?.filter(t => t.id !== template.id)
+    });
   }
 
   async renderTemplate(t: Template) {

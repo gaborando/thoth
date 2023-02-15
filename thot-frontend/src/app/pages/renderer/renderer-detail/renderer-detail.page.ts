@@ -81,10 +81,11 @@ export class RendererDetailPage implements OnInit {
 
   }
 
-  async delete(renderer: Renderer) {
-    await this.rendererService.delete(renderer.id)
-    await this.screenMessageService.showDone();
-    return this.navController.navigateBack('/renderer-list');
+  delete(renderer: Renderer) {
+    return this.screenMessageService.showDeleteAlert(async () => {
+      await this.rendererService.delete(renderer.id);
+      return this.navController.navigateBack('/renderer-list');
+    })
   }
 
   async playRenderer() {

@@ -43,4 +43,11 @@ export class DatasourceDetailPage implements OnInit {
     }
 
   }
+
+  delete() {
+    return this.screenMessageService.showDeleteAlert(async () => {
+      await this.datasourceService.deleteById(this.datasource.id);
+      return this.navController.navigateBack('/datasource-list');
+    })
+  }
 }

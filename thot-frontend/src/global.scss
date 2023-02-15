@@ -29,3 +29,9 @@
 ion-popover {
   --width: 500px;
 }
+
+.error-alert{
+  .alert-title{
+    color: var(--ion-color-danger);
+  }
+}

@@ -4,11 +4,12 @@ import {Datasource} from "../common/types/datasource";
 import {Renderer} from "../common/types/renderer";
 import {environment} from "../../environments/environment";
 import {Page} from "../common/utils/fetchUtils";
+import {DataFetcher} from "../common/utils/service-patterns/data-fetcher";
 
 @Injectable({
   providedIn: 'root'
 })
-export class RendererService {
+export class RendererService implements DataFetcher<Renderer>{
 
   constructor() {
   }
@@ -34,9 +35,9 @@ export class RendererService {
 
   }
 
-  async findAll(): Promise<Page<Renderer>> {
-    return fetch(environment.apiUrl + '/renderer/', {
-      method: 'GET'
+  async findAll(page = 0): Promise<Page<Renderer>> {
+    return fetch(environment.apiUrl + '/renderer/?page=' + page, {
+      method: 'GET',
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()
@@ -61,9 +62,9 @@ export class RendererService {
       method: 'DELETE'
     }).then(async r => {
       if (!r.ok) {
-        throw await r.json()
+        throw await r.text()
       }
-      return await r.json()
+      return await r.text()
     });
   }
 

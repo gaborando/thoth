@@ -9,10 +9,30 @@
 
 
 <ion-content>
-
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-grid>
     <ion-row>
-      <ion-col size="4" *ngFor="let c of clients">
+      <ng-container *ngIf="!elements">
+        <ion-col size="4" *ngFor="let i of [1,2,3]">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>
+                <ion-skeleton-text animated="true" style="width: 60%"></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ul>
+                <li *ngFor="let s of [1,2,3]">
+                  <ion-skeleton-text animated="true" style="width: 40%"></ion-skeleton-text>
+                </li>
+              </ul>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ng-container>
+      <ion-col size="4" *ngFor="let c of elements">
         <ion-card>
           <ion-card-header>
             <ion-card-title>
@@ -30,4 +50,7 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+  <ion-infinite-scroll (ionInfinite)="handleLoadMore($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

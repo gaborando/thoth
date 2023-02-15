@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import {environment} from "../../../environments/environment";
 import {Datasource} from "../../common/types/datasource";
 import {Page} from "../../common/utils/fetchUtils";
+import {DataFetcher} from "../../common/utils/service-patterns/data-fetcher";
 
 @Injectable({
   providedIn: 'root'
 })
-export class DataSourceService {
+export class DataSourceService implements DataFetcher<Datasource>{
 
   constructor() { }
 

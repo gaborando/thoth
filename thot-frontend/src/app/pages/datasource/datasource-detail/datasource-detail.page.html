@@ -4,6 +4,12 @@
       <ion-back-button defaultHref="/datasource-list"></ion-back-button>
     </ion-buttons>
     <ion-title>Datasource</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="delete()">
+        <ion-icon slot="icon-only" name="trash" color="danger"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

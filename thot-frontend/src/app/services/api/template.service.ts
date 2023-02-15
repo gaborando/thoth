@@ -3,11 +3,12 @@ import {Template} from "../../common/types/template";
 import {find} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {Page} from "../../common/utils/fetchUtils";
+import {DataFetcher} from "../../common/utils/service-patterns/data-fetcher";
 
 @Injectable({
   providedIn: 'root'
 })
-export class TemplateService {
+export class TemplateService implements DataFetcher<Template>{
 
   constructor() {
 
