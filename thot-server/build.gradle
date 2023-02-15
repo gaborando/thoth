@@ -31,6 +31,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
 
+	implementation 'com.google.zxing:core:3.5.1'
+	implementation 'com.google.zxing:javase:3.5.1'
+
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'com.ibm.db2:jcc'
 	runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
