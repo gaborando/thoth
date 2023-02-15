@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/renderer-list"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Renderer</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="primary" routerLink="/render-new">
+        <ion-button *ngIf="renderer" (click)="delete(renderer)">
+          <ion-icon color="danger" name="trash" slot="end" tappable="true"></ion-icon>
+        </ion-button>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="renderer">
+
+  <form>
+    <ion-item>
+      <ion-label>Name</ion-label>
+      <ion-input name="name" [(ngModel)]="renderer.name"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Template</ion-label>
+      <ion-input name="template" [(ngModel)]="renderer.template.name" readonly="true"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Datasource</ion-label>
+      <ion-input name="datasource" [(ngModel)]="datasourceList" readonly="true"></ion-input>
+    </ion-item>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="8">
+
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Association Map</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-item *ngFor="let p of renderer.template.markers">
+                <ion-label>{{p}}</ion-label>
+                <ion-select #s interface="popover" (ionChange)="updateAssociationMap(p, s.value)" [value]="oldAssoc[p]"
+                            placeholder="Datasource">
+                  <ion-select-option value="parameter">Parameter</ion-select-option>
+                  <ion-select-option *ngFor="let p of availableProperties" [value]="p">{{p.ds.name}}
+                    - {{p.property}}</ion-select-option>
+                </ion-select>
+
+              </ion-item>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="4">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>{{renderer.template.name}}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-img class="ion-padding" style="height: 300px" [src]="renderer.template.img"></ion-img>
+            </ion-card-content>
+            <ion-button fill="clear" color="secondary" (click)="openViewer(renderer.template)">View</ion-button>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </form>
+
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="secondary" (click)="playRenderer()" class="ion-margin-horizontal">Render
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button color="primary" (click)="updateRenderer()" class="ion-margin-horizontal"
+                  [disabled]="!renderer?.name">Save
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-footer>

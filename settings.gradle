@@ -1,0 +1,5 @@
+rootProject.name = 'thot'
+include 'thot-server'
+include 'thot-client'
+include 'thot-common'
+

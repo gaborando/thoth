@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/datasource-list"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Datasource</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="datasource">
+  <ion-item>
+    <ion-label>Datasource Name</ion-label>
+    <ion-input name="name" [(ngModel)]="datasource.name"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Datasource Type</ion-label>
+    <ion-input name="type" [value]="datasource.type" readonly="true" disabled="true"></ion-input>
+  </ion-item>
+
+
+  <ng-container [ngSwitch]="datasource.type">
+    <ng-container *ngSwitchCase="'jdbc'">
+      <app-jdbc-datasource-parameters  #jdbc (onInit)="dsParameters = jdbc"
+                                       [jdbcDatasourceParameters]="datasource"
+                                       [queryParams]="datasource.parameters"
+                                       [detectedProperties]="datasource.properties"
+                                      (isValid)="validParameters = $event"></app-jdbc-datasource-parameters>
+    </ng-container>
+  </ng-container>
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="ion-text-end">
+    <ion-button color="secondary" (click)="dsParameters?.checkQuery()">
+      Validate Parameters
+    </ion-button>
+    <ion-button [disabled]="!validParameters" (click)="saveParameters()">
+      Confirm
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Renders</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="primary" routerLink="/renderer-new">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+    <ion-item *ngFor="let r of renderers">
+      <ion-label>{{r.name}}</ion-label>
+      <ion-icon color="secondary" name="create" slot="end" tappable="true" [routerLink]="'/renderer-detail/' + r.id"></ion-icon>
+      <ion-icon color="danger" name="trash" slot="end" tappable="true" (click)="delete(r)"></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>
