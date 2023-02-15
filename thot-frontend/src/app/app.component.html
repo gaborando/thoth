@@ -3,9 +3,19 @@
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
         <ion-list id="inbox-list">
-          <ion-list-header>Thot</ion-list-header>
-          <ion-note>Template & Printing Service</ion-note>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="3">
 
+                 <ion-img src="assets/icon/favicon.png">
+                   </ion-img>
+              </ion-col>
+              <ion-col>
+                <ion-list-header>Thot</ion-list-header>
+                <ion-note>Template & Printing Service</ion-note>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
           <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
               <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
