@@ -8,7 +8,7 @@ import {
 import {
   DatasourceParametersComponent
 } from "../../../components/renderer/datasource-parameters/datasource-parameters-component";
-import {ScreenMessageService} from "../../../services/api/screen-message.service";
+import {ScreenMessageService} from "../../../services/screen-message.service";
 import {NavController} from "@ionic/angular";
 
 @Component({
@@ -32,15 +32,10 @@ export class DatasourceDetailPage implements OnInit {
   }
 
   async saveParameters(): Promise<any> {
-    if (!this.dsParameters) {
-      return
-    }
-    try {
-      this.datasource = await this.dsParameters.updateParameters();
+    return this.screenMessageService.loadingWrapper(async () => {
+      this.datasource = await this.dsParameters?.updateParameters();
       await this.screenMessageService.showDone();
-    } catch (e) {
-
-    }
+    })
 
   }
 

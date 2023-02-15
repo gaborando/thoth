@@ -13,7 +13,7 @@
   </ion-item>
   <ion-item>
     <ion-label>Query</ion-label>
-    <ion-textarea name="query" [(ngModel)]="jdbcDatasourceParameters.query"
+    <ion-textarea style="min-height: 200px" name="query" [(ngModel)]="jdbcDatasourceParameters.query"
                   (keyup)="detectQueryParameters()"></ion-textarea>
     <ion-note slot="helper" *ngIf="queryParams.length > 0">
       Detected parameters: {{queryParams.join(",")}}

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {RendererService} from "../../../services/renderer.service";
+import {RendererService} from "../../../services/api/renderer.service";
 import {Renderer} from "../../../common/types/renderer";
 import {ListPage} from "../../../common/utils/ui-patterns/list-page";
 

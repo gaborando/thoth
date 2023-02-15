@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Renderer} from "../../../common/types/renderer";
-import {RendererService} from "../../../services/renderer.service";
+import {RendererService} from "../../../services/api/renderer.service";
 import {ActivatedRoute} from "@angular/router";
-import {ScreenMessageService} from "../../../services/api/screen-message.service";
+import {ScreenMessageService} from "../../../services/screen-message.service";
 import {AlertController, LoadingController, NavController} from "@ionic/angular";
 import {environment} from "../../../../environments/environment";
 import {Template} from "../../../common/types/template";
@@ -76,9 +76,10 @@ export class RendererDetailPage implements OnInit {
   }
 
   async updateRenderer() {
-    await this.rendererService.update(this.renderer)
-    await this.screenMessageService.showDone();
-
+    return this.screenMessageService.loadingWrapper(async () => {
+      await this.rendererService.update(this.renderer);
+      await this.screenMessageService.showDone();
+    })
   }
 
   delete(renderer: Renderer) {

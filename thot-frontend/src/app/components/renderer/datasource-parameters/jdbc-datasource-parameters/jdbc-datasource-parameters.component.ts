@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {DataSourceService} from "../../../../services/api/data-source.service";
 import {AlertController} from "@ionic/angular";
 import {DatasourceParametersComponent} from "../datasource-parameters-component";
+import {ScreenMessageService} from "../../../../services/screen-message.service";
 
 @Component({
   selector: 'app-jdbc-datasource-parameters',
@@ -17,8 +18,7 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
   public isValid = new EventEmitter();
 
   @Input()
-  jdbcDatasourceParameters: any = {
-  }
+  jdbcDatasourceParameters: any = {}
 
   @Input()
   queryParams: string[] = ['id'];
@@ -30,7 +30,8 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
 
   constructor(
     private dataSourceService: DataSourceService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private screenMessageService: ScreenMessageService
   ) {
   }
 
@@ -77,13 +78,16 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
           params[key] = resp.data.values[key];
         }
       }
-      try {
-        this.detectedProperties = await this.dataSourceService.checkParameters('jdbc', this.jdbcDatasourceParameters, params);
-        this.validParameters = true;
-        this.isValid.emit(this.validParameters)
-      } catch (e: any) {
-        this.checkError = e.message;
-      }
+      await this.screenMessageService.loadingWrapper(async () => {
+        try {
+          this.detectedProperties = await this.dataSourceService.checkParameters('jdbc', this.jdbcDatasourceParameters, params);
+          this.validParameters = true;
+          this.isValid.emit(this.validParameters)
+          await this.screenMessageService.showDone();
+        } catch (e: any) {
+          this.checkError = e.message;
+        }
+      })
     }
 
   }

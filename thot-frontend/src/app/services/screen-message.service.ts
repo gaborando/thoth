@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AlertController, ToastController} from "@ionic/angular";
+import {AlertController, LoadingController, ToastController} from "@ionic/angular";
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +7,8 @@ import {AlertController, ToastController} from "@ionic/angular";
 export class ScreenMessageService {
 
   constructor(private toastController: ToastController,
-              private alertController: AlertController) {
+              private alertController: AlertController,
+              private loadingController: LoadingController) {
   }
 
   async showDone() {
@@ -28,6 +29,16 @@ export class ScreenMessageService {
       cssClass: 'error-alert'
     });
     return toast.present()
+  }
+
+  async loadingWrapper(fun: () => Promise<any>){
+    const loading = await this.loadingController.create();
+    await loading.present();
+    try{
+      return await fun();
+    }finally {
+      await loading.dismiss();
+    }
   }
 
   async showDeleteAlert(deleteFun: () => Promise<any>) {

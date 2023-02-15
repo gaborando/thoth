@@ -5,7 +5,7 @@ import {AlertController, LoadingController} from "@ionic/angular";
 import {DomSanitizer} from "@angular/platform-browser";
 import {environment} from "../../../../environments/environment";
 import {ClientService} from "../../../services/api/client.service";
-import {ScreenMessageService} from "../../../services/api/screen-message.service";
+import {ScreenMessageService} from "../../../services/screen-message.service";
 import {ListPage} from "../../../common/utils/ui-patterns/list-page";
 
 @Component({

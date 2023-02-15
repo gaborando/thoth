@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Template} from "../common/types/template";
-import {Datasource} from "../common/types/datasource";
-import {Renderer} from "../common/types/renderer";
-import {environment} from "../../environments/environment";
-import {Page} from "../common/utils/fetchUtils";
-import {DataFetcher} from "../common/utils/service-patterns/data-fetcher";
+import {Template} from "../../common/types/template";
+import {Datasource} from "../../common/types/datasource";
+import {Renderer} from "../../common/types/renderer";
+import {environment} from "../../../environments/environment";
+import {Page} from "../../common/utils/fetchUtils";
+import {DataFetcher} from "../../common/utils/service-patterns/data-fetcher";
 
 @Injectable({
   providedIn: 'root'
