@@ -9,7 +9,7 @@ const routes: Routes = [
   },
   {
     path: 'template-list',
-    loadChildren: () => import('./pages/template-list/template-list.module').then( m => m.TemplateListPageModule)
+    loadChildren: () => import('./pages/template/template-list/template-list.module').then(m => m.TemplateListPageModule)
   },
   {
     path: 'renderer-list',
@@ -34,6 +34,10 @@ const routes: Routes = [
   {
     path: 'renderer-detail/:identifier',
     loadChildren: () => import('./pages/renderer/renderer-detail/renderer-detail.module').then( m => m.RendererDetailPageModule)
+  },
+  {
+    path: 'client-list',
+    loadChildren: () => import('./pages/client/client-list/client-list.module').then( m => m.ClientListPageModule)
   },
 ];
 

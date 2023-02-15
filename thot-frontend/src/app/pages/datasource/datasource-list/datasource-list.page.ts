@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {DataSourceService} from "../../../services/data-source.service";
+import {DataSourceService} from "../../../services/api/data-source.service";
 import {Datasource} from "../../../common/types/datasource";
 
 @Component({

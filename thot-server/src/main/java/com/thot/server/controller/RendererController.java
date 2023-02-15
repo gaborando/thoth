@@ -1,6 +1,7 @@
 package com.thot.server.controller;
 
 import com.thot.server.controller.dto.renderer.RendererCreateRequest;
+import com.thot.server.controller.dto.PrintRequest;
 import com.thot.server.model.domain.Renderer;
 import com.thot.server.service.RenderService;
 import com.thot.server.service.RendererService;
@@ -29,7 +30,7 @@ public class RendererController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Renderer> create(@RequestBody RendererCreateRequest request){
+    public ResponseEntity<Renderer> create(@RequestBody RendererCreateRequest request) {
         return ResponseEntity.ok(rendererService.create(
                 request.getName(),
                 request.getTemplate(),
@@ -81,7 +82,7 @@ public class RendererController {
 
     @GetMapping("/{identifier}/render/jpeg")
     public ResponseEntity<byte[]> renderJpeg(@RequestParam HashMap<String, Object> params,
-                                            @PathVariable String identifier) throws IOException, InterruptedException {
+                                             @PathVariable String identifier) throws IOException, InterruptedException {
 
         var data = renderService.renderRendererJpeg(identifier, params);
 
@@ -94,7 +95,7 @@ public class RendererController {
 
     @GetMapping("/{identifier}/render/svg")
     public ResponseEntity<byte[]> renderSvg(@RequestParam HashMap<String, Object> params,
-                                             @PathVariable String identifier) throws IOException, InterruptedException {
+                                            @PathVariable String identifier) throws IOException, InterruptedException {
 
         var data = renderService.renderRendererSvg(identifier, params);
 
@@ -103,6 +104,12 @@ public class RendererController {
         httpHeaders.set(HttpHeaders.CONTENT_TYPE, "image/svg+xml");
         return ResponseEntity.ok().headers(httpHeaders).body(data.getBytes());
 
+    }
+
+    @PostMapping("/{identifier}/print")
+    public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws IOException, InterruptedException {
+        renderService.printRenderer(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService());
+        return ResponseEntity.ok().build();
     }
 
 }

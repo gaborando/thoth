@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {environment} from "../../environments/environment";
-import {Datasource} from "../common/types/datasource";
-import {Page} from "../common/utils/fetchUtils";
+import {environment} from "../../../environments/environment";
+import {Datasource} from "../../common/types/datasource";
+import {Page} from "../../common/utils/fetchUtils";
 
 @Injectable({
   providedIn: 'root'

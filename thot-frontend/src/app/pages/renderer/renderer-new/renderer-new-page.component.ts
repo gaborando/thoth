@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {TemplateService} from "../../../services/template.service";
+import {TemplateService} from "../../../services/api/template.service";
 import {Template} from "../../../common/types/template";
-import {DataSourceService} from "../../../services/data-source.service";
+import {DataSourceService} from "../../../services/api/data-source.service";
 import {Datasource} from "../../../common/types/datasource";
 import {RendererService} from "../../../services/renderer.service";
-import {ScreenMessageService} from "../../../services/screen-message.service";
+import {ScreenMessageService} from "../../../services/api/screen-message.service";
 import {NavController} from "@ionic/angular";
 
 @Component({

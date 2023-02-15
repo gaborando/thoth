@@ -1,9 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {TemplateService} from "../../services/template.service";
-import {Template} from "../../common/types/template";
-import {AlertController} from "@ionic/angular";
+import {TemplateService} from "../../../services/api/template.service";
+import {Template} from "../../../common/types/template";
+import {AlertController, LoadingController} from "@ionic/angular";
 import {DomSanitizer} from "@angular/platform-browser";
-import {environment} from "../../../environments/environment";
+import {environment} from "../../../../environments/environment";
+import {ClientService} from "../../../services/api/client.service";
+import {ScreenMessageService} from "../../../services/api/screen-message.service";
 
 @Component({
   selector: 'app-template-list',
@@ -17,7 +19,9 @@ export class TemplateListPage implements OnInit {
 
   constructor(private templateService: TemplateService,
               private alertController: AlertController,
-              private sanitizer: DomSanitizer) {
+              private clientService: ClientService,
+              private screenMessageService: ScreenMessageService,
+              private loadingController: LoadingController) {
   }
 
   async ngOnInit() {
@@ -120,7 +124,6 @@ export class TemplateListPage implements OnInit {
 
   async renderTemplate(t: Template) {
     const inputs: any[] = [];
-    console.log(t.markers);
     t.markers.forEach(m => {
       inputs.push({
         id: m,
@@ -172,7 +175,98 @@ export class TemplateListPage implements OnInit {
     }
   }
 
-  sanitize(svg: string | undefined) {
-    return svg ? this.sanitizer.bypassSecurityTrustHtml(svg) : null;
+
+  async printRenderer(template: Template) {
+    let inputs: any[] = [];
+    template.markers.forEach(m => {
+      inputs.push({
+        id: m,
+        label: m,
+        name: m,
+        placeholder: m,
+      })
+    })
+    const alert = await this.alertController.create({
+      header: "Print a Template",
+      inputs: inputs,
+      buttons: [
+        {
+          text: 'ok'
+        },
+        {
+          text: 'cancel',
+          role: 'cancel'
+        }
+      ]
+    });
+    await alert.present();
+    const resp = await alert.onDidDismiss();
+    if (!resp.role) {
+      const params = resp.data.values;
+      inputs = [];
+      const clients = (await this.clientService.findAll()).content;
+      for (const c of clients){
+        inputs.push({
+          label: c.name,
+          type: 'radio',
+          value: c
+        })
+      }
+      const alert = await this.alertController.create({
+        header: "Select a Client",
+        inputs: inputs,
+        buttons: [
+          {
+            text: 'ok'
+          },
+          {
+            text: 'cancel',
+            role: 'cancel'
+          }
+        ]
+      });
+      await alert.present();
+      const r2 = await alert.onDidDismiss();
+      if (!r2.role) {
+        const client = r2.data.values;
+
+        inputs = [];
+        for (const s of client.printServices){
+          inputs.push({
+            label: s,
+            type: 'radio',
+            value: s
+          })
+        }
+        const alert = await this.alertController.create({
+          header: "Select a Print Service",
+          inputs: inputs,
+          buttons: [
+            {
+              text: 'ok'
+            },
+            {
+              text: 'cancel',
+              role: 'cancel'
+            }
+          ]
+        });
+        await alert.present();
+        const r3 = await alert.onDidDismiss();
+        if (!r3.role) {
+          const s = r3.data.values;
+
+
+          const loading =await this.loadingController.create();
+          await loading.present();
+          try {
+            await this.templateService.print(template.id, params, client.identifier, s);
+            await this.screenMessageService.showDone();
+          }finally {
+            await loading.dismiss();
+          }
+        }
+      }
+    }
   }
 }

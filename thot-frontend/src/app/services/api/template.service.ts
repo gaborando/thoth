@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import {Template} from "../common/types/template";
+import {Template} from "../../common/types/template";
 import {find} from "rxjs";
-import {environment} from "../../environments/environment";
-import {Page} from "../common/utils/fetchUtils";
+import {environment} from "../../../environments/environment";
+import {Page} from "../../common/utils/fetchUtils";
 
 @Injectable({
   providedIn: 'root'
@@ -22,13 +22,6 @@ export class TemplateService {
       }
       return await r.json()
     });
-  }
-
-  private guidGenerator() {
-    const S4 = () => {
-      return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-    };
-    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
   }
 
   async create(name: string) {
@@ -70,6 +63,25 @@ export class TemplateService {
         throw await r.json()
       }
       return await r.json()
+    });
+  }
+
+  async print(renderer: string, parameters: any, clientIdentifier: string, printService: any) {
+    return fetch(environment.apiUrl + '/renderer/' + renderer + '/print', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify({
+        parameters,
+        clientIdentifier,
+        printService
+      })
+    }).then(async r => {
+      if (!r.ok) {
+        throw await r.text()
+      }
+      return await r.text()
     });
   }
 }

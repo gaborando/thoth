@@ -11,6 +11,7 @@ export class AppComponent {
     { title: 'Templates', url: '/template-list', icon: 'create' },
     { title: 'Datasource', url: '/datasource-list', icon: 'server' },
     { title: 'Renderers', url: '/renderer-list', icon: 'document-text' },
+    { title: 'Clients', url: '/client-list', icon: 'print' },
   ];
   constructor() {}
 }

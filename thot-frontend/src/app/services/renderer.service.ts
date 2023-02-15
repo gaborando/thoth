@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Template} from "../common/types/template";
 import {Datasource} from "../common/types/datasource";
 import {Renderer} from "../common/types/renderer";
@@ -10,13 +10,14 @@ import {Page} from "../common/utils/fetchUtils";
 })
 export class RendererService {
 
-  constructor() { }
+  constructor() {
+  }
 
   async create(name: string | undefined, selectedTemplate: Template | undefined, selectedDatasource: Datasource[] | undefined, associationMap: any): Promise<Renderer> {
     return fetch(environment.apiUrl + '/renderer/', {
       method: 'POST',
       headers: {
-        'Content-Type':'application/json;charset=utf-8'
+        'Content-Type': 'application/json;charset=utf-8'
       },
       body: JSON.stringify({
         name: name,
@@ -70,7 +71,7 @@ export class RendererService {
     return fetch(environment.apiUrl + '/renderer/' + renderer?.id, {
       method: 'PUT',
       headers: {
-        'Content-Type':'application/json;charset=utf-8'
+        'Content-Type': 'application/json;charset=utf-8'
       },
       body: JSON.stringify(
         {
@@ -83,6 +84,25 @@ export class RendererService {
         throw await r.json()
       }
       return await r.json()
+    });
+  }
+
+  async print(renderer: string, parameters: any, clientIdentifier: string, printService: any) {
+    return fetch(environment.apiUrl + '/renderer/' + renderer + '/print', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify({
+        parameters,
+        clientIdentifier,
+        printService
+      })
+    }).then(async r => {
+      if (!r.ok) {
+        throw await r.text()
+      }
+      return await r.text()
     });
   }
 }

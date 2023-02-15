@@ -75,7 +75,10 @@
     <ion-buttons slot="start">
       <ion-button color="secondary" (click)="playRenderer()" class="ion-margin-horizontal">Render
       </ion-button>
+      <ion-button color="secondary" (click)="printRenderer()" class="ion-margin-horizontal">Print
+      </ion-button>
     </ion-buttons>
+
     <ion-buttons slot="end">
       <ion-button color="primary" (click)="updateRenderer()" class="ion-margin-horizontal"
                   [disabled]="!renderer?.name">Save

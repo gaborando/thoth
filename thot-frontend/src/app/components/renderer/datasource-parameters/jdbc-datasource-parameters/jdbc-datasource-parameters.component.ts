@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {DataSourceService} from "../../../../services/data-source.service";
+import {DataSourceService} from "../../../../services/api/data-source.service";
 import {AlertController} from "@ionic/angular";
 import {DatasourceParametersComponent} from "../datasource-parameters-component";
 

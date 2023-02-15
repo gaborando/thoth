@@ -3,29 +3,14 @@ package com.thot.server.service;
 import com.thot.server.controller.dto.renderer.Association;
 import com.thot.server.model.domain.Renderer;
 import com.thot.server.model.domain.Template;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.thot.common.Jpeg2Pdf;
 import org.thot.common.Svg2Jpeg;
-import org.thot.common.Svg2Pdf;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
-
-import static java.lang.System.in;
 
 @Service
 public class RenderService {
@@ -37,17 +22,20 @@ public class RenderService {
     private final DataSourceService dataSourceService;
     private final Svg2Jpeg svg2Jpeg;
 
+    private final ClientService clientService;
+
     public RenderService(
             TemplateService templateService,
             RendererService rendererService,
             DataSourceService dataSourceService,
             @Value("${thot.out.dir}") String outDir,
-            @Value("${thot.svgexport.executable}") String executable
+            @Value("${thot.svgexport.executable}") String executable,
 
-    ) {
+            ClientService clientService) {
         this.templateService = templateService;
         this.rendererService = rendererService;
         this.dataSourceService = dataSourceService;
+        this.clientService = clientService;
         svg2Jpeg = new Svg2Jpeg(executable, outDir);
     }
 
@@ -71,7 +59,6 @@ public class RenderService {
     }
 
     public byte[] renderTemplateJpeg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
-
         var template = templateService.getById(identifier).orElseThrow();
         return renderTemplateJpeg(template, params);
 
@@ -85,42 +72,12 @@ public class RenderService {
 
     public byte[] renderTemplatePdf(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
         var img = renderTemplateJpeg(template, params);
-        PDDocument document = new PDDocument();
-        BufferedImage bimg = ImageIO.read(new ByteArrayInputStream(img));
-        float width = bimg.getWidth();
-        float height = bimg.getHeight();
-        PDPage page = new PDPage(new PDRectangle(width, height));
-        document.addPage(page);
-        var i = PDImageXObject.createFromByteArray(document, img, null);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page);
-        contentStream.drawImage(i, 0, 0);
-        contentStream.close();
-        in.close();
-
-        var out = new ByteArrayOutputStream();
-        document.save(out);
-        document.close();
-        return out.toByteArray();
+        return Jpeg2Pdf.convert(img);
     }
 
     public byte[] renderRendererPdf(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
         var img = renderRendererJpeg(identifier, params);
-        PDDocument document = new PDDocument();
-        BufferedImage bimg = ImageIO.read(new ByteArrayInputStream(img));
-        float width = bimg.getWidth();
-        float height = bimg.getHeight();
-        PDPage page = new PDPage(new PDRectangle(width, height));
-        document.addPage(page);
-        var i = PDImageXObject.createFromByteArray(document, img, null);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page);
-        contentStream.drawImage(i, 0, 0);
-        contentStream.close();
-        in.close();
-
-        var out = new ByteArrayOutputStream();
-        document.save(out);
-        document.close();
-        return out.toByteArray();
+        return Jpeg2Pdf.convert(img);
     }
 
 
@@ -183,5 +140,13 @@ public class RenderService {
         }
 
         return renderTemplateJpeg(renderer.getTemplate(), allParams);
+    }
+
+    public void printRenderer(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService) throws IOException, InterruptedException {
+        clientService.printSvg(clientIdentifier, printService, renderRendererSvg(identifier, parameters));
+    }
+
+    public void printTemplate(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService) throws IOException, InterruptedException {
+        clientService.printSvg(clientIdentifier, printService, renderTemplateSvg(identifier, parameters));
     }
 }

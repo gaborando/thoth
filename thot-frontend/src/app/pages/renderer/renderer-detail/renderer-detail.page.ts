@@ -2,10 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {Renderer} from "../../../common/types/renderer";
 import {RendererService} from "../../../services/renderer.service";
 import {ActivatedRoute} from "@angular/router";
-import {ScreenMessageService} from "../../../services/screen-message.service";
-import {AlertController, NavController} from "@ionic/angular";
+import {ScreenMessageService} from "../../../services/api/screen-message.service";
+import {AlertController, LoadingController, NavController} from "@ionic/angular";
 import {environment} from "../../../../environments/environment";
 import {Template} from "../../../common/types/template";
+import {ClientService} from "../../../services/api/client.service";
 
 @Component({
   selector: 'app-renderer-detail',
@@ -24,7 +25,9 @@ export class RendererDetailPage implements OnInit {
               private navController: NavController,
 
               private alertController: AlertController,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private clientService: ClientService,
+              private loadingController: LoadingController) {
   }
 
   async ionViewWillEnter() {
@@ -130,6 +133,7 @@ export class RendererDetailPage implements OnInit {
       for (const key of Object.keys(resp.data.values)) {
         query.append(key, resp.data.values[key]);
       }
+
       window.open(environment.apiUrl + '/renderer/' + this.renderer.id + '/render/pdf?' + query.toString())
     }
   }
@@ -160,5 +164,113 @@ export class RendererDetailPage implements OnInit {
       this.drawIoWindow?.focus();
     }
 
+  }
+
+  async printRenderer() {
+    if (!this.renderer) {
+      return;
+    }
+    let inputs: any[] = [];
+    for (const p of Object.keys(this.renderer.associationMap)) {
+      if (this.renderer.associationMap[p].type === 'parameter') {
+        inputs.push({
+          id: p,
+          label: p,
+          name: p,
+          placeholder: p,
+        })
+      }
+    }
+    for (const ds of this.renderer.datasourceProperties) {
+      for (const p of ds.parameters) {
+        inputs.push({
+          id: p,
+          label: p,
+          name: p,
+          placeholder: p,
+        })
+      }
+    }
+    const alert = await this.alertController.create({
+      header: "Print a Template",
+      inputs: inputs,
+      buttons: [
+        {
+          text: 'ok'
+        },
+        {
+          text: 'cancel',
+          role: 'cancel'
+        }
+      ]
+    });
+    await alert.present();
+    const resp = await alert.onDidDismiss();
+    if (!resp.role) {
+      const params = resp.data.values;
+      inputs = [];
+      const clients = (await this.clientService.findAll()).content;
+      for (const c of clients){
+        inputs.push({
+          label: c.name,
+          type: 'radio',
+          value: c
+        })
+      }
+      const alert = await this.alertController.create({
+        header: "Select a Client",
+        inputs: inputs,
+        buttons: [
+          {
+            text: 'ok'
+          },
+          {
+            text: 'cancel',
+            role: 'cancel'
+          }
+        ]
+      });
+      await alert.present();
+      const r2 = await alert.onDidDismiss();
+      if (!r2.role) {
+        const client = r2.data.values;
+
+        inputs = [];
+        for (const s of client.printServices){
+          inputs.push({
+            label: s,
+            type: 'radio',
+            value: s
+          })
+        }
+        const alert = await this.alertController.create({
+          header: "Select a Print Service",
+          inputs: inputs,
+          buttons: [
+            {
+              text: 'ok'
+            },
+            {
+              text: 'cancel',
+              role: 'cancel'
+            }
+          ]
+        });
+        await alert.present();
+        const r3 = await alert.onDidDismiss();
+        if (!r3.role) {
+          const s = r3.data.values;
+
+          const loading =await this.loadingController.create();
+          await loading.present();
+          try {
+            await this.rendererService.print(this.renderer.id, params, client.identifier, s);
+            await this.screenMessageService.showDone();
+          }finally {
+            await loading.dismiss();
+          }
+        }
+      }
+    }
   }
 }
