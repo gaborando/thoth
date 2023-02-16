@@ -1,5 +1,5 @@
-rootProject.name = 'thot'
-include 'thot-server'
-include 'thot-client'
-include 'thot-common'
+rootProject.name = 'thoth'
+include 'thoth-server'
+include 'thoth-client'
+include 'thoth-common'
 
