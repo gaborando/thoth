@@ -5,10 +5,7 @@ import com.thoth.server.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/client")
@@ -26,6 +23,12 @@ public class ClientController {
     ) {
         return clientService.search(Specification.where(null),
                 PageRequest.of(page, 10));
+    }
+
+    @DeleteMapping("/{identifier}")
+    public void unregister(
+            @PathVariable String identifier) {
+        clientService.deleteById(identifier);
     }
 
 }

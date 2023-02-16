@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,8 +17,12 @@ import java.util.Set;
 @Setter
 public class Template {
     @Id
+    @NotBlank
+    @Size(min = 3, max = 256)
     private String id;
 
+    @NotBlank
+    @Size(min = 3, max = 256)
     private String name;
 
     @Column(columnDefinition = "TEXT")
@@ -29,6 +35,6 @@ public class Template {
     private String xml;
 
     @ElementCollection
-    private Set<String> markers;
+    private Set<@NotBlank @Size(min = 3, max = 256) String> markers;
 
 }

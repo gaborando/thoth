@@ -4,6 +4,8 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,15 +17,21 @@ import java.util.List;
 @Setter
 public abstract class DatasourceProperties {
     @Id
+    @NotBlank
+    @Size(min = 3, max = 256)
     private String id;
 
+    @NotBlank
+    @Size(min = 3, max = 256)
     private String name;
 
+    @NotBlank
+    @Size(min = 3, max = 256)
     private String type;
 
     @ElementCollection
-    private List<String> parameters;
+    private List<@NotBlank @Size(min = 3, max = 256) String> parameters;
 
     @ElementCollection
-    private List<String> properties;
+    private List<@NotBlank @Size(min = 3, max = 256) String> properties;
 }

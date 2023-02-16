@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Client} from "../../../common/types/client";
 import {ClientService} from "../../../services/api/client.service";
 import {ListPage} from "../../../common/utils/ui-patterns/list-page";
+import {ScreenMessageService} from "../../../services/screen-message.service";
 
 @Component({
   selector: 'app-client-list',
@@ -10,7 +11,8 @@ import {ListPage} from "../../../common/utils/ui-patterns/list-page";
 })
 export class ClientListPage extends ListPage<Client> implements OnInit {
 
-  constructor(private clientService: ClientService) {
+  constructor(private clientService: ClientService,
+              private screenMessageService: ScreenMessageService) {
     super(clientService)
   }
 
@@ -20,4 +22,10 @@ export class ClientListPage extends ListPage<Client> implements OnInit {
   ngOnInit() {
   }
 
+  unregister(client: Client) {
+    return this.screenMessageService.showDeleteAlert(async () => {
+      await  this.clientService.deleteById(client.identifier);
+      this.elements = this.elements?.filter(c=>c.identifier !== client.identifier)
+    })
+  }
 }

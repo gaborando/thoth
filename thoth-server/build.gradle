@@ -41,6 +41,9 @@ dependencies {
 	runtimeOnly 'com.oracle.database.jdbc:ojdbc8'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
+
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
 	implementation project(':thoth-common')
 
 

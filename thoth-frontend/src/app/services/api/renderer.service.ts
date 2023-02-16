@@ -62,7 +62,7 @@ export class RendererService implements DataFetcher<Renderer>{
       method: 'DELETE'
     }).then(async r => {
       if (!r.ok) {
-        throw await r.text()
+        throw await r.json()
       }
       return await r.text()
     });

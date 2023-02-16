@@ -22,4 +22,15 @@ export class ClientService {
       return await r.json()
     });
   }
+
+  async deleteById(identifier: string) {
+    return fetch(environment.apiUrl + '/client/' + identifier, {
+      method: 'DELETE'
+    }).then(async r => {
+      if (!r.ok) {
+        throw await r.json()
+      }
+      return await r.text()
+    });
+  }
 }
