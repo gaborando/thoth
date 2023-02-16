@@ -63,7 +63,7 @@ export class TemplateService implements DataFetcher<Template>{
       if (!r.ok) {
         throw await r.json()
       }
-      return await r.json()
+      return await r.text()
     });
   }
 
