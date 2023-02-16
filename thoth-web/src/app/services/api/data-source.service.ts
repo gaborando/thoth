@@ -11,9 +11,10 @@ export class DataSourceService implements DataFetcher<Datasource>{
 
   constructor() { }
 
-  async checkParameters(type: string, jdbcDatasourceParameters: any, parameters: any) {
-    const request = {... jdbcDatasourceParameters};
+  async checkParameters(type: string, datasourceParameters: any, parameters: any) {
+    const request = {... datasourceParameters};
     request.parameters = parameters;
+    console.log(request)
     return fetch(environment.apiUrl + '/datasource/check/' + type, {
       method: 'POST',
       headers: {

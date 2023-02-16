@@ -1,5 +1,8 @@
 package com.thoth.server.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoth.server.controller.dto.datasource.RestDatasourceParameters;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
@@ -7,18 +10,24 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
 @Service
 public class DataSourceService {
 
+    private final ObjectMapper objectMapper;
 
     private final DatasourcePropertiesRepository datasourcePropertiesRepository;
 
-    public DataSourceService(DatasourcePropertiesRepository datasourcePropertiesRepository) {
+    public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository) {
+        this.objectMapper = objectMapper;
         this.datasourcePropertiesRepository = datasourcePropertiesRepository;
     }
 
@@ -107,5 +116,29 @@ public class DataSourceService {
 
     public HashMap<String, Object> fetchData(String id, HashMap<String, Object> params) {
         return fetchData(datasourcePropertiesRepository.findById(id).orElseThrow(), params);
+    }
+
+    public String[] checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
+        var strBody = objectMapper.writeValueAsString(request);
+        for (Map.Entry<String, String> e : parameters.entrySet()) {
+            strBody = strBody.replace("{{"+e.getKey()+"}}", e.getValue());
+        }
+        request = objectMapper.readValue(strBody, RestDatasourceParameters.class);
+        var restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        request.getHeaders().forEach(headers::set);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+        var resp = restTemplate.exchange(
+                request.getUrl(),
+                HttpMethod.valueOf(request.getMethod()),
+                requestEntity,
+                HashMap.class,
+                request.getQueryParameters()
+        );
+        var props = new ArrayList<String>();
+        for (Object o : resp.getBody().keySet()) {
+            props.add(o.toString());
+        }
+        return props.toArray(String[]::new);
     }
 }

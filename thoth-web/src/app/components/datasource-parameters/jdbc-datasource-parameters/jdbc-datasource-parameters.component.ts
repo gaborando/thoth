@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {DataSourceService} from "../../../../services/api/data-source.service";
+import {DataSourceService} from "../../../services/api/data-source.service";
 import {AlertController} from "@ionic/angular";
 import {DatasourceParametersComponent} from "../datasource-parameters-component";
-import {ScreenMessageService} from "../../../../services/screen-message.service";
+import {ScreenMessageService} from "../../../services/screen-message.service";
 import {CodemirrorComponent} from "@ctrl/ngx-codemirror";
 
 @Component({
@@ -28,7 +28,6 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
   @Input()
   detectedProperties: string[] = []
   checkError: string | null = null;
-  q = 'select * from users;';
 
   constructor(
     private dataSourceService: DataSourceService,

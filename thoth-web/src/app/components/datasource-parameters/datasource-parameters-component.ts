@@ -1,4 +1,4 @@
-import {Datasource} from "../../../common/types/datasource";
+import {Datasource} from "../../common/types/datasource";
 
 export interface DatasourceParametersComponent {
   checkQuery(): void

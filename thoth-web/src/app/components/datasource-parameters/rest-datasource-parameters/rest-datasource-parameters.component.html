@@ -1,0 +1,81 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>
+      Request Parameters
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <form #frm>
+      <ion-item>
+        <ion-label>Server URL</ion-label>
+        <ion-input name="url" [(ngModel)]="restDatasourceParameters.url" type="url"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Request Method</ion-label>
+        <ion-select name="method" [(ngModel)]="restDatasourceParameters.method">
+          <ion-select-option *ngFor="let m of ['GET','POST','PUT','DELETE']" [value]="m">{{m}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item-divider>
+        Query Parameters
+      </ion-item-divider>
+      <ion-item>
+        <ion-input #queryKey placeholder="Key"></ion-input>
+        <ion-input #queryValue placeholder="Value"></ion-input>
+        <ion-button slot="end"
+                    (click)="addQueryParam(queryKey.value, queryValue.value); queryKey.value = null; queryValue.value = null">
+          <ion-icon slot="icon-only" name="add"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item lines="full" *ngFor="let q of obj.keys(restDatasourceParameters.queryParameters)">
+        <ion-label>{{q}}</ion-label>
+        <ion-label>{{restDatasourceParameters.queryParameters[q]}}</ion-label>
+        <ion-button color="warning" slot="end" (click)="removeQueryParam(q)">
+          <ion-icon slot="icon-only" name="remove"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item-divider>
+        Headers
+      </ion-item-divider>
+      <ion-item>
+        <ion-input #headerKey placeholder="Header"></ion-input>
+        <ion-input #headerValue placeholder="Value"></ion-input>
+        <ion-button slot="end"
+                    (click)="addHeader(headerKey.value, headerValue.value); headerKey.value = null; headerValue.value = null">
+          <ion-icon slot="icon-only" name="add"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item lines="full" *ngFor="let h of obj.keys(restDatasourceParameters.headers)">
+        <ion-label>{{h}}</ion-label>
+        <ion-label>{{restDatasourceParameters.headers[h]}}</ion-label>
+        <ion-button color="warning" slot="end" (click)="removeHeader(h)">
+          <ion-icon slot="icon-only" name="remove"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ng-container *ngIf="['POST','PUT'].includes(restDatasourceParameters.method)">
+        <ion-item-divider>
+          Body
+        </ion-item-divider>
+        <ion-item>
+          <ion-input #bodyKey placeholder="Key"></ion-input>
+          <ion-input #bodyValue placeholder="Value"></ion-input>
+          <ion-button slot="end"
+                      (click)="addBody(bodyKey.value, bodyValue.value); bodyKey.value = null; bodyValue.value = null">
+            <ion-icon slot="icon-only" name="add"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <ion-item lines="full" *ngFor="let b of obj.keys(restDatasourceParameters.body)">
+          <ion-label>{{b}}</ion-label>
+          <ion-label>{{restDatasourceParameters.body[b]}}</ion-label>
+          <ion-button color="warning" slot="end" (click)="removeBodyItem(b)">
+            <ion-icon slot="icon-only" name="remove"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ng-container>
+    </form>
+  </ion-card-content>
+  <div class="ion-margin">
+    <ion-note>Detected parameters:  {{parameters.join(",")}}</ion-note>
+  </div>
+</ion-card>
+

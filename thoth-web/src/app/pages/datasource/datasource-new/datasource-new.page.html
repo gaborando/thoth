@@ -26,6 +26,9 @@
       <ng-container *ngSwitchCase="'jdbc'">
         <app-jdbc-datasource-parameters #jdbc (onInit)="dsParameters = jdbc" (isValid)="validParameters = $event"></app-jdbc-datasource-parameters>
       </ng-container>
+      <ng-container *ngSwitchCase="'rest'">
+        <app-rest-datasource-parameters #rest (onInit)="dsParameters = rest" (isValid)="validParameters = $event"></app-rest-datasource-parameters>
+      </ng-container>
     </ng-container>
   </ng-container>
 </ion-content>

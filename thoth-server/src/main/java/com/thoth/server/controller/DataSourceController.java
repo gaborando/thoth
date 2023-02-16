@@ -1,7 +1,9 @@
 package com.thoth.server.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoth.server.controller.dto.datasource.JdbcDatasourceParametersCheckRequest;
 import com.thoth.server.controller.dto.datasource.JdbcDatasourceParametersCreateRequest;
+import com.thoth.server.controller.dto.datasource.RestDatasourceParametersCheckRequest;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
 import com.thoth.server.service.DataSourceService;
@@ -34,6 +36,15 @@ public class DataSourceController {
                 parameters.getParameters()
         ));
     }
+
+    @PostMapping(value = "/check/rest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String[]> checkRestParameters(@RequestBody RestDatasourceParametersCheckRequest parameters) throws SQLException, JsonProcessingException {
+        return ResponseEntity.ok(dataSourceService.checkRest(
+                parameters.getRequest(),
+                parameters.getParameters()
+        ));
+    }
+
 
     @PostMapping(value = "/jdbc", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DatasourceProperties> createJdbcParameters(@RequestBody JdbcDatasourceParametersCreateRequest parameters) throws SQLException {

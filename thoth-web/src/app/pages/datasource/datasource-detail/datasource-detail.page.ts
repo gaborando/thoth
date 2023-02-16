@@ -4,10 +4,10 @@ import {DataSourceService} from "../../../services/api/data-source.service";
 import {Datasource} from "../../../common/types/datasource";
 import {
   JdbcDatasourceParametersComponent
-} from "../../../components/renderer/datasource-parameters/jdbc-datasource-parameters/jdbc-datasource-parameters.component";
+} from "../../../components/datasource-parameters/jdbc-datasource-parameters/jdbc-datasource-parameters.component";
 import {
   DatasourceParametersComponent
-} from "../../../components/renderer/datasource-parameters/datasource-parameters-component";
+} from "../../../components/datasource-parameters/datasource-parameters-component";
 import {ScreenMessageService} from "../../../services/screen-message.service";
 import {NavController} from "@ionic/angular";
 

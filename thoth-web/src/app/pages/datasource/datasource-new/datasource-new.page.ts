@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {
   JdbcDatasourceParametersComponent
-} from "../../../components/renderer/datasource-parameters/jdbc-datasource-parameters/jdbc-datasource-parameters.component";
+} from "../../../components/datasource-parameters/jdbc-datasource-parameters/jdbc-datasource-parameters.component";
 import {
   DatasourceParametersComponent
-} from "../../../components/renderer/datasource-parameters/datasource-parameters-component";
+} from "../../../components/datasource-parameters/datasource-parameters-component";
 import {ScreenMessageService} from "../../../services/screen-message.service";
 import {NavController} from "@ionic/angular";
 
@@ -18,6 +18,9 @@ export class DatasourceNewPage implements OnInit {
   types = [{
     name: 'jdbc',
     type: 'jdbc'
+  }, {
+    name: 'rest',
+    type: 'rest'
   }];
   dataSourceType: any;
   dsParameters: DatasourceParametersComponent | null = null;
