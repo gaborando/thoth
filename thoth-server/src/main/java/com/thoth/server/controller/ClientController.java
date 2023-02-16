@@ -5,6 +5,8 @@ import com.thoth.server.service.ClientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,12 +19,12 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @GetMapping("/")
-    public Page<Client> findAll(
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<Client>> findAll(
             @RequestParam(defaultValue = "0") int page
     ) {
-        return clientService.search(Specification.where(null),
-                PageRequest.of(page, 10));
+        return ResponseEntity.ok(clientService.search(Specification.where(null),
+                PageRequest.of(page, 10)));
     }
 
     @DeleteMapping("/{identifier}")

@@ -36,10 +36,8 @@ public class UtilsController {
 
         var img =  MatrixToImageWriter.toBufferedImage(bitMatrix);
         var baos = new ByteArrayOutputStream();
-        ImageIO.write(img, "jpeg", baos);;
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE);
-        return ResponseEntity.ok().headers(httpHeaders).body(baos.toByteArray());
+        ImageIO.write(img, "jpeg", baos);
+        return ResponseEntity.ok(baos.toByteArray());
     }
 
     @GetMapping(value = "/qrcode", produces = MediaType.IMAGE_JPEG_VALUE)
@@ -51,9 +49,7 @@ public class UtilsController {
 
         var img =  MatrixToImageWriter.toBufferedImage(bitMatrix);
         var baos = new ByteArrayOutputStream();
-        ImageIO.write(img, "jpeg", baos);;
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE);
-        return ResponseEntity.ok().headers(httpHeaders).body(baos.toByteArray());
+        ImageIO.write(img, "jpeg", baos);
+        return ResponseEntity.ok(baos.toByteArray());
     }
 }

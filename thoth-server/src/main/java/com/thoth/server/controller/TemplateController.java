@@ -32,23 +32,23 @@ public class TemplateController {
         this.renderService = renderService;
     }
 
-    @GetMapping("/")
-    public Page<Template> findAll(
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<Template>> findAll(
             @RequestParam(defaultValue = "0") int page
     ) {
-        return templateService.search(Specification.where(null),
-                PageRequest.of(page, 10));
+        return ResponseEntity.ok(templateService.search(Specification.where(null),
+                PageRequest.of(page, 10)));
     }
 
-    @PostMapping("/")
-    public Template create(@RequestBody CreateTemplateRequest request) {
-        return templateService.create(request.getName());
+    @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Template> create(@RequestBody CreateTemplateRequest request) {
+        return ResponseEntity.ok(templateService.create(request.getName()));
     }
 
-    @PutMapping("/{identifier}")
-    public Template update(@RequestBody Template template, @PathVariable String identifier) {
+    @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Template> update(@RequestBody Template template, @PathVariable String identifier) {
         template.setId(identifier);
-        return templateService.save(template);
+        return ResponseEntity.ok(templateService.save(template));
     }
 
     @DeleteMapping("/{identifier}")
@@ -56,36 +56,30 @@ public class TemplateController {
         templateService.deleteById(identifier);
     }
 
-    @GetMapping("/{identifier}/render/jpeg")
+    @GetMapping(value = "/{identifier}/render/jpeg",produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderJpeg(@RequestParam HashMap<String, Object> params,
                                          @PathVariable String identifier) throws IOException, InterruptedException {
 
         var data = renderService.renderTemplateJpeg(identifier, params);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE);
-        return ResponseEntity.ok().headers(httpHeaders).body(data);
+        return ResponseEntity.ok(data);
 
     }
 
-    @GetMapping("/{identifier}/render/pdf")
+    @GetMapping(value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderPdf(@RequestParam HashMap<String, Object> params,
                                              @PathVariable String identifier) throws IOException, InterruptedException {
 
         var data = renderService.renderTemplatePdf(identifier, params);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
-        return ResponseEntity.ok().headers(httpHeaders).body(data);
+        return ResponseEntity.ok(data);
 
     }
 
-    @GetMapping("/{identifier}/render/svg")
+    @GetMapping(value = "/{identifier}/render/svg", produces = "image/svg+xml")
     public ResponseEntity<byte[]> renderSvg(@RequestParam HashMap<String, Object> params,
                                             @PathVariable String identifier) throws IOException, InterruptedException {
 
         var data = renderService.renderTemplateSvg(identifier, params);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set(HttpHeaders.CONTENT_TYPE, "image/svg+xml");
-        return ResponseEntity.ok().headers(httpHeaders).body(data.getBytes());
+        return ResponseEntity.ok(data.getBytes());
 
     }
 

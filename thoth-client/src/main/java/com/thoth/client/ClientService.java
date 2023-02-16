@@ -63,14 +63,15 @@ public class ClientService {
         job.setPrintService(printService);
         PageFormat pf = job.defaultPage();
         HashPrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
-        attr.add(new MediaPrintableArea(0f, 0f, 210f, 297f, MediaPrintableArea.MM));
         if (document.getPage(0).getBBox().getWidth() <= document.getPage(0).getBBox().getHeight())
         {
             pf.setOrientation(PageFormat.PORTRAIT);
+            attr.add(new MediaPrintableArea(0f, 0f, 210f, 297f, MediaPrintableArea.MM));
         }
         else
         {
             pf.setOrientation(PageFormat.LANDSCAPE);
+            attr.add(new MediaPrintableArea(0f, 0f, 210f, 297f, MediaPrintableArea.MM));
         }
         job.setPrintable(new PDFPrintable(document), pf);
         job.print(attr);

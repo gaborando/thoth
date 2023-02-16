@@ -8,6 +8,7 @@ import com.thoth.server.service.DataSourceService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class DataSourceController {
         this.dataSourceService = dataSourceService;
     }
 
-    @PostMapping("/check/jdbc")
+    @PostMapping(value = "/check/jdbc", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String[]> checkJdbcParameters(@RequestBody JdbcDatasourceParametersCheckRequest parameters) throws SQLException {
         return ResponseEntity.ok(dataSourceService.checkJdbc(
                 parameters.getUrl(),
@@ -34,7 +35,7 @@ public class DataSourceController {
         ));
     }
 
-    @PostMapping("/jdbc")
+    @PostMapping(value = "/jdbc", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DatasourceProperties> createJdbcParameters(@RequestBody JdbcDatasourceParametersCreateRequest parameters) throws SQLException {
         return ResponseEntity.ok(dataSourceService.createJdbc(
                 parameters.getName(),
@@ -47,27 +48,27 @@ public class DataSourceController {
         ));
     }
 
-    @GetMapping("/")
-    public Page<DatasourceProperties> findAll(
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<DatasourceProperties>> findAll(
             @RequestParam(defaultValue = "0") int page
     ) {
-        return dataSourceService.search(Specification.where(null),
-                PageRequest.of(page, 10));
+        return ResponseEntity.ok(dataSourceService.search(Specification.where(null),
+                PageRequest.of(page, 10)));
     }
 
-    @GetMapping("/{identifier}")
+    @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DatasourceProperties> findById(@PathVariable String identifier) {
         return ResponseEntity.ok(dataSourceService.findById(identifier).orElseThrow());
     }
 
-    @PostMapping("/jdbc/{identifier}")
+    @PostMapping(value = "/jdbc/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DatasourceProperties> updateJdbcParameters(@RequestBody JdbcDatasourceProperties properties, @PathVariable String identifier) throws SQLException {
         properties.setId(identifier);
         return ResponseEntity.ok(dataSourceService.update(properties));
     }
 
     @DeleteMapping("/{identifier}")
-    public void updateJdbcParameters(@PathVariable String identifier) throws SQLException {
+    public void deleteJdbcParameters(@PathVariable String identifier) {
         dataSourceService.delete(identifier);
     }
 }
