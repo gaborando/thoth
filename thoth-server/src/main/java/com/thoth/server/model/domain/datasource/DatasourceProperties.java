@@ -30,8 +30,8 @@ public abstract class DatasourceProperties {
     private String type;
 
     @ElementCollection
-    private List<@NotBlank @Size(min = 3, max = 256) String> parameters;
+    private List<@NotBlank @Size(min = 1, max = 256) String> parameters;
 
     @ElementCollection
-    private List<@NotBlank @Size(min = 3, max = 256) String> properties;
+    private List<@NotBlank @Size(min = 1, max = 256) String> properties;
 }

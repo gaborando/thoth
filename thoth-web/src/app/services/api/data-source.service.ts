@@ -87,7 +87,7 @@ export class DataSourceService implements DataFetcher<Datasource>{
       if (!r.ok) {
         throw await r.json()
       }
-      return await r.json()
+      return await r.text()
     });
   }
 }
