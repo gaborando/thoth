@@ -17,6 +17,8 @@ import org.thoth.common.dto.RegisterClientRequest;
 
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.standard.MediaPrintableArea;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterException;
@@ -60,17 +62,18 @@ public class ClientService {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintService(printService);
         PageFormat pf = job.defaultPage();
-        Paper paper = new Paper();
-        double margin = 18; // 1 inch margin
-        paper.setImageableArea(margin, margin, paper.getWidth() - margin * 2, paper.getHeight() - margin * 2);
-        if (document.getPage(0).getBBox().getWidth() >= document.getPage(0).getBBox().getHeight()) {
-            pf.setOrientation(0);
-        } else {
-            pf.setOrientation(1);
+        HashPrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
+        attr.add(new MediaPrintableArea(0f, 0f, 210f, 297f, MediaPrintableArea.MM));
+        if (document.getPage(0).getBBox().getWidth() <= document.getPage(0).getBBox().getHeight())
+        {
+            pf.setOrientation(PageFormat.PORTRAIT);
         }
-        pf.setPaper(paper);
+        else
+        {
+            pf.setOrientation(PageFormat.LANDSCAPE);
+        }
         job.setPrintable(new PDFPrintable(document), pf);
-        job.print();
+        job.print(attr);
         return true;
     }
 

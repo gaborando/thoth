@@ -67,8 +67,8 @@ export class TemplateService implements DataFetcher<Template>{
     });
   }
 
-  async print(renderer: string, parameters: any, clientIdentifier: string, printService: any) {
-    return fetch(environment.apiUrl + '/renderer/' + renderer + '/print', {
+  async print(template: string, parameters: any, clientIdentifier: string, printService: any) {
+    return fetch(environment.apiUrl + '/template/' + template + '/print', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
