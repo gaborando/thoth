@@ -1,10 +1,13 @@
 package com.thoth.server.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.thoth.server.controller.dto.datasource.RestDatasourceParameters;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
+import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.data.domain.Page;
@@ -86,7 +89,7 @@ public class DataSourceService {
         return true;
     }
 
-    public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) {
+    public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) throws JsonProcessingException {
         if(datasourceProperty instanceof JdbcDatasourceProperties j){
             var dataSourceBuilder = DataSourceBuilder.create();
             dataSourceBuilder.url(j.getUrl());
@@ -110,15 +113,46 @@ public class DataSourceService {
             }
             return resp;
         }
+        if(datasourceProperty instanceof RestDatasourceProperties j){
+            var request  = new RestDatasourceParameters();
+            request.setBody(j.getBody());
+            request.setUrl(j.getUrl());
+            request.setHeaders(j.getHeaders());
+            request.setMethod(j.getMethod());
+            request.setQueryParameters(j.getQueryParameters());
+            request.setJsonQuery(j.getJsonQuery());
+            var strBody = objectMapper.writeValueAsString(request);
+            for (Map.Entry<String, Object> e : parameters.entrySet()) {
+                strBody = strBody.replace("{{"+e.getKey()+"}}", e.getValue().toString());
+            }
+            request = objectMapper.readValue(strBody, RestDatasourceParameters.class);
+            var restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            request.getHeaders().forEach(headers::set);
+            HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+            var resp = restTemplate.exchange(
+                    request.getUrl(),
+                    HttpMethod.valueOf(request.getMethod()),
+                    requestEntity,
+                    String.class,
+                    request.getQueryParameters()
+            );
+
+            var root = objectMapper.readTree(resp.getBody()).at(request.getJsonQuery());
+            if(!root.getNodeType().equals(JsonNodeType.OBJECT))
+                throw new IllegalArgumentException("Invalid json Object fetched");
+
+            return getNodeFieldsMap(root, "");
+        }
        return new HashMap<>();
     }
 
 
-    public HashMap<String, Object> fetchData(String id, HashMap<String, Object> params) {
+    public HashMap<String, Object> fetchData(String id, HashMap<String, Object> params) throws Exception {
         return fetchData(datasourcePropertiesRepository.findById(id).orElseThrow(), params);
     }
 
-    public String[] checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
+    public ArrayList<String> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
         var strBody = objectMapper.writeValueAsString(request);
         for (Map.Entry<String, String> e : parameters.entrySet()) {
             strBody = strBody.replace("{{"+e.getKey()+"}}", e.getValue());
@@ -132,13 +166,56 @@ public class DataSourceService {
                 request.getUrl(),
                 HttpMethod.valueOf(request.getMethod()),
                 requestEntity,
-                HashMap.class,
+                String.class,
                 request.getQueryParameters()
         );
-        var props = new ArrayList<String>();
-        for (Object o : resp.getBody().keySet()) {
-            props.add(o.toString());
-        }
-        return props.toArray(String[]::new);
+
+        var root = objectMapper.readTree(resp.getBody()).at(request.getJsonQuery());
+        if(!root.getNodeType().equals(JsonNodeType.OBJECT))
+            throw new IllegalArgumentException("Invalid json Object fetched");
+
+        return getNodeFields(root, "");
+    }
+
+    private ArrayList<String> getNodeFields(JsonNode root, String s) {
+        var fields = new ArrayList<String>();
+        root.fields().forEachRemaining(e -> {
+            if(e.getValue().getNodeType() == JsonNodeType.OBJECT){
+                fields.addAll(getNodeFields(e.getValue(), e.getKey() + '/'));
+            }
+            else if(e.getValue().getNodeType() != JsonNodeType.ARRAY){
+                fields.add(s + e.getKey());
+            }
+        });
+        return fields;
+    }
+
+    private HashMap<String, Object> getNodeFieldsMap(JsonNode root, String s) {
+        var fields = new HashMap<String, Object>();
+        root.fields().forEachRemaining(e -> {
+            if(e.getValue().getNodeType() == JsonNodeType.OBJECT){
+                fields.putAll(getNodeFieldsMap(e.getValue(), e.getKey() + '/'));
+            }
+            else if(e.getValue().getNodeType() != JsonNodeType.ARRAY){
+                fields.put(s + e.getKey(), e.getValue().asText());
+            }
+        });
+        return fields;
+    }
+
+    public RestDatasourceProperties createRest(String name, String url, String method, Map<String, String> queryParameters, Map<String, String> headers, String jsonQuery, Map<String, Object> body, List<String> parameters, List<String> properties) {
+        var dsp = new RestDatasourceProperties();
+        dsp.setId("dsp_rest_" + UUID.randomUUID());
+        dsp.setUrl(url);
+        dsp.setMethod(method);
+        dsp.setQueryParameters(queryParameters);
+        dsp.setHeaders(headers);
+        dsp.setJsonQuery(jsonQuery);
+        dsp.setBody(body);
+        dsp.setParameters(parameters);
+        dsp.setProperties(properties);
+        dsp.setName(name);
+        dsp.setType("rest");
+        return datasourcePropertiesRepository.save(dsp);
     }
 }

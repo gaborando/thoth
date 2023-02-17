@@ -8,19 +8,27 @@
 </ion-header>
 
 <ion-content>
-  <ion-item>
-    <ion-label>Datasource Name</ion-label>
-    <ion-input name="name" [(ngModel)]="datasourceName"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Datasource Type</ion-label>
-    <ion-select name="dataSourceType" [(ngModel)]="dataSourceType">
-      <ion-select-option *ngFor="let t of types" [value]="t.type">
-        {{t.name}}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
-
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Datasource Baisc Properties
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Datasource Name</ion-label>
+        <ion-input name="name" [(ngModel)]="datasourceName"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Datasource Type</ion-label>
+        <ion-select name="dataSourceType" [(ngModel)]="dataSourceType">
+          <ion-select-option *ngFor="let t of types" [value]="t.type">
+            {{t.name}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
   <ng-container *ngIf="dataSourceType">
     <ng-container [ngSwitch]="dataSourceType">
       <ng-container *ngSwitchCase="'jdbc'">

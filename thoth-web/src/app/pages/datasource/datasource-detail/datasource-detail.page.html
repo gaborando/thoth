@@ -14,23 +14,39 @@
 </ion-header>
 
 <ion-content *ngIf="datasource">
-  <ion-item>
-    <ion-label>Datasource Name</ion-label>
-    <ion-input name="name" [(ngModel)]="datasource.name"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label>Datasource Type</ion-label>
-    <ion-input name="type" [value]="datasource.type" readonly="true" disabled="true"></ion-input>
-  </ion-item>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Datasource Baisc Properties
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Datasource Name</ion-label>
+        <ion-input name="name" [(ngModel)]="datasource.name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Datasource Type</ion-label>
+        <ion-input name="type" [value]="datasource.type" readonly="true" disabled="true"></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
 
 
   <ng-container [ngSwitch]="datasource.type">
     <ng-container *ngSwitchCase="'jdbc'">
-      <app-jdbc-datasource-parameters  #jdbc (onInit)="dsParameters = jdbc"
-                                       [jdbcDatasourceParameters]="datasource"
-                                       [queryParams]="datasource.parameters"
-                                       [detectedProperties]="datasource.properties"
+      <app-jdbc-datasource-parameters #jdbc (onInit)="dsParameters = jdbc"
+                                      [jdbcDatasourceParameters]="datasource"
+                                      [queryParams]="datasource.parameters"
+                                      [detectedProperties]="datasource.properties"
                                       (isValid)="validParameters = $event"></app-jdbc-datasource-parameters>
+    </ng-container>
+    <ng-container *ngSwitchCase="'rest'">
+      <app-rest-datasource-parameters #rest (onInit)="dsParameters = rest"
+                                      [restDatasourceParameters]="datasource"
+                                      [parameters]="datasource.parameters"
+                                      [detectedProperties]="datasource.properties"
+                                      (isValid)="validParameters = $event"></app-rest-datasource-parameters>
     </ng-container>
   </ng-container>
 

@@ -3,13 +3,14 @@ package com.thoth.server.controller.dto.datasource;
 import lombok.Data;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class RestDatasourceParameters {
     private String url;
     private String method;
-    private HashMap<String, String> queryParameters;
-    private HashMap<String, String> headers;
-    private HashMap<String, Object> body;
-    private HashMap<String, Object> parameters;
+    private Map<String, String> queryParameters;
+    private Map<String, String> headers;
+    private Map<String, Object> body;
+    private String jsonQuery;
 }

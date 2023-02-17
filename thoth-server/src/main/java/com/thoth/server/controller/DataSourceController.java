@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoth.server.controller.dto.datasource.JdbcDatasourceParametersCheckRequest;
 import com.thoth.server.controller.dto.datasource.JdbcDatasourceParametersCreateRequest;
 import com.thoth.server.controller.dto.datasource.RestDatasourceParametersCheckRequest;
+import com.thoth.server.controller.dto.datasource.RestDatasourceParametersCreateRequest;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
 import com.thoth.server.service.DataSourceService;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/datasource")
@@ -38,7 +40,7 @@ public class DataSourceController {
     }
 
     @PostMapping(value = "/check/rest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String[]> checkRestParameters(@RequestBody RestDatasourceParametersCheckRequest parameters) throws SQLException, JsonProcessingException {
+    public ResponseEntity<ArrayList<String>> checkRestParameters(@RequestBody RestDatasourceParametersCheckRequest parameters) throws SQLException, JsonProcessingException {
         return ResponseEntity.ok(dataSourceService.checkRest(
                 parameters.getRequest(),
                 parameters.getParameters()
@@ -54,6 +56,21 @@ public class DataSourceController {
                 parameters.getUsername(),
                 parameters.getPassword(),
                 parameters.getQuery(),
+                parameters.getParameters(),
+                parameters.getProperties()
+        ));
+    }
+
+    @PostMapping(value = "/rest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DatasourceProperties> createJdbcParameters(@RequestBody RestDatasourceParametersCreateRequest parameters) throws SQLException {
+        return ResponseEntity.ok(dataSourceService.createRest(
+                parameters.getName(),
+                parameters.getUrl(),
+                parameters.getMethod(),
+                parameters.getQueryParameters(),
+                parameters.getHeaders(),
+                parameters.getJsonQuery(),
+                parameters.getBody(),
                 parameters.getParameters(),
                 parameters.getProperties()
         ));

@@ -153,28 +153,10 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
     if (!resp.role) {
 
       var query = new URLSearchParams();
-      for (const key of Object.keys(resp.data.values)) {
+      for (const key of Object.keys(resp.data.values || {})) {
         query.append(key, resp.data.values[key]);
       }
       window.open(environment.apiUrl + '/template/' + t.id + '/render/pdf?' + query.toString())
-      /*
-      let svg = t.svg;
-      for(const key of Object.keys(resp.data.values)){
-        svg = svg?.replace('{{' + key + '}}', resp.data.values[key]);
-      }
-      if(svg) {
-        // store in a Blob
-        const blob = new Blob([svg], {type: "image/svg+xml"});
-        // create an URI pointing to that blob
-        const url = URL.createObjectURL(blob);
-        const win = open(url);
-        // so the Garbage Collector can collect the
-        if(win) {
-          win.onload = (evt) => URL.revokeObjectURL(url);
-        }
-      }
-      console.log(t.svg);
-      console.log(resp.data.values);*/
     }
   }
 

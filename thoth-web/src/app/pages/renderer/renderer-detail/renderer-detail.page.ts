@@ -132,7 +132,7 @@ export class RendererDetailPage implements OnInit {
     if (!resp.role) {
 
       var query = new URLSearchParams();
-      for (const key of Object.keys(resp.data.values)) {
+      for (const key of Object.keys(resp.data.values || {})) {
         query.append(key, resp.data.values[key]);
       }
 

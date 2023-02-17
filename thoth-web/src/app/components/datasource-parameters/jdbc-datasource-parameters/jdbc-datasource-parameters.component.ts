@@ -22,7 +22,7 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
   jdbcDatasourceParameters: any = {}
 
   @Input()
-  queryParams: string[] = ['id'];
+  queryParams: string[] = [];
   validParameters = false;
 
   @Input()
@@ -72,7 +72,7 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
     const resp = await alert.onDidDismiss();
     if (!resp.role) {
       const params: any = {}
-      for (const key of Object.keys(resp.data.values)) {
+      for (const key of Object.keys(resp.data.values || {})) {
         if (this.isNumeric(resp.data.values[key])) {
           params[key] = parseFloat(resp.data.values[key])
         } else {
@@ -81,6 +81,7 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
       }
       await this.screenMessageService.loadingWrapper(async () => {
         try {
+          this.checkError = null;
           this.detectedProperties = await this.dataSourceService.checkParameters('jdbc', this.jdbcDatasourceParameters, params);
           this.validParameters = true;
           this.isValid.emit(this.validParameters)

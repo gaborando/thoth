@@ -29,7 +29,8 @@ export class RestDatasourceParametersComponent implements OnInit, DatasourcePara
     headers: {
       'Accept': 'application/json'
     },
-    body: {}
+    body: {},
+    jsonQuery: '$'
   }
 
   @Input()
@@ -56,7 +57,6 @@ export class RestDatasourceParametersComponent implements OnInit, DatasourcePara
   }
 
   async checkQuery() {
-    console.log('check');
     const inputs: any[] = [];
     this.parameters.forEach(m => {
       inputs.push({
@@ -92,6 +92,7 @@ export class RestDatasourceParametersComponent implements OnInit, DatasourcePara
       }
       await this.screenMessageService.loadingWrapper(async () => {
         try {
+          this.checkError = null;
           this.detectedProperties = await this.dataSourceService.checkParameters('rest',
             {
               request: this.restDatasourceParameters
