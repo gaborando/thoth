@@ -67,7 +67,7 @@ export class TemplateService implements DataFetcher<Template>{
     });
   }
 
-  async print(template: string, parameters: any, clientIdentifier: string, printService: any) {
+  async print(template: string, parameters: any, clientIdentifier: string, printService: any, copies: number) {
     return fetch(environment.apiUrl + '/template/' + template + '/print', {
       method: 'POST',
       headers: {
@@ -76,7 +76,8 @@ export class TemplateService implements DataFetcher<Template>{
       body: JSON.stringify({
         parameters,
         clientIdentifier,
-        printService
+        printService,
+        copies
       })
     }).then(async r => {
       if (!r.ok) {

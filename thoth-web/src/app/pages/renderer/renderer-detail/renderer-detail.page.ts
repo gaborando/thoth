@@ -7,6 +7,7 @@ import {AlertController, LoadingController, NavController} from "@ionic/angular"
 import {environment} from "../../../../environments/environment";
 import {Template} from "../../../common/types/template";
 import {ClientService} from "../../../services/api/client.service";
+import {GuiUtilsService} from "../../../services/gui-utils.service";
 
 @Component({
   selector: 'app-renderer-detail',
@@ -27,7 +28,8 @@ export class RendererDetailPage implements OnInit {
               private alertController: AlertController,
               private route: ActivatedRoute,
               private clientService: ClientService,
-              private loadingController: LoadingController) {
+              private loadingController: LoadingController,
+              private guiUtils: GuiUtilsService) {
   }
 
   async ionViewWillEnter() {
@@ -210,67 +212,16 @@ export class RendererDetailPage implements OnInit {
     const resp = await alert.onDidDismiss();
     if (!resp.role) {
       const params = resp.data.values;
-      inputs = [];
-      const clients = (await this.clientService.findAll()).content;
-      for (const c of clients){
-        inputs.push({
-          label: c.name,
-          type: 'radio',
-          value: c
-        })
-      }
-      const alert = await this.alertController.create({
-        header: "Select a Client",
-        inputs: inputs,
-        buttons: [
-          {
-            text: 'ok'
-          },
-          {
-            text: 'cancel',
-            role: 'cancel'
-          }
-        ]
-      });
-      await alert.present();
-      const r2 = await alert.onDidDismiss();
-      if (!r2.role) {
-        const client = r2.data.values;
+      const {data, role} = await this.guiUtils.printRequestModal();
+      if(role === 'confirm'){
 
-        inputs = [];
-        for (const s of client.printServices){
-          inputs.push({
-            label: s,
-            type: 'radio',
-            value: s
-          })
-        }
-        const alert = await this.alertController.create({
-          header: "Select a Print Service",
-          inputs: inputs,
-          buttons: [
-            {
-              text: 'ok'
-            },
-            {
-              text: 'cancel',
-              role: 'cancel'
-            }
-          ]
-        });
-        await alert.present();
-        const r3 = await alert.onDidDismiss();
-        if (!r3.role) {
-          const s = r3.data.values;
-
-          const loading =await this.loadingController.create();
-          await loading.present();
-          try {
-            await this.rendererService.print(this.renderer.id, params, client.identifier, s);
-            await this.screenMessageService.showDone();
-          }finally {
-            await loading.dismiss();
-          }
+        const loading =await this.loadingController.create();
+        await loading.present();
+        try {
+          await this.rendererService.print(this.renderer.id, params, data.client.identifier, data.printService, data.copies);
+          await this.screenMessageService.showDone();
+        }finally {
+          await loading.dismiss();
         }
       }
     }

@@ -72,6 +72,7 @@ public class ClientService {
             attr.add(new MediaPrintableArea(0f, 0f, 210f, 297f, MediaPrintableArea.MM));
         }
         job.setPrintable(new PDFPrintable(document), pf);
+        job.setCopies(printRequest.getCopies());
         job.print(attr);
         return true;
     }

@@ -4,6 +4,8 @@ public class PrintRequest {
     private String printService;
     private String svg;
 
+    private Integer copies;
+
     public String getPrintService() {
         return printService;
     }
@@ -18,5 +20,13 @@ public class PrintRequest {
 
     public void setSvg(String svg) {
         this.svg = svg;
+    }
+
+    public Integer getCopies() {
+        return copies;
+    }
+
+    public void setCopies(Integer copies) {
+        this.copies = copies;
     }
 }

@@ -85,7 +85,7 @@ public class TemplateController {
 
     @PostMapping("/{identifier}/print")
     public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws IOException, InterruptedException {
-        renderService.printTemplate(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService());
+        renderService.printTemplate(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService(), request.getCopies());
 
         return ResponseEntity.ok().build();
     }

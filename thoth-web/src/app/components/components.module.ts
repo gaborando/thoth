@@ -9,17 +9,20 @@ import {CodemirrorModule} from "@ctrl/ngx-codemirror";
 import {
   RestDatasourceParametersComponent
 } from "./datasource-parameters/rest-datasource-parameters/rest-datasource-parameters.component";
+import {PrintRequestModalComponent} from "./modals/print-request-modal/print-request-modal.component";
 
 
 
 @NgModule({
   declarations: [
     JdbcDatasourceParametersComponent,
-    RestDatasourceParametersComponent
+    RestDatasourceParametersComponent,
+    PrintRequestModalComponent,
   ],
   exports: [
     JdbcDatasourceParametersComponent,
-    RestDatasourceParametersComponent
+    RestDatasourceParametersComponent,
+    PrintRequestModalComponent
   ],
     imports: [
         CommonModule,

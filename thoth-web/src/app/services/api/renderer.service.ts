@@ -88,7 +88,7 @@ export class RendererService implements DataFetcher<Renderer>{
     });
   }
 
-  async print(renderer: string, parameters: any, clientIdentifier: string, printService: any) {
+  async print(renderer: string, parameters: any, clientIdentifier: string, printService: any, copies: number) {
     return fetch(environment.apiUrl + '/renderer/' + renderer + '/print', {
       method: 'POST',
       headers: {
@@ -97,7 +97,8 @@ export class RendererService implements DataFetcher<Renderer>{
       body: JSON.stringify({
         parameters,
         clientIdentifier,
-        printService
+        printService,
+        copies
       })
     }).then(async r => {
       if (!r.ok) {

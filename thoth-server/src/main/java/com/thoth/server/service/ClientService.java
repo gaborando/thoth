@@ -38,10 +38,11 @@ public class ClientService {
         repository.deleteById(identifier);
     }
 
-    public void printSvg(String clientIdentifier, String printingService, String svg){
+    public void printSvg(String clientIdentifier, String printingService, String svg, Integer copies){
         var request = new PrintRequest();
         request.setPrintService(printingService);
         request.setSvg(svg);
+        request.setCopies(copies);
         var ex = new DirectExchange("thoth."+clientIdentifier+".rpc");
         rabbitTemplate.convertSendAndReceive(ex.getName(), "rpc", request);
     }

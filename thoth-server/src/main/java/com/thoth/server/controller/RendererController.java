@@ -97,7 +97,7 @@ public class RendererController {
 
     @PostMapping("/{identifier}/print")
     public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws Exception {
-        renderService.printRenderer(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService());
+        renderService.printRenderer(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService(), request.getCopies());
         return ResponseEntity.ok().build();
     }
 

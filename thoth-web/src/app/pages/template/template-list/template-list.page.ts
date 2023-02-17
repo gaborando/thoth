@@ -7,6 +7,7 @@ import {environment} from "../../../../environments/environment";
 import {ClientService} from "../../../services/api/client.service";
 import {ScreenMessageService} from "../../../services/screen-message.service";
 import {ListPage} from "../../../common/utils/ui-patterns/list-page";
+import {GuiUtilsService} from "../../../services/gui-utils.service";
 
 @Component({
   selector: 'app-template-list',
@@ -21,7 +22,8 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
               private alertController: AlertController,
               private clientService: ClientService,
               private screenMessageService: ScreenMessageService,
-              private loadingController: LoadingController) {
+              private loadingController: LoadingController,
+              private guiUtils: GuiUtilsService) {
     super(templateService);
   }
 
@@ -186,167 +188,20 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
     await alert.present();
     const resp = await alert.onDidDismiss();
     if (!resp.role) {
-
       const params = resp.data.values;
-      inputs = [];
-      const clients = (await this.clientService.findAll()).content;
-      for (const c of clients){
-        inputs.push({
-          label: c.name,
-          type: 'radio',
-          value: c
-        })
-      }
-      const alert = await this.alertController.create({
-        header: "Select a Client",
-        inputs: inputs,
-        buttons: [
-          {
-            text: 'ok'
-          },
-          {
-            text: 'cancel',
-            role: 'cancel'
-          }
-        ]
-      });
-      await alert.present();
-      const r2 = await alert.onDidDismiss();
-      if (!r2.role) {
-        const client = r2.data.values;
+      const {data, role} = await this.guiUtils.printRequestModal();
+      if(role === 'confirm'){
 
-        inputs = [];
-        for (const s of client.printServices){
-          inputs.push({
-            label: s,
-            type: 'radio',
-            value: s
-          })
-        }
-        const alert = await this.alertController.create({
-          header: "Select a Print Service",
-          inputs: inputs,
-          buttons: [
-            {
-              text: 'ok'
-            },
-            {
-              text: 'cancel',
-              role: 'cancel'
-            }
-          ]
-        });
-        await alert.present();
-        const r3 = await alert.onDidDismiss();
-        if (!r3.role) {
-          const s = r3.data.values;
-
-          const loading =await this.loadingController.create();
-          await loading.present();
-          try {
-            await this.templateService.print(t.id, params, client.identifier, s);
-            await this.screenMessageService.showDone();
-          }finally {
-            await loading.dismiss();
-          }
+        const loading =await this.loadingController.create();
+        await loading.present();
+        try {
+          await this.templateService.print(t.id, params, data.client.identifier, data.printService, data.copies);
+          await this.screenMessageService.showDone();
+        }finally {
+          await loading.dismiss();
         }
       }
 
-    }
-  }
-
-
-  async printRenderer(template: Template) {
-    let inputs: any[] = [];
-    template.markers.forEach(m => {
-      inputs.push({
-        id: m,
-        label: m,
-        name: m,
-        placeholder: m,
-      })
-    })
-    const alert = await this.alertController.create({
-      header: "Print a Template",
-      inputs: inputs,
-      buttons: [
-        {
-          text: 'ok'
-        },
-        {
-          text: 'cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    await alert.present();
-    const resp = await alert.onDidDismiss();
-    if (!resp.role) {
-      const params = resp.data.values;
-      inputs = [];
-      const clients = (await this.clientService.findAll()).content;
-      for (const c of clients){
-        inputs.push({
-          label: c.name,
-          type: 'radio',
-          value: c
-        })
-      }
-      const alert = await this.alertController.create({
-        header: "Select a Client",
-        inputs: inputs,
-        buttons: [
-          {
-            text: 'ok'
-          },
-          {
-            text: 'cancel',
-            role: 'cancel'
-          }
-        ]
-      });
-      await alert.present();
-      const r2 = await alert.onDidDismiss();
-      if (!r2.role) {
-        const client = r2.data.values;
-
-        inputs = [];
-        for (const s of client.printServices){
-          inputs.push({
-            label: s,
-            type: 'radio',
-            value: s
-          })
-        }
-        const alert = await this.alertController.create({
-          header: "Select a Print Service",
-          inputs: inputs,
-          buttons: [
-            {
-              text: 'ok'
-            },
-            {
-              text: 'cancel',
-              role: 'cancel'
-            }
-          ]
-        });
-        await alert.present();
-        const r3 = await alert.onDidDismiss();
-        if (!r3.role) {
-          const s = r3.data.values;
-
-
-          const loading =await this.loadingController.create();
-          await loading.present();
-          try {
-            await this.templateService.print(template.id, params, client.identifier, s);
-            await this.screenMessageService.showDone();
-          }finally {
-            await loading.dismiss();
-          }
-        }
-      }
     }
   }
 }

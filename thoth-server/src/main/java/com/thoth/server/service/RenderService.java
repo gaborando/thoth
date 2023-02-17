@@ -3,7 +3,6 @@ package com.thoth.server.service;
 import com.thoth.server.controller.dto.renderer.Association;
 import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.model.domain.Template;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thoth.common.Jpeg2Pdf;
 import org.thoth.common.Svg2Jpeg;
@@ -141,11 +140,11 @@ public class RenderService {
         return renderTemplateJpeg(renderer.getTemplate(), allParams);
     }
 
-    public void printRenderer(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService) throws Exception {
-        clientService.printSvg(clientIdentifier, printService, renderRendererSvg(identifier, parameters));
+    public void printRenderer(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService, Integer copies) throws Exception {
+        clientService.printSvg(clientIdentifier, printService, renderRendererSvg(identifier, parameters), copies);
     }
 
-    public void printTemplate(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService) throws IOException, InterruptedException {
-        clientService.printSvg(clientIdentifier, printService, renderTemplateSvg(identifier, parameters));
+    public void printTemplate(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService, Integer copies) throws IOException, InterruptedException {
+        clientService.printSvg(clientIdentifier, printService, renderTemplateSvg(identifier, parameters), copies);
     }
 }
