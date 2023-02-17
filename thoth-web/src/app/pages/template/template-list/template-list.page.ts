@@ -188,7 +188,7 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
     await alert.present();
     const resp = await alert.onDidDismiss();
     if (!resp.role) {
-      const params = resp.data.values;
+      const params = resp.data.values || {};
       const {data, role} = await this.guiUtils.printRequestModal();
       if(role === 'confirm'){
 
