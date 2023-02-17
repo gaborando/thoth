@@ -1,5 +1,11 @@
 package org.thoth.common;
 
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.options.ScreenshotType;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,34 +14,38 @@ import java.util.UUID;
 
 public class Svg2Jpeg {
 
-    public final String exePath;
+    private final Page page;
 
-    public final String outPath;
-
-    public Svg2Jpeg(String exePath, String outPath) {
-        this.exePath = exePath;
-        this.outPath = outPath;
+    public Svg2Jpeg() {
+        Playwright playwright = Playwright.create();
+        Browser browser = playwright.chromium().launch();
+        page = browser.newPage();
     }
 
-    public byte[] convert(String svg) throws IOException, InterruptedException {
-        var fName = UUID.randomUUID().toString();
-        var svgPath = Path.of(outPath, fName + ".svg");
-        var jpegPath = Path.of(outPath, fName + ".jpeg");
-        Files.write(svgPath, svg.getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
-        var pb = new ProcessBuilder();
-        pb.command(exePath, svgPath.toAbsolutePath().toString(), jpegPath.toAbsolutePath().toString(), "2x");
-        var p = pb.start();
-        int rc = p.waitFor();
-        if (rc == 0) {
-            var resp = new String(p.getInputStream().readAllBytes());
-            System.out.println(resp);
-        } else {
-            var error = new String(p.getErrorStream().readAllBytes());
-            System.err.println(error);
-        }
-        Files.delete(svgPath);
-        var bytes = Files.readAllBytes(jpegPath);
-        Files.delete(jpegPath);
-        return bytes;
+    public synchronized byte[] convert(String svg) {
+        page.setContent(svg);
+        page.evaluate("""
+                () => {
+                    var scale = 2;
+                    var svg = document.getElementsByTagName('svg')[0];
+                    var iWidth = svg.width.baseVal.value;
+                    var iHeight = svg.height.baseVal.value;
+                    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                    svg.removeAttribute('width');
+                    svg.removeAttribute('height');
+                    svg.style.setProperty('margin', 0, 'important');
+                    svg.style.setProperty('border', 0, 'important');
+                    svg.style.setProperty('padding', 0, 'important');
+                    svg.style.setProperty('position', 'fixed', 'important');
+                    svg.style.setProperty('left', 0, 'important');
+                    svg.style.setProperty('top', 0, 'important');
+                    
+                    svg.style.setProperty('width', (iWidth * scale) + 'px', 'important');
+                    svg.style.setProperty('height', (iHeight * scale) + 'px',  'important');
+                }
+                """);
+        return page.locator("svg").screenshot(new Locator.ScreenshotOptions()
+                .setType(ScreenshotType.JPEG)
+                .setQuality(100));
     }
 }

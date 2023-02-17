@@ -16,6 +16,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.0-alpha2'
+    implementation 'com.microsoft.playwright:playwright:1.30.0'
 }
 
 test {

@@ -38,16 +38,14 @@ public class ClientService {
     private final String clientIdentifier;
     private final DirectExchange serverExchange;
 
-    public ClientService(@Value("${thoth.out.dir}") String outDir,
-                         @Value("${thoth.svgexport.executable}") String executable,
-                         RabbitTemplate rabbitTemplate,
+    public ClientService(RabbitTemplate rabbitTemplate,
                          @Value("${thoth.client.name}") String clientName,
                          @Value("${thoth.client.identifier}") String clientIdentifier,
                          @Value("${thoth.server.exchange}") String serverExchange) {
         this.rabbitTemplate = rabbitTemplate;
         this.clientName = clientName;
         this.clientIdentifier = clientIdentifier;
-        this.svg2Jpeg = new Svg2Jpeg(executable, outDir);
+        this.svg2Jpeg = new Svg2Jpeg();
         this.serverExchange = new DirectExchange(serverExchange);
 
     }

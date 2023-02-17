@@ -28,15 +28,12 @@ public class RenderService {
             TemplateService templateService,
             RendererService rendererService,
             DataSourceService dataSourceService,
-            @Value("${thoth.out.dir}") String outDir,
-            @Value("${thoth.svgexport.executable}") String executable,
-
             ClientService clientService) {
         this.templateService = templateService;
         this.rendererService = rendererService;
         this.dataSourceService = dataSourceService;
         this.clientService = clientService;
-        svg2Jpeg = new Svg2Jpeg(executable, outDir);
+        svg2Jpeg = new Svg2Jpeg();
     }
 
     public String renderTemplateSvg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
