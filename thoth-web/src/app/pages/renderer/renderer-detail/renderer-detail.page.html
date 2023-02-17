@@ -42,6 +42,7 @@
                 <ion-label>{{p}}</ion-label>
                 <ion-select #s interface="popover" (ionChange)="updateAssociationMap(p, s.value)" [value]="oldAssoc[p]"
                             placeholder="Datasource">
+                  <ion-select-option [value]="null"><ion-text color="light">Empty</ion-text></ion-select-option>
                   <ion-select-option value="parameter">Parameter</ion-select-option>
                   <ion-select-option *ngFor="let p of availableProperties" [value]="p">{{p.ds.name}}
                     - {{p.property}}</ion-select-option>

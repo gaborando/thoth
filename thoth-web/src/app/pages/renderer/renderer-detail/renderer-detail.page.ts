@@ -36,14 +36,16 @@ export class RendererDetailPage implements OnInit {
     const resp = await this.rendererService.findById(this.route.snapshot.paramMap.get('identifier'))
     this.datasourceList = resp.datasourceProperties.map(d => d.name).join(",");
     this.availableProperties = [];
+    const tmp = [];
     for (const d of resp.datasourceProperties) {
       for (const p of d.properties) {
-        this.availableProperties.push({
+        tmp.push({
           ds: d,
           property: p
         })
       }
     }
+    this.availableProperties = tmp.sort((a,b) =>  (a.ds.name + a.property).localeCompare(b.ds.name + b.property) );
     for (const a of Object.keys(resp.associationMap)) {
       if (resp.associationMap[a].type === 'datasource') {
         this.oldAssoc[a] = this.availableProperties.find(ap => ap.ds.id === resp.associationMap[a].id && ap.property === resp.associationMap[a].property)
@@ -61,7 +63,9 @@ export class RendererDetailPage implements OnInit {
     if (!this.renderer) {
       return
     }
-    if (association === 'parameter') {
+    if(!association){
+      delete this.renderer.associationMap[p];
+    }else if (association === 'parameter') {
       this.renderer.associationMap[p] = {
         type: 'parameter',
         id: null,
