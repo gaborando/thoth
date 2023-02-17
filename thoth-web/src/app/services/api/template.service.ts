@@ -14,8 +14,8 @@ export class TemplateService implements DataFetcher<Template>{
 
   }
 
-  async findAll(): Promise<Page<Template>>{
-    return fetch(environment.apiUrl + '/template/', {
+  async findAll(page = 0): Promise<Page<Template>>{
+    return fetch(environment.apiUrl + '/template/?page='+page, {
       method: 'GET'
     }).then(async r => {
       if (!r.ok) {
