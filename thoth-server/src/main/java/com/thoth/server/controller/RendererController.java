@@ -69,7 +69,7 @@ public class RendererController {
 
     @GetMapping(value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderPdf(@RequestParam HashMap<String, Object> params,
-                                            @PathVariable String identifier) throws IOException, InterruptedException {
+                                            @PathVariable String identifier) throws Exception {
 
         var data = renderService.renderRendererPdf(identifier, params);
 
@@ -79,7 +79,7 @@ public class RendererController {
 
     @GetMapping(value = "/{identifier}/render/jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderJpeg(@RequestParam HashMap<String, Object> params,
-                                             @PathVariable String identifier) throws IOException, InterruptedException {
+                                             @PathVariable String identifier) throws Exception {
 
         var data = renderService.renderRendererJpeg(identifier, params);
         return ResponseEntity.ok(data);
@@ -88,7 +88,7 @@ public class RendererController {
 
     @GetMapping(value = "/{identifier}/render/svg", produces = "image/svg+xml")
     public ResponseEntity<byte[]> renderSvg(@RequestParam HashMap<String, Object> params,
-                                            @PathVariable String identifier) throws IOException, InterruptedException {
+                                            @PathVariable String identifier) throws Exception {
 
         var data = renderService.renderRendererSvg(identifier, params);
         return ResponseEntity.ok(data.getBytes());
@@ -96,7 +96,7 @@ public class RendererController {
     }
 
     @PostMapping("/{identifier}/print")
-    public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws IOException, InterruptedException {
+    public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws Exception {
         renderService.printRenderer(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService());
         return ResponseEntity.ok().build();
     }

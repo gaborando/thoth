@@ -48,6 +48,8 @@ public class RenderService {
     public String renderTemplateSvg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
 
         var svg = template.getSvg();
+        // Image Embedding Correction
+        svg = svg.replace("https://embed.diagrams.net/{{", "{{");
         for (Map.Entry<String, Object> e : params.entrySet()) {
             svg = svg.replace("{{" + e.getKey() + "}}", e.getValue() == null ? "" : e.getValue().toString());
         }
@@ -75,18 +77,18 @@ public class RenderService {
         return Jpeg2Pdf.convert(img);
     }
 
-    public byte[] renderRendererPdf(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
+    public byte[] renderRendererPdf(String identifier, HashMap<String, Object> params) throws Exception {
         var img = renderRendererJpeg(identifier, params);
         return Jpeg2Pdf.convert(img);
     }
 
 
-    public String renderRendererSvg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
+    public String renderRendererSvg(String identifier, HashMap<String, Object> params) throws Exception {
         var renderer = rendererService.findById(identifier).orElseThrow();
         return renderRendererSvg(renderer, params);
     }
 
-    public String renderRendererSvg(Renderer renderer, HashMap<String, Object> params) throws IOException, InterruptedException {
+    public String renderRendererSvg(Renderer renderer, HashMap<String, Object> params) throws Exception {
         var allParams = new HashMap<String, Object>();
         for (String marker : renderer.getTemplate().getMarkers()) {
             allParams.put(marker, "");
@@ -110,12 +112,12 @@ public class RenderService {
         return renderTemplateSvg(renderer.getTemplate(), allParams);
     }
 
-    public byte[] renderRendererJpeg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
+    public byte[] renderRendererJpeg(String identifier, HashMap<String, Object> params) throws Exception {
         var renderer = rendererService.findById(identifier).orElseThrow();
         return renderRendererJpeg(renderer, params);
     }
 
-    private byte[] renderRendererJpeg(Renderer renderer, HashMap<String, Object> params) throws IOException, InterruptedException {
+    private byte[] renderRendererJpeg(Renderer renderer, HashMap<String, Object> params) throws Exception {
 
 
         var allParams = new HashMap<String, Object>();
@@ -142,7 +144,7 @@ public class RenderService {
         return renderTemplateJpeg(renderer.getTemplate(), allParams);
     }
 
-    public void printRenderer(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService) throws IOException, InterruptedException {
+    public void printRenderer(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService) throws Exception {
         clientService.printSvg(clientIdentifier, printService, renderRendererSvg(identifier, parameters));
     }
 
