@@ -45,12 +45,11 @@ public class AuthenticationFacade implements IAuthenticationFacade {
 
     @Override
     public <T extends SecuredResource> Specification<T> securedSpecification(Specification<T> spec, Class<T> cls) {
-        spec.and(spec.or(
+        return  spec.and(spec.or(
                 (r,q,qb)-> {
                     return qb.equal(r.get("createdBy"), getUserSID());
                 }
         ));
-        return null;
     }
 
     @Override
