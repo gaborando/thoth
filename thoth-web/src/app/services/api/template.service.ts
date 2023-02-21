@@ -4,19 +4,21 @@ import {find} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {Page} from "../../common/utils/fetchUtils";
 import {DataFetcher} from "../../common/utils/service-patterns/data-fetcher";
+import {AuthenticatedService} from "./authenticated.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class TemplateService implements DataFetcher<Template>{
+export class TemplateService extends AuthenticatedService implements DataFetcher<Template>{
 
   constructor() {
-
+    super()
   }
 
   async findAll(page = 0): Promise<Page<Template>>{
     return fetch(environment.apiUrl + '/template/?page='+page, {
-      method: 'GET'
+      method: 'GET',
+      headers: this.getHeaders()
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()
@@ -28,9 +30,7 @@ export class TemplateService implements DataFetcher<Template>{
   async create(name: string) {
     return fetch(environment.apiUrl + '/template/', {
       method: 'POST',
-      headers: {
-        'Content-Type':'application/json;charset=utf-8'
-      },
+      headers: this.postHeaders(),
       body: JSON.stringify({name})
     }).then(async r => {
       if (!r.ok) {
@@ -44,9 +44,7 @@ export class TemplateService implements DataFetcher<Template>{
 
     return fetch(environment.apiUrl + '/template/' + template.id, {
       method: 'PUT',
-      headers: {
-        'Content-Type':'application/json;charset=utf-8'
-      },
+      headers: this.postHeaders(),
       body: JSON.stringify(template)
     }).then(async r => {
       if (!r.ok) {
@@ -58,7 +56,8 @@ export class TemplateService implements DataFetcher<Template>{
 
   async delete(id: string) {
     return fetch(environment.apiUrl + '/template/' + id, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: this.getHeaders()
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()
@@ -70,9 +69,7 @@ export class TemplateService implements DataFetcher<Template>{
   async print(template: string, parameters: any, clientIdentifier: string, printService: any, copies: number) {
     return fetch(environment.apiUrl + '/template/' + template + '/print', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
+      headers: this.postHeaders(),
       body: JSON.stringify({
         parameters,
         clientIdentifier,

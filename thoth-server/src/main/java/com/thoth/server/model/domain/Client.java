@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class Client {
+public class Client extends SecuredResource {
 
     @Id
     @NotBlank

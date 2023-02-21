@@ -5,21 +5,21 @@ import {Renderer} from "../../common/types/renderer";
 import {environment} from "../../../environments/environment";
 import {Page} from "../../common/utils/fetchUtils";
 import {DataFetcher} from "../../common/utils/service-patterns/data-fetcher";
+import {AuthenticatedService} from "./authenticated.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class RendererService implements DataFetcher<Renderer>{
+export class RendererService extends AuthenticatedService implements DataFetcher<Renderer>{
 
   constructor() {
+    super()
   }
 
   async create(name: string | undefined, selectedTemplate: Template | undefined, selectedDatasource: Datasource[] | undefined, associationMap: any): Promise<Renderer> {
     return fetch(environment.apiUrl + '/renderer/', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
+      headers: this.postHeaders(),
       body: JSON.stringify({
         name: name,
         template: selectedTemplate?.id,
@@ -38,6 +38,7 @@ export class RendererService implements DataFetcher<Renderer>{
   async findAll(page = 0): Promise<Page<Renderer>> {
     return fetch(environment.apiUrl + '/renderer/?page=' + page, {
       method: 'GET',
+      headers: this.getHeaders()
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()
@@ -48,7 +49,8 @@ export class RendererService implements DataFetcher<Renderer>{
 
   async findById(identifier: string | null): Promise<Renderer> {
     return fetch(environment.apiUrl + '/renderer/' + identifier, {
-      method: 'GET'
+      method: 'GET',
+      headers: this.getHeaders()
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()
@@ -59,7 +61,8 @@ export class RendererService implements DataFetcher<Renderer>{
 
   async delete(identifier: string) {
     return fetch(environment.apiUrl + '/renderer/' + identifier, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: this.getHeaders()
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()
@@ -71,9 +74,7 @@ export class RendererService implements DataFetcher<Renderer>{
   async update(renderer: Renderer | null) {
     return fetch(environment.apiUrl + '/renderer/' + renderer?.id, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
+      headers: this.postHeaders(),
       body: JSON.stringify(
         {
           name: renderer?.name,
@@ -91,9 +92,7 @@ export class RendererService implements DataFetcher<Renderer>{
   async print(renderer: string, parameters: any, clientIdentifier: string, printService: any, copies: number) {
     return fetch(environment.apiUrl + '/renderer/' + renderer + '/print', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
+      headers: this.postHeaders(),
       body: JSON.stringify({
         parameters,
         clientIdentifier,

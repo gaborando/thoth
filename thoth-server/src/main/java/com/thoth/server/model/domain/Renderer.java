@@ -10,13 +10,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 @Entity
 @Getter
 @Setter
-public class Renderer {
+public class Renderer extends SecuredResource{
 
     @Id
     @NotBlank
@@ -35,6 +36,9 @@ public class Renderer {
     @NotEmpty
     @Column(insertable = false, updatable = false)
     private List<DatasourceProperties> datasourceProperties;
+
+    @Column(updatable = false)
+    private Instant createdAt;
 
     @ElementCollection
     private Map<@NotBlank @Size(min = 3, max = 256) String, @NotNull Association> associationMap;

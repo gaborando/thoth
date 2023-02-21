@@ -10,13 +10,15 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-public class Template {
+public class Template extends SecuredResource {
     @Id
+    @Column(updatable = false)
     @NotBlank
     @Size(min = 3, max = 256)
     private String id;
@@ -33,6 +35,9 @@ public class Template {
 
     @Column(columnDefinition = "TEXT")
     private String xml;
+
+    @Column(updatable = false)
+    private Instant createdAt;
 
     @ElementCollection
     private Set<@NotBlank @Size(min = 3, max = 256) String> markers;

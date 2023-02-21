@@ -7,10 +7,12 @@ import com.thoth.server.service.RenderService;
 import com.thoth.server.service.TemplateService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
@@ -18,10 +20,8 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/template")
-// @CrossOrigin(origins = "*", allowedHeaders = "*")
+@Secured("ROLE_USER")
 public class TemplateController {
-
-
 
     private final TemplateService templateService;
 
@@ -37,7 +37,7 @@ public class TemplateController {
             @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(templateService.search(Specification.where(null),
-                PageRequest.of(page, 10)));
+                PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt")))));
     }
 
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,7 +53,8 @@ public class TemplateController {
 
     @DeleteMapping("/{identifier}")
     public void delete(@PathVariable String identifier) {
-        templateService.deleteById(identifier);
+        var e = templateService.getById(identifier).orElseThrow();
+        templateService.delete(e);
     }
 
     @GetMapping(value = "/{identifier}/render/jpeg",produces = MediaType.IMAGE_JPEG_VALUE)

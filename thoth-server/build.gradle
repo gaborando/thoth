@@ -44,9 +44,20 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
+
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+// https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt
+	implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.30.2'
+
+
+
 	implementation project(':thoth-common')
+
+
 
 
 

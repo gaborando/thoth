@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/datasource")
+@Secured("ROLE_USER")
 public class DataSourceController {
 
     private final DataSourceService dataSourceService;
@@ -97,6 +99,7 @@ public class DataSourceController {
 
     @DeleteMapping("/{identifier}")
     public void deleteJdbcParameters(@PathVariable String identifier) {
-        dataSourceService.delete(identifier);
+        var e = dataSourceService.findById(identifier).orElseThrow();
+        dataSourceService.delete(e);
     }
 }

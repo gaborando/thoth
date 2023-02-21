@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.dto.datasource.RestDatasourceParameters;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
@@ -17,21 +18,29 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Instant;
 import java.util.*;
 
 @Service
+@Secured("ROLE_USER")
 public class DataSourceService {
 
     private final ObjectMapper objectMapper;
 
     private final DatasourcePropertiesRepository datasourcePropertiesRepository;
 
-    public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository) {
+    private final IAuthenticationFacade facade;
+
+    public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository, IAuthenticationFacade facade) {
         this.objectMapper = objectMapper;
         this.datasourcePropertiesRepository = datasourcePropertiesRepository;
+        this.facade = facade;
     }
 
     public String[] checkJdbc(String url, String username, String password, String query, HashMap<String, Object> parameters) {
@@ -58,23 +67,28 @@ public class DataSourceService {
         dsp.setProperties(properties);
         dsp.setName(name);
         dsp.setType("jdbc");
+        dsp.setCreatedAt(Instant.now());
+        facade.fillSecuredResource(dsp);
         return datasourcePropertiesRepository.save(dsp);
     }
 
     public Page<DatasourceProperties> search(Specification<DatasourceProperties> specification, PageRequest pageable) {
-        return datasourcePropertiesRepository.findAll(specification, pageable);
+        return datasourcePropertiesRepository.findAll(facade.securedSpecification(specification, DatasourceProperties.class), pageable);
     }
 
+    @PostAuthorize("@authenticationFacade.canAccess(returnObject)")
     public Optional<DatasourceProperties> findById(String identifier) {
         return datasourcePropertiesRepository.findById(identifier);
     }
 
+    @PreAuthorize("@authenticationFacade.canAccess(#properties)")
     public DatasourceProperties update(DatasourceProperties properties) {
         return datasourcePropertiesRepository.save(properties);
     }
 
-    public void delete(String identifier) {
-        datasourcePropertiesRepository.deleteById(identifier);
+    @PreAuthorize("@authenticationFacade.canAccess(#properties)")
+    public void delete(DatasourceProperties properties) {
+        datasourcePropertiesRepository.delete(properties);
     }
 
     public static boolean isNumeric(Object strNum) {
@@ -89,6 +103,7 @@ public class DataSourceService {
         return true;
     }
 
+    @PreAuthorize("@authenticationFacade.canAccess(#datasourceProperty)")
     public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) throws JsonProcessingException {
         if(datasourceProperty instanceof JdbcDatasourceProperties j){
             var dataSourceBuilder = DataSourceBuilder.create();
@@ -152,6 +167,7 @@ public class DataSourceService {
         return fetchData(datasourcePropertiesRepository.findById(id).orElseThrow(), params);
     }
 
+    @PreAuthorize("@authenticationFacade.canAccess(#request)")
     public ArrayList<String> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
         var strBody = objectMapper.writeValueAsString(request);
         for (Map.Entry<String, String> e : parameters.entrySet()) {
@@ -216,6 +232,8 @@ public class DataSourceService {
         dsp.setProperties(properties);
         dsp.setName(name);
         dsp.setType("rest");
+        dsp.setCreatedAt(Instant.now());
+        facade.fillSecuredResource(dsp);
         return datasourcePropertiesRepository.save(dsp);
     }
 }

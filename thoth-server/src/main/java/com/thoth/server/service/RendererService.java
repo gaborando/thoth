@@ -1,5 +1,6 @@
 package com.thoth.server.service;
 
+import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.dto.renderer.Association;
 import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
@@ -8,14 +9,19 @@ import com.thoth.server.model.repository.TemplateRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Secured("ROLE_USER")
 public class RendererService {
 
     private final TemplateRepository templateRepository;
@@ -23,10 +29,13 @@ public class RendererService {
 
     private final RendererRepository rendererRepository;
 
-    public RendererService(TemplateRepository templateRepository, DatasourcePropertiesRepository datasourcePropertiesRepository, RendererRepository rendererRepository) {
+    private final IAuthenticationFacade facade;
+
+    public RendererService(TemplateRepository templateRepository, DatasourcePropertiesRepository datasourcePropertiesRepository, RendererRepository rendererRepository, IAuthenticationFacade facade) {
         this.templateRepository = templateRepository;
         this.datasourcePropertiesRepository = datasourcePropertiesRepository;
         this.rendererRepository = rendererRepository;
+        this.facade = facade;
     }
 
     public Renderer create(String name, String template, List<String> datasource, Map<String, Association> associationMap) {
@@ -36,22 +45,27 @@ public class RendererService {
         renderer.setTemplate(templateRepository.findById(template).orElseThrow());
         renderer.setDatasourceProperties(datasourcePropertiesRepository.findAllById(datasource));
         renderer.setAssociationMap(associationMap);
+        renderer.setCreatedAt(Instant.now());
+        facade.fillSecuredResource(renderer);
         return rendererRepository.save(renderer);
 
     }
 
     public Page<Renderer> search(Specification<Renderer> specification, PageRequest pageRequest) {
-        return rendererRepository.findAll(specification, pageRequest);
+        return rendererRepository.findAll(facade.securedSpecification(specification, Renderer.class), pageRequest);
     }
 
+    @PreAuthorize("@authenticationFacade.canAccess(#renderer)")
     public Renderer save(Renderer renderer) {
         return rendererRepository.save(renderer);
     }
 
-    public void deleteById(String identifier) {
-        rendererRepository.deleteById(identifier);
+    @PreAuthorize("@authenticationFacade.canAccess(#renderer)")
+    public void delete(Renderer renderer) {
+        rendererRepository.delete(renderer);
     }
 
+    @PostAuthorize("@authenticationFacade.canAccess(returnObject)")
     public Optional<Renderer> findById(String identifier) {
         return rendererRepository.findById(identifier);
     }

@@ -1,5 +1,6 @@
 package com.thoth.server.service;
 
+import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.model.domain.Client;
 import com.thoth.server.model.repository.ClientRepository;
 import org.springframework.amqp.core.DirectExchange;
@@ -7,10 +8,13 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.thoth.common.dto.PrintRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -19,11 +23,11 @@ public class ClientService {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public ClientService(ClientRepository repository, RabbitTemplate rabbitTemplate) {
+    private final IAuthenticationFacade authenticationFacade;
+    public ClientService(ClientRepository repository, RabbitTemplate rabbitTemplate, IAuthenticationFacade authenticationFacade) {
         this.repository = repository;
         this.rabbitTemplate = rabbitTemplate;
-        //rabbitTemplate.setReceiveTimeout(60*1000);
-        //rabbitTemplate.setReplyTimeout(60*1000);
+        this.authenticationFacade = authenticationFacade;
     }
 
     public Client register(String identifier, String name, List<String> printServices){
@@ -34,8 +38,9 @@ public class ClientService {
         return repository.save(c);
     }
 
-    public void deleteById(String identifier){
-        repository.deleteById(identifier);
+    @PreAuthorize("@authenticationFacade.canAccess(#client)")
+    public void delete(Client client){
+        repository.delete(client);
     }
 
     public void printSvg(String clientIdentifier, String printingService, String svg, Integer copies){
@@ -48,6 +53,11 @@ public class ClientService {
     }
 
     public Page<Client> search(Specification<Client> where, PageRequest of) {
-        return repository.findAll(where, of);
+        return repository.findAll(authenticationFacade.securedSpecification(where, Client.class), of);
+    }
+
+    @PostAuthorize("@authenticationFacade.canAccess(returnObject)")
+    public Optional<Client> findById(String identifier) {
+        return repository.findById(identifier);
     }
 }
