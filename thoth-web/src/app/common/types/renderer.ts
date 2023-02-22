@@ -1,7 +1,8 @@
 import {Template} from "./template";
 import {Datasource} from "./datasource";
+import {SecuredResource} from "./secured-resource";
 
-export interface Renderer {
+export interface Renderer extends SecuredResource {
   id: string;
   name: string;
 

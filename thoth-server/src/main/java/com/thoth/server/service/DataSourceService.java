@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.dto.datasource.RestDatasourceParameters;
+import com.thoth.server.model.domain.Client;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
 import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
+import com.thoth.server.model.repository.RendererRepository;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,11 +38,14 @@ public class DataSourceService {
     private final DatasourcePropertiesRepository datasourcePropertiesRepository;
 
     private final IAuthenticationFacade facade;
+    private final RendererRepository rendererRepository;
 
-    public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository, IAuthenticationFacade facade) {
+    public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository, IAuthenticationFacade facade,
+                             RendererRepository rendererRepository) {
         this.objectMapper = objectMapper;
         this.datasourcePropertiesRepository = datasourcePropertiesRepository;
         this.facade = facade;
+        this.rendererRepository = rendererRepository;
     }
 
     public String[] checkJdbc(String url, String username, String password, String query, HashMap<String, Object> parameters) {
@@ -81,9 +86,14 @@ public class DataSourceService {
         return datasourcePropertiesRepository.findById(identifier);
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#properties)")
-    public DatasourceProperties update(DatasourceProperties properties) {
-        return datasourcePropertiesRepository.save(properties);
+
+    public DatasourceProperties update(String identifier, DatasourceProperties properties) {
+        return update(findById(identifier).orElseThrow(), properties);
+    }
+    @PreAuthorize("@authenticationFacade.canAccess(#original)")
+    private DatasourceProperties update(DatasourceProperties original, DatasourceProperties update) {
+        update.setId(original.getId());
+        return datasourcePropertiesRepository.save(update);
     }
 
     @PreAuthorize("@authenticationFacade.canAccess(#properties)")

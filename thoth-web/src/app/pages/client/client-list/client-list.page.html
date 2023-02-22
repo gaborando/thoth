@@ -15,7 +15,7 @@
   <ion-grid>
     <ion-row>
       <ng-container *ngIf="!elements">
-        <ion-col size="4" *ngFor="let i of [1,2,3]">
+        <ion-col size-sm="12" size-md="6" size-lg="6" size-xl="4" *ngFor="let i of [1,2,3]">
           <ion-card>
             <ion-card-header>
               <ion-card-title>
@@ -32,7 +32,7 @@
           </ion-card>
         </ion-col>
       </ng-container>
-      <ion-col size="4" *ngFor="let c of elements">
+      <ion-col size-sm="12" size-md="6" size-lg="6" size-xl="4" *ngFor="let c of elements">
         <ion-card>
           <ion-card-header>
             <ion-card-title>
@@ -47,6 +47,7 @@
             </ul>
           </ion-card-content>
           <div class="ion-text-end">
+            <ion-button fill="clear" color="secondary" (click)="selectedClient = c; modal.present()">Sharing Options</ion-button>
             <ion-button fill="clear" color="danger" (click)="unregister(c)">Unregister</ion-button>
           </div>
         </ion-card>
@@ -56,4 +57,23 @@
   <ion-infinite-scroll (ionInfinite)="handleLoadMore($event)">
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
+
+  <ion-modal #modal trigger="open-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="modal.dismiss()">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Sharing Options</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="updateSharingOptions(modal)" [strong]="true">Confirm</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <app-sharing-options [securedResource]="selectedClient"></app-sharing-options>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

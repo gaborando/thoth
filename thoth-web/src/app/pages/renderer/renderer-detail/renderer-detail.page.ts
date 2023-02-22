@@ -24,7 +24,6 @@ export class RendererDetailPage implements OnInit {
   constructor(private rendererService: RendererService,
               private screenMessageService: ScreenMessageService,
               private navController: NavController,
-
               private alertController: AlertController,
               private route: ActivatedRoute,
               private clientService: ClientService,
@@ -45,7 +44,7 @@ export class RendererDetailPage implements OnInit {
         })
       }
     }
-    this.availableProperties = tmp.sort((a,b) =>  (a.ds.name + a.property).localeCompare(b.ds.name + b.property) );
+    this.availableProperties = tmp.sort((a, b) => (a.ds.name + a.property).localeCompare(b.ds.name + b.property));
     for (const a of Object.keys(resp.associationMap)) {
       if (resp.associationMap[a].type === 'datasource') {
         this.oldAssoc[a] = this.availableProperties.find(ap => ap.ds.id === resp.associationMap[a].id && ap.property === resp.associationMap[a].property)
@@ -63,9 +62,9 @@ export class RendererDetailPage implements OnInit {
     if (!this.renderer) {
       return
     }
-    if(!association){
+    if (!association) {
       delete this.renderer.associationMap[p];
-    }else if (association === 'parameter') {
+    } else if (association === 'parameter') {
       this.renderer.associationMap[p] = {
         type: 'parameter',
         id: null,
@@ -140,6 +139,11 @@ export class RendererDetailPage implements OnInit {
       var query = new URLSearchParams();
       for (const key of Object.keys(resp.data.values || {})) {
         query.append(key, resp.data.values[key]);
+      }
+
+      const accessToken = localStorage.getItem("access_token");
+      if (accessToken) {
+        query.append("access_token", accessToken);
       }
 
       window.open(environment.apiUrl + '/renderer/' + this.renderer.id + '/render/pdf?' + query.toString())
@@ -217,14 +221,14 @@ export class RendererDetailPage implements OnInit {
     if (!resp.role) {
       const params = resp.data.values;
       const {data, role} = await this.guiUtils.printRequestModal();
-      if(role === 'confirm'){
+      if (role === 'confirm') {
 
-        const loading =await this.loadingController.create();
+        const loading = await this.loadingController.create();
         await loading.present();
         try {
           await this.rendererService.print(this.renderer.id, params, data.client.identifier, data.printService, data.copies);
           await this.screenMessageService.showDone();
-        }finally {
+        } finally {
           await loading.dismiss();
         }
       }

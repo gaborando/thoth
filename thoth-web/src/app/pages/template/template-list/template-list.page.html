@@ -20,7 +20,7 @@
     <ion-row>
       <ng-container *ngIf="!elements">
         <ng-container *ngFor="let t of [1,2,3]">
-          <ion-col size="3">
+          <ion-col size-sm="12" size-md="6" size-lg="6" size-xl="4">
             <ion-card>
               <ion-card-header>
                 <ion-card-title><ion-skeleton-text animated="true"></ion-skeleton-text></ion-card-title>
@@ -30,6 +30,7 @@
               </ion-card-content>
               <div class="ion-text-end">
                 <ion-button fill="clear" color="primary"  disabled="true">Edit</ion-button>
+                <ion-button fill="clear" color="primary"  disabled="true">Draw</ion-button>
                 <ion-button fill="clear" color="secondary" disabled="true" >Render</ion-button>
                 <ion-button fill="clear" color="danger" disabled="true" >Delete</ion-button>
               </div>
@@ -48,7 +49,8 @@
               <ion-img class="ion-padding" style="height: 500px" [src]="t.img"></ion-img>
             </ion-card-content>
             <div class="ion-text-end">
-              <ion-button fill="clear" color="primary" (click)="openEditor(t)">Edit</ion-button>
+              <ion-button fill="clear" color="primary" routerLink="/template-detail/{{t.id}}">Edit</ion-button>
+              <ion-button fill="clear" color="primary" (click)="openEditor(t)">Draw</ion-button>
               <ion-button fill="clear" color="secondary" (click)="renderTemplate(t)">Render</ion-button>
               <ion-button fill="clear" color="secondary" (click)="printTemplate(t)">Print</ion-button>
               <ion-button fill="clear" color="danger" (click)="removeTemplate(t)">Delete</ion-button>

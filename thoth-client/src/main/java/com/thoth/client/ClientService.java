@@ -37,15 +37,18 @@ public class ClientService {
     private final String clientName;
     private final String clientIdentifier;
     private final DirectExchange serverExchange;
+    private final String ownerSID;
 
     public ClientService(RabbitTemplate rabbitTemplate,
                          @Value("${thoth.client.name}") String clientName,
                          @Value("${thoth.client.identifier}") String clientIdentifier,
+                         @Value("${thoth.client.owner.sid}") String ownerSID,
                          @Value("${thoth.server.exchange}") String serverExchange) {
         this.rabbitTemplate = rabbitTemplate;
         this.clientName = clientName;
         this.clientIdentifier = clientIdentifier;
         this.svg2Jpeg = new Svg2Jpeg();
+        this.ownerSID = ownerSID;
         this.serverExchange = new DirectExchange(serverExchange);
 
     }
@@ -81,6 +84,7 @@ public class ClientService {
         var request = new RegisterClientRequest();
         request.setIdentifier(clientIdentifier);
         request.setName(clientName);
+        request.setOwnerSID(ownerSID);
         request.setPrintServices(Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
                 .map(PrintService::getName).collect(Collectors.toList()));
         logger.info("Registering client " + request.getName() + " ["+request.getIdentifier()+"]");

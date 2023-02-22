@@ -40,6 +40,12 @@ public class TemplateController {
                 PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt")))));
     }
 
+    @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Template> findById(
+            @PathVariable String identifier) {
+        return ResponseEntity.ok(templateService.getById(identifier).orElseThrow());
+    }
+
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Template> create(@RequestBody CreateTemplateRequest request) {
         return ResponseEntity.ok(templateService.create(request.getName()));
@@ -47,8 +53,7 @@ public class TemplateController {
 
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Template> update(@RequestBody Template template, @PathVariable String identifier) {
-        template.setId(identifier);
-        return ResponseEntity.ok(templateService.save(template));
+        return ResponseEntity.ok(templateService.update(identifier, template));
     }
 
     @DeleteMapping("/{identifier}")

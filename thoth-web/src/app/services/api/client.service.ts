@@ -38,4 +38,20 @@ export class ClientService extends AuthenticatedService {
       return await r.text()
     });
   }
+
+  async update(client: Client) {
+    return fetch(environment.apiUrl + '/client/' + client.identifier, {
+      method: 'PUT',
+      headers: this.postHeaders(),
+      body: JSON.stringify({
+        allowedUserList: client.allowedUserList,
+        allowedOrganizationList: client.allowedOrganizationList,
+      })
+    }).then(async r => {
+      if (!r.ok) {
+        throw await r.json()
+      }
+      return await r.text()
+    });
+  }
 }

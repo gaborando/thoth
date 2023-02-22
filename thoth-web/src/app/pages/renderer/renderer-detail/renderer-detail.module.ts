@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { RendererDetailPageRoutingModule } from './renderer-detail-routing.module';
 
 import { RendererDetailPage } from './renderer-detail.page';
+import {ComponentsModule} from "../../../components/components.module";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    RendererDetailPageRoutingModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        RendererDetailPageRoutingModule,
+        ComponentsModule
+    ],
   declarations: [RendererDetailPage]
 })
 export class RendererDetailPageModule {}

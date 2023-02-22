@@ -58,10 +58,7 @@ public class RendererController {
 
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Renderer> update(@RequestBody Renderer renderer, @PathVariable String identifier) {
-        var r = rendererService.findById(identifier).orElseThrow();
-        r.setAssociationMap(renderer.getAssociationMap());
-        r.setName(renderer.getName());
-        return ResponseEntity.ok(rendererService.save(r));
+        return ResponseEntity.ok(rendererService.update(identifier, renderer));
     }
 
     @DeleteMapping("/{identifier}")

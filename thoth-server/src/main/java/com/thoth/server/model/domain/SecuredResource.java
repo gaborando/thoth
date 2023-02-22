@@ -1,7 +1,6 @@
 package com.thoth.server.model.domain;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,5 +15,5 @@ public abstract class SecuredResource {
     @ElementCollection
     private Set<String> allowedUserList;
     @ElementCollection
-    private Set<String> allowedGroupList;
+    private Set<String> allowedOrganizationList;
 }

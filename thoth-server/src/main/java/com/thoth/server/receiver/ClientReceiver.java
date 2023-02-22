@@ -17,7 +17,7 @@ public class ClientReceiver {
 
     @RabbitListener(queues = "thoth.server.rpc.requests")
     public void register(RegisterClientRequest request) {
-        clientService.register(request.getIdentifier(), request.getName(),
+        clientService.register(request.getIdentifier(), request.getName(), request.getOwnerSID(),
                 request.getPrintServices());
     }
 }

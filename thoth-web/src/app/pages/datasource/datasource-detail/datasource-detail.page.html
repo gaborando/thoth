@@ -49,15 +49,16 @@
                                       (isValid)="validParameters = $event"></app-rest-datasource-parameters>
     </ng-container>
   </ng-container>
+  <app-sharing-options [securedResource]="datasource"></app-sharing-options>
 
 </ion-content>
 <ion-footer>
   <ion-toolbar class="ion-text-end">
-    <ion-button color="secondary" (click)="dsParameters?.checkQuery()">
+    <ion-button fill="clear" color="secondary" (click)="dsParameters?.checkQuery()">
       Validate Parameters
     </ion-button>
-    <ion-button [disabled]="!validParameters" (click)="saveParameters()">
-      Confirm
+    <ion-button fill="clear" [disabled]="!validParameters" (click)="saveParameters()">
+      Save
     </ion-button>
   </ion-toolbar>
 </ion-footer>

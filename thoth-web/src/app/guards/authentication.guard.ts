@@ -11,6 +11,16 @@ export class AuthenticationGuard implements CanActivate {
   constructor() {
   }
 
+  parseJwt (token: string) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+  }
+
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
@@ -24,7 +34,7 @@ export class AuthenticationGuard implements CanActivate {
     }
 
     const currentToken = localStorage.getItem("access_token");
-    if(!currentToken){
+    if(!currentToken || ((this.parseJwt(currentToken || "").exp * 1000) < new Date().getTime())){
       window.location.replace('https://' + environment.cognito.Auth.oauth.domain + '/login?' +
         'client_id=' + environment.cognito.Auth.userPoolWebClientId + '&' +
         // 'logout_uri=' + environment.cognito.Auth.oauth.redirectSignOut + '&' +

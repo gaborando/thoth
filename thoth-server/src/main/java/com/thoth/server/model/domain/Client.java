@@ -1,5 +1,6 @@
 package com.thoth.server.model.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -27,6 +28,9 @@ public class Client extends SecuredResource {
     @NotBlank
     @Size(min = 3, max = 256)
     private String name;
+
+    @Column(updatable = false)
+    private Instant createdAt;
 
     @ElementCollection
     @NotEmpty

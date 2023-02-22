@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/template-list"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Template</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="primary" routerLink="/render-new">
+        <ion-button *ngIf="template" (click)="delete(template)">
+          <ion-icon color="danger" name="trash" slot="end" tappable="true"></ion-icon>
+        </ion-button>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="template">
+
+  <form>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          Basic Template Properties
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>Name</ion-label>
+          <ion-input name="name" [(ngModel)]="template.name"></ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          Template
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-img class="ion-padding" style="height: 500px" [src]="template.img"></ion-img>
+      </ion-card-content>
+      <div class="ion-text-end">
+        <ion-button fill="clear" color="primary" (click)="openEditor()">Draw</ion-button>
+      </div>
+    </ion-card>
+    <app-sharing-options [securedResource]="template"></app-sharing-options>
+
+
+
+  </form>
+
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" color="secondary" (click)="render()" class="ion-margin-horizontal">Render
+      </ion-button>
+      <ion-button fill="clear" color="secondary" (click)="print()" class="ion-margin-horizontal">Print
+      </ion-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" color="primary" (click)="update()" class="ion-margin-horizontal"
+                  [disabled]="!template?.name">Save
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-footer>

@@ -1,22 +1,20 @@
 import {Component, OnInit} from '@angular/core';
-import {TemplateService} from "../../../services/api/template.service";
 import {Template} from "../../../common/types/template";
-import {AlertController, LoadingController} from "@ionic/angular";
-import {DomSanitizer} from "@angular/platform-browser";
-import {environment} from "../../../../environments/environment";
+import {TemplateService} from "../../../services/api/template.service";
+import {AlertController, LoadingController, NavController} from "@ionic/angular";
 import {ClientService} from "../../../services/api/client.service";
 import {ScreenMessageService} from "../../../services/screen-message.service";
-import {ListPage} from "../../../common/utils/ui-patterns/list-page";
 import {GuiUtilsService} from "../../../services/gui-utils.service";
 import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.service";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
-  selector: 'app-template-list',
-  templateUrl: './template-list.page.html',
-  styleUrls: ['./template-list.page.scss'],
+  selector: 'app-template-detail',
+  templateUrl: './template-detail.page.html',
+  styleUrls: ['./template-detail.page.scss'],
 })
-export class TemplateListPage extends ListPage<Template> implements OnInit {
-
+export class TemplateDetailPage implements OnInit {
+  template: Template | undefined;
   private drawIoWindow: Window | null = null;
 
   constructor(private templateService: TemplateService,
@@ -25,45 +23,58 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
               private screenMessageService: ScreenMessageService,
               private loadingController: LoadingController,
               private guiUtils: GuiUtilsService,
-              private templateGuiUtils: TemplateGuiUtilsService) {
-    super(templateService);
+              private navController: NavController,
+              private templateGuiUtils: TemplateGuiUtilsService,
+              private route: ActivatedRoute) {
   }
 
+  async ionViewWillEnter() {
+    this.template = await this.templateService.findById(this.route.snapshot.paramMap.get('identifier'))
+  }
   ngOnInit() {
-    return super.loadPageData();
   }
 
-  async createTemplate() {
-    const alert = await this.alertController.create({
-      header: "Create a Template",
-      inputs: [
-        {
-          id: 'name',
-          label: 'Name',
-          name: 'name',
-          placeholder: 'Name'
-        }
-      ],
-      buttons: [
-        {
-          text: 'ok'
-        },
-        {
-          text: 'cancel',
-          role: 'cancel'
-        }
-      ]
+  delete(template: Template) {
+    return this.screenMessageService.showDeleteAlert(async () => {
+      await this.templateService.delete(template.id);
+      return this.navController.navigateBack('/template-list')
     });
-    await alert.present();
-    const resp = await alert.onDidDismiss();
-    if (!resp.role) {
-      const t = await this.templateService.create(resp.data.values.name);
-      this.elements?.push(t);
-      return this.openEditor(t);
-    }
   }
 
-  public openEditor(template: Template) {
+
+  render() {
+    if (!this.template) {
+      return;
+    }
+    return this.templateGuiUtils.renderTemplate(this.template);
+  }
+
+  print() {
+    if (!this.template) {
+      return;
+    }
+    return this.templateGuiUtils.printTemplate(this.template);
+  }
+
+  update() {
+    if (!this.template) {
+      return;
+    }
+    const t = this.template;
+    return this.screenMessageService.loadingWrapper(async () => {
+      this.templateService.update(t).finally();
+      await this.screenMessageService.showDone();
+    })
+
+  }
+
+  openEditor() {
+
+    if(!this.template){
+      return;
+    }
+    const template = this.template;
+
     var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1';
 
     if (this.drawIoWindow == null || this.drawIoWindow.closed) {
@@ -106,7 +117,6 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
             window.removeEventListener('message', receive);
             this.drawIoWindow?.close();
             this.drawIoWindow = null;
-            this.templateService.update(template).finally();
           }
         }
       };
@@ -118,21 +128,5 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
       // Shows existing editor window
       this.drawIoWindow?.focus();
     }
-
-  }
-
-  removeTemplate(template: Template) {
-    return this.screenMessageService.showDeleteAlert(async () => {
-      await this.templateService.delete(template.id);
-      this.elements = this.elements?.filter(t => t.id !== template.id)
-    });
-  }
-
-  async renderTemplate(t: Template) {
-    return this.templateGuiUtils.renderTemplate(t);
-  }
-
-  async printTemplate(t: Template) {
-    return this.templateGuiUtils.printTemplate(t);
   }
 }

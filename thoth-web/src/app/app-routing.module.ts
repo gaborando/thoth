@@ -57,6 +57,10 @@ const routes: Routes = [
     path: 'client-list',
     loadChildren: () => import('./pages/client/client-list/client-list.module').then( m => m.ClientListPageModule),
     canActivate: [AuthenticationGuard]
+  },
+  {
+    path: 'template-detail/:identifier',
+    loadChildren: () => import('./pages/template/template-detail/template-detail.module').then( m => m.TemplateDetailPageModule)
   }
 ];
 

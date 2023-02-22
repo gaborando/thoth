@@ -3,6 +3,7 @@ package com.thoth.server.service;
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.dto.renderer.Association;
 import com.thoth.server.model.domain.Renderer;
+import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
 import com.thoth.server.model.repository.RendererRepository;
 import com.thoth.server.model.repository.TemplateRepository;
@@ -55,9 +56,17 @@ public class RendererService {
         return rendererRepository.findAll(facade.securedSpecification(specification, Renderer.class), pageRequest);
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#renderer)")
-    public Renderer save(Renderer renderer) {
-        return rendererRepository.save(renderer);
+
+    public Renderer update(String identifier, Renderer properties) {
+        return update(findById(identifier).orElseThrow(), properties);
+    }
+    @PreAuthorize("@authenticationFacade.canAccess(#original)")
+    private Renderer update(Renderer original, Renderer update) {
+        original.setAssociationMap(update.getAssociationMap());
+        original.setName(update.getName());
+        original.setAllowedOrganizationList(update.getAllowedOrganizationList());
+        original.setAllowedUserList(update.getAllowedUserList());
+        return rendererRepository.save(update);
     }
 
     @PreAuthorize("@authenticationFacade.canAccess(#renderer)")

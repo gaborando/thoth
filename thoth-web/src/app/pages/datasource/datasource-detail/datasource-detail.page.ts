@@ -19,7 +19,7 @@ import {NavController} from "@ionic/angular";
 export class DatasourceDetailPage implements OnInit {
   datasource: any;
   dsParameters: DatasourceParametersComponent | null = null;
-  validParameters = false;
+  validParameters = true;
 
   constructor(private route: ActivatedRoute,
               private datasourceService: DataSourceService,

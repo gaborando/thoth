@@ -1,0 +1,93 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>
+      Sharing Options
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-row>
+            <h1>
+              Users
+            </h1>
+          </ion-row>
+          <ion-row *ngFor="let sid of securedResource?.allowedUserList">
+            <ion-col>
+              {{sid}}
+            </ion-col>
+            <ion-col size="1">
+              <ion-icon color="danger" name="trash" tappable="true" (click)="removeAllowedUser(sid)"></ion-icon>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngIf="!securedResource?.allowedUserList?.length">
+            Not shared with any user
+          </ion-row>
+        </ion-col>
+        <ion-col>
+          <ion-row>
+            <h1>
+              Organizations
+            </h1>
+          </ion-row>
+          <ion-row *ngFor="let sid of securedResource?.allowedOrganizationList">
+            <ion-col>
+              {{sid}}
+            </ion-col>
+            <ion-col size="1">
+              <ion-icon color="danger" name="trash" tappable="true" (click)="removeAllowedOrganization(sid)"></ion-icon>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngIf="!securedResource?.allowedOrganizationList?.length">
+            Not shared with any organization
+          </ion-row>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </ion-card-content>
+  <div class="ion-text-end">
+    <ion-button fill="clear" id="open-modal">
+      Add
+    </ion-button>
+  </div>
+</ion-card>
+<ion-modal #modal trigger="open-modal" (willPresent)="autocompleteData = []">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="modal.dismiss()">Cancel</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button [disabled]="!sid.value || !type.value" (click)="addPermission(modal, type.value, sid.value)"
+                      [strong]="true">Confirm
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-item>
+        <ion-label>Type</ion-label>
+        <ion-select #type (ionChange)="sid.value = null; autocompleteData = []">
+          <ion-select-option value="user">User</ion-select-option>
+          <ion-select-option value="organization">Organization</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>Identifier</ion-label>
+        <ion-input [disabled]="!type.value" debounce="500" (ionChange)="fetchAutocomplete($event, type.value)" #sid
+                   type="text"></ion-input>
+        <ion-spinner *ngIf="autocompleteLoading" name="dots"></ion-spinner>
+      </ion-item>
+      <ng-container *ngIf="autocompleteData.length > 0 && autocompleteData[0] !== sid.value">
+        <p *ngFor="let value of autocompleteData" (click)="sid.value = value">
+          {{value}}
+        </p>
+      </ng-container>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>
+

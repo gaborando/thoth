@@ -43,7 +43,9 @@ export class RendererNewPage implements OnInit {
 
 
   updateAssociationMap(p: string, association: any) {
-    if(association === 'parameter'){
+    if(!association){
+      delete this.associationMap[p];
+    }else if(association === 'parameter'){
       this.associationMap[p] = {
         type: 'parameter',
         id: null,
@@ -69,15 +71,16 @@ export class RendererNewPage implements OnInit {
 
   updateAvailableAssociations(event: any) {
     const ds = event.detail.value;
-    this.availableProperties = [];
-    for (const d of ds) {
-      console.log(d)
+
+    const tmp = [];
+    for (const d of ds.datasourceProperties) {
       for (const p of d.properties) {
-        this.availableProperties.push({
+        tmp.push({
           ds: d,
           property: p
         })
       }
     }
+    this.availableProperties = tmp.sort((a,b) =>  (a.ds.name + a.property).localeCompare(b.ds.name + b.property) );
   }
 }

@@ -93,8 +93,7 @@ public class DataSourceController {
 
     @PostMapping(value = "/jdbc/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DatasourceProperties> updateJdbcParameters(@RequestBody JdbcDatasourceProperties properties, @PathVariable String identifier) throws SQLException {
-        properties.setId(identifier);
-        return ResponseEntity.ok(dataSourceService.update(properties));
+        return ResponseEntity.ok(dataSourceService.update(identifier, properties));
     }
 
     @DeleteMapping("/{identifier}")

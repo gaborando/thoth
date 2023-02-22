@@ -83,4 +83,16 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
       return await r.text()
     });
   }
+
+  async findById(identifier: string | null): Promise<Template> {
+    return fetch(environment.apiUrl + '/template/'+identifier, {
+      method: 'GET',
+      headers: this.getHeaders()
+    }).then(async r => {
+      if (!r.ok) {
+        throw await r.json()
+      }
+      return await r.json()
+    });
+  }
 }

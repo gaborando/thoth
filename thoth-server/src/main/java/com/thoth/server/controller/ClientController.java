@@ -30,6 +30,12 @@ public class ClientController {
                 PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt")))));
     }
 
+    @PutMapping("/{identifier}")
+    public ResponseEntity<Client> update(
+            @PathVariable String identifier, @RequestBody Client client) {
+       return ResponseEntity.ok(clientService.update(identifier, client));
+    }
+
     @DeleteMapping("/{identifier}")
     public void unregister(
             @PathVariable String identifier) {

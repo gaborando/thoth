@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.thoth.common.dto.PrintRequest;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,11 +31,13 @@ public class ClientService {
         this.authenticationFacade = authenticationFacade;
     }
 
-    public Client register(String identifier, String name, List<String> printServices){
+    public Client register(String identifier, String name, String ownerSID, List<String> printServices){
         var c = new Client();
         c.setName(name);
         c.setIdentifier(identifier);
+        c.setCreatedBy(ownerSID);
         c.setPrintServices(printServices);
+        c.setCreatedAt(Instant.now());
         return repository.save(c);
     }
 
@@ -59,5 +62,17 @@ public class ClientService {
     @PostAuthorize("@authenticationFacade.canAccess(returnObject)")
     public Optional<Client> findById(String identifier) {
         return repository.findById(identifier);
+    }
+
+    public Client update(String identifier, Client update) {
+        var c = findById(identifier).orElseThrow();
+        return update(c, update);
+    }
+
+    @PreAuthorize("@authenticationFacade.canAccess(#original)")
+    private Client update(Client original, Client update) {
+        original.setAllowedUserList(update.getAllowedUserList());
+        original.setAllowedOrganizationList(update.getAllowedOrganizationList());
+        return repository.save(original);
     }
 }

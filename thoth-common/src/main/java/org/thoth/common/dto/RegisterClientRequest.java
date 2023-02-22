@@ -6,6 +6,8 @@ import java.util.List;
 public class RegisterClientRequest implements Serializable {
     private String identifier;
     private String name;
+
+    private String ownerSID;
     private List<String> printServices;
 
     public String getIdentifier() {
@@ -30,5 +32,13 @@ public class RegisterClientRequest implements Serializable {
 
     public void setPrintServices(List<String> printServices) {
         this.printServices = printServices;
+    }
+
+    public String getOwnerSID() {
+        return ownerSID;
+    }
+
+    public void setOwnerSID(String ownerSID) {
+        this.ownerSID = ownerSID;
     }
 }

@@ -2,6 +2,8 @@ package com.thoth.server.service;
 
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.model.domain.Template;
+import com.thoth.server.model.domain.datasource.DatasourceProperties;
+import com.thoth.server.model.repository.RendererRepository;
 import com.thoth.server.model.repository.TemplateRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -24,15 +26,21 @@ public class TemplateService {
 
     private final TemplateRepository templateRepository;
     private final IAuthenticationFacade authenticationFacade;
+    private final RendererRepository rendererRepository;
 
-    public TemplateService(TemplateRepository templateRepository, IAuthenticationFacade authenticationFacade) {
+    public TemplateService(TemplateRepository templateRepository, IAuthenticationFacade authenticationFacade,
+                           RendererRepository rendererRepository) {
         this.templateRepository = templateRepository;
         this.authenticationFacade = authenticationFacade;
+        this.rendererRepository = rendererRepository;
     }
-
-    @PreAuthorize("@authenticationFacade.canAccess(#template)")
-    public Template save(Template template){
-        return templateRepository.save(template);
+    public Template update(String identifier, Template properties) {
+        return update(getById(identifier).orElseThrow(), properties);
+    }
+    @PreAuthorize("@authenticationFacade.canAccess(#original)")
+    private Template update(Template original, Template update) {
+        update.setId(original.getId());
+        return templateRepository.save(update);
     }
 
     @PreAuthorize("@authenticationFacade.canAccess(#template)")

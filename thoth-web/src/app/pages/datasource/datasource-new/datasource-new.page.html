@@ -42,10 +42,10 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar class="ion-text-end">
-    <ion-button color="secondary" (click)="dsParameters?.checkQuery()">
+    <ion-button fill="clear" color="secondary" (click)="dsParameters?.checkQuery()">
       Validate Parameters
     </ion-button>
-    <ion-button [disabled]="!validParameters" (click)="saveParameters()">
+    <ion-button fill="clear" [disabled]="!validParameters" (click)="saveParameters()">
       Confirm
     </ion-button>
   </ion-toolbar>

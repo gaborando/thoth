@@ -78,7 +78,9 @@ export class RendererService extends AuthenticatedService implements DataFetcher
       body: JSON.stringify(
         {
           name: renderer?.name,
-          associationMap: renderer?.associationMap
+          associationMap: renderer?.associationMap,
+          allowedOrganizationList: renderer?.allowedOrganizationList,
+          allowedUserList: renderer?.allowedUserList
         }
       )
     }).then(async r => {

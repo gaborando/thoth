@@ -28,8 +28,8 @@ public class JwtService {
     private final String issuer;
 
     public JwtService(
-            @Value("${oauth.jwk.url}") String jwkUrl,
-            @Value("${oauth.issuer.url}") String issuer) {
+            @Value("${thoth.oauth.jwk.url}") String jwkUrl,
+            @Value("${thoth.oauth.issuer.url}") String issuer) {
         this.jwkUrl = jwkUrl;
         this.issuer = issuer;
     }
