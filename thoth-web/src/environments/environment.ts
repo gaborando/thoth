@@ -1,33 +1,33 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
+function makeid(length: number) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
+}
 
+const state = makeid(32);
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8080',
-  cognito: {
-    Auth: {
-      // REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
-      identityPoolId: 'urn:amazon:cognito:sp:eu-west-1_VfkzwcRqJ',
-
-      // OPTIONAL - Amazon Cognito User Pool ID
-      userPoolId: 'eu-west-1_VfkzwcRqJ',
-
-      // REQUIRED - Amazon Cognito Region
-      region: 'eu-west-1',
-
-
-      // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
-      userPoolWebClientId: '3fg6d0vhqbag36ad21vge8vmim',
-
-      oauth: {
-        domain: 'glc-thoth.auth.eu-west-1.amazoncognito.com',
-        scope: ['email', 'profile', 'openid', 'aws.cognito.signin.user.admin'],
-        redirectSignIn: window.location.origin + '/token-redirect',
-        redirectSignOut: window.location.origin + '/logout',
-        responseType: 'token' // or 'token', note that REFRESH token will only be generated when the responseType is code
-      }
-    }
+  oauth: {
+    logoutUrl: 'https://glc-thoth.auth.eu-west-1.amazoncognito.com/logout?' +
+      'client_id=3fg6d0vhqbag36ad21vge8vmim&' +
+      'logout_uri=' + window.location.origin + '/logout' + '&' +
+      'identity_provider=COGNITO&scope=email%20profile%20openid%20aws.cognito.signin.user.admin&state='+state+'&'+
+      'response_type=token',
+    loginUrl: 'https://glc-thoth.auth.eu-west-1.amazoncognito.com/login?' +
+      'client_id=3fg6d0vhqbag36ad21vge8vmim&' +
+      'redirect_uri=' + window.location.origin + '/token-redirect&' +
+      'identity_provider=COGNITO&scope=email%20profile%20openid%20aws.cognito.signin.user.admin&state='+state+'&'+
+      'response_type=token'
   }
 };
 

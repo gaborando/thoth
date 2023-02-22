@@ -26,11 +26,6 @@ export class AppComponent implements OnInit{
 
   logout() {
     localStorage.removeItem("access_token")
-    window.location.replace('https://' + environment.cognito.Auth.oauth.domain + '/logout?' +
-      'client_id=' + environment.cognito.Auth.userPoolWebClientId + '&' +
-      'logout_uri=' + environment.cognito.Auth.oauth.redirectSignOut + '&' +
-      'redirect_uri=' + environment.cognito.Auth.oauth.redirectSignIn + '&' +
-      'identity_provider=COGNITO&scope=email%20profile%20openid%20aws.cognito.signin.user.admin&state=uepdg8YumFOCc0L41pM81oHsjbm0Gm77&'+
-      'response_type=token');
+    window.location.replace(environment.oauth.logoutUrl);
   }
 }
