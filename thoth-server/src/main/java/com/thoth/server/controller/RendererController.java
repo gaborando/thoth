@@ -20,7 +20,6 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/renderer")
-@Secured("ROLE_USER")
 public class RendererController {
 
     private final RendererService rendererService;
@@ -32,6 +31,8 @@ public class RendererController {
         this.renderService = renderService;
     }
 
+
+    @Secured("ROLE_USER")
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Renderer> create(@RequestBody RendererCreateRequest request) {
         return ResponseEntity.ok(rendererService.create(
@@ -42,6 +43,8 @@ public class RendererController {
         ));
     }
 
+
+    @Secured("ROLE_USER")
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<Renderer>> findAll(
             @RequestParam(defaultValue = "0") int page
@@ -50,23 +53,29 @@ public class RendererController {
                 PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt")))));
     }
 
+
+    @Secured("ROLE_USER")
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Renderer> findById(
             @PathVariable String identifier) {
         return ResponseEntity.ok(rendererService.findById(identifier).orElseThrow());
     }
 
+
+    @Secured("ROLE_USER")
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Renderer> update(@RequestBody Renderer renderer, @PathVariable String identifier) {
         return ResponseEntity.ok(rendererService.update(identifier, renderer));
     }
 
+
+    @Secured("ROLE_USER")
     @DeleteMapping("/{identifier}")
     public void delete(@PathVariable String identifier) {
         rendererService.delete(rendererService.findById(identifier).orElseThrow());
     }
 
-
+    @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderPdf(@RequestParam HashMap<String, Object> params,
                                             @PathVariable String identifier) throws Exception {
@@ -77,6 +86,7 @@ public class RendererController {
 
     }
 
+    @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/{identifier}/render/jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderJpeg(@RequestParam HashMap<String, Object> params,
                                              @PathVariable String identifier) throws Exception {
@@ -86,6 +96,7 @@ public class RendererController {
 
     }
 
+    @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/{identifier}/render/svg", produces = "image/svg+xml")
     public ResponseEntity<byte[]> renderSvg(@RequestParam HashMap<String, Object> params,
                                             @PathVariable String identifier) throws Exception {
@@ -95,6 +106,7 @@ public class RendererController {
 
     }
 
+    @Secured({"ROLE_USER", "ROLE_API"})
     @PostMapping("/{identifier}/print")
     public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws Exception {
         renderService.printRenderer(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService(), request.getCopies());

@@ -31,15 +31,16 @@ public class ApiKeyService {
         this.facade = facade;
     }
 
-    public ApiKey create(Instant expiry){
+    public ApiKey create(String name, Instant expiry){
         var token = new ApiKey();
+        token.setName(name);
         token.setId("tkn_"  + UUID.randomUUID());
         token.setCreatedAt(Instant.now());
         token.setExpiry(expiry);
         token.setUserSID(facade.getUserSID());
         token.setOrganizationSID(facade.getOrganizationSID());
 
-        byte[] randomBytes = new byte[128];
+        byte[] randomBytes = new byte[64];
         secureRandom.nextBytes(randomBytes);
         token.setApiKey(base64Encoder.encodeToString(randomBytes));
         return apiKeyRepository.save(token);
@@ -61,5 +62,9 @@ public class ApiKeyService {
             throw new AccessDeniedException("Token Expired");
         }
         return key;
+    }
+
+    public void delete(String identifier) {
+        delete(apiKeyRepository.findById(identifier).orElseThrow());
     }
 }

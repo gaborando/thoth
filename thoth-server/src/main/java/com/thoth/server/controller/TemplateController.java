@@ -62,6 +62,7 @@ public class TemplateController {
         templateService.delete(e);
     }
 
+    @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/{identifier}/render/jpeg",produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderJpeg(@RequestParam HashMap<String, Object> params,
                                          @PathVariable String identifier) throws IOException, InterruptedException {
@@ -71,6 +72,7 @@ public class TemplateController {
 
     }
 
+    @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderPdf(@RequestParam HashMap<String, Object> params,
                                              @PathVariable String identifier) throws IOException, InterruptedException {
@@ -80,6 +82,7 @@ public class TemplateController {
 
     }
 
+    @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/{identifier}/render/svg", produces = "image/svg+xml")
     public ResponseEntity<byte[]> renderSvg(@RequestParam HashMap<String, Object> params,
                                             @PathVariable String identifier) throws IOException, InterruptedException {
@@ -89,6 +92,7 @@ public class TemplateController {
 
     }
 
+    @Secured({"ROLE_USER", "ROLE_API"})
     @PostMapping("/{identifier}/print")
     public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws IOException, InterruptedException {
         renderService.printTemplate(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService(), request.getCopies());

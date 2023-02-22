@@ -20,10 +20,6 @@ export class ClientListPage extends ListPage<Client> implements OnInit {
     super(clientService)
   }
 
-  ionViewWillEnter() {
-    return super.loadPageData();
-  }
-
   ngOnInit() {
   }
 
@@ -39,7 +35,7 @@ export class ClientListPage extends ListPage<Client> implements OnInit {
       return ;
     }
     const c = this.selectedClient;
-    return this.screenMessageService.showDeleteAlert(async () => {
+    return this.screenMessageService.loadingWrapper(async () => {
       await this.clientService.update(c);
       return modal.dismiss();
     })

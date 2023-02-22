@@ -17,6 +17,13 @@ public abstract class ThothAuthenticationToken extends AbstractAuthenticationTok
         this.setAuthenticated(true);
     }
 
+    public ThothAuthenticationToken(String userSID, String organizationSID, List<? extends GrantedAuthority> authorities) {
+        super(authorities);
+        this.userSID = userSID;
+        this.organizationSID = organizationSID;
+        this.setAuthenticated(true);
+    }
+
     @Override
     public String getPrincipal() {
         return getUserSID();

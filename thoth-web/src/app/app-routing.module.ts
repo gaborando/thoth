@@ -61,6 +61,10 @@ const routes: Routes = [
   {
     path: 'template-detail/:identifier',
     loadChildren: () => import('./pages/template/template-detail/template-detail.module').then( m => m.TemplateDetailPageModule)
+  },
+  {
+    path: 'api-key-list',
+    loadChildren: () => import('./pages/api-key/api-key-list/api-key-list.module').then( m => m.ApiKeyListPageModule)
   }
 ];
 
