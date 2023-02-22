@@ -15,11 +15,6 @@ export class RendererListPage extends ListPage<Renderer> implements OnInit {
   ) {
     super(rendererService);
   }
-
-  ionViewWillEnter() {
-    return super.loadPageData();
-  }
-
   ngOnInit() {
   }
 

@@ -8,6 +8,10 @@ export abstract class ListPage<E>{
   protected constructor(protected fetcher: DataFetcher<E>) {
   }
 
+  async ionViewWillEnter() {
+    return this.loadPageData();
+  }
+
 
   async loadPageData(){
     this.page = 0;

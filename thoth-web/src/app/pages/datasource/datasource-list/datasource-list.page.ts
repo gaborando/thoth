@@ -13,10 +13,6 @@ export class DatasourceListPage extends ListPage<Datasource> implements OnInit {
     super(datasourceService)
   }
 
-  async ionViewWillEnter() {
-    return super.loadPageData();
-  }
-
   async ngOnInit() {
 
   }
