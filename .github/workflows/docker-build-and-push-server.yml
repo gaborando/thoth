@@ -1,17 +1,14 @@
-name: Docker Image CI
+name: Docker Build&Push Server CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "release" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "release" ]
 
 jobs:
-
-  build:
-
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     -
@@ -21,14 +18,9 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
         
-    - name: Build the Docker image Server
+    - name: Build the Docker image
       run: docker build . --file docker/thoth-server/Dockerfile --tag gaborando/thoth-server:latest
-  
-    - name: Push Docker image Server
+
+    - name: Push the Docker image
       run: docker push gaborando/thoth-server:latest
-      
-    - name: Build the Docker image Web
-      run: docker build . --file docker/thoth-web/Dockerfile --tag gaborando/thoth-web:latest
-      
-    - name: Push Docker image Web
-      run: docker push gaborando/thoth-web:latest
+
