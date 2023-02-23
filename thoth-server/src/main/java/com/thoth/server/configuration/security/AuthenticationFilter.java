@@ -3,6 +3,7 @@ package com.thoth.server.configuration.security;
 import com.thoth.server.configuration.security.token.ApiKetAuthenticationToken;
 import com.thoth.server.configuration.security.token.DefaultAuthenticationToken;
 import com.thoth.server.configuration.security.token.JwtAuthenticationToken;
+import com.thoth.server.configuration.security.token.TempAuthenticationToken;
 import com.thoth.server.service.ApiKeyService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,15 +24,18 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     private final ApiKeyService apiKeyService;
+
+    private final SecuredTimestampService securedTimestampService;
     private final boolean oAuthEnabled;
 
 
     public AuthenticationFilter(
             @Value("${thoth.oauth.enabled}") boolean oAuthEnabled,
-            JwtService jwtService, ApiKeyService apiKeyService) {
+            JwtService jwtService, ApiKeyService apiKeyService, SecuredTimestampService securedTimestampService) {
         this.jwtService = jwtService;
         this.oAuthEnabled = oAuthEnabled;
         this.apiKeyService = apiKeyService;
+        this.securedTimestampService = securedTimestampService;
     }
 
     @Override
@@ -66,10 +70,28 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            String tmpKey = getTmpKetFromRequest(request);
+            if (StringUtils.hasText(tmpKey)) {
+                var key =  securedTimestampService.parse(tmpKey);
+                var authentication = new TempAuthenticationToken(key);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
         } catch (Exception ex) {
             logger.error("Could not set user authentication in security context", ex);
         }
         filterChain.doFilter(request, response);
+    }
+
+    private String getTmpKetFromRequest(HttpServletRequest request) {
+        String tmpKey = request.getParameter("TMP_KEY");
+        if(StringUtils.hasText(tmpKey)){
+            return tmpKey;
+        }
+        return null;
     }
 
     private String getApiKeyFromRequest(HttpServletRequest request) {

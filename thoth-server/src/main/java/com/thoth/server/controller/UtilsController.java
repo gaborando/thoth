@@ -31,6 +31,7 @@ public class UtilsController {
         this.sidService = sidService;
     }
 
+    @Secured({"ROLE_USER", "ROLE_TMP"})
     @GetMapping(value = "/barcode", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderBarcode(
             @RequestParam String code,
@@ -47,6 +48,7 @@ public class UtilsController {
         return ResponseEntity.ok(baos.toByteArray());
     }
 
+    @Secured({"ROLE_USER", "ROLE_TMP"})
     @GetMapping(value = "/qrcode", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderQrcode(@RequestParam String code,
             @RequestParam(defaultValue = "300") int size) throws WriterException, IOException {

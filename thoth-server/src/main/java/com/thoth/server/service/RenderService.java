@@ -1,5 +1,6 @@
 package com.thoth.server.service;
 
+import com.thoth.server.configuration.security.SecuredTimestampService;
 import com.thoth.server.controller.dto.renderer.Association;
 import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.model.domain.Template;
@@ -23,15 +24,18 @@ public class RenderService {
 
     private final ClientService clientService;
 
+    private final SecuredTimestampService securedTimestampService;
+
     public RenderService(
             TemplateService templateService,
             RendererService rendererService,
             DataSourceService dataSourceService,
-            ClientService clientService) {
+            ClientService clientService, SecuredTimestampService securedTimestampService) {
         this.templateService = templateService;
         this.rendererService = rendererService;
         this.dataSourceService = dataSourceService;
         this.clientService = clientService;
+        this.securedTimestampService = securedTimestampService;
         svg2Jpeg = new Svg2Jpeg();
     }
 
@@ -43,9 +47,12 @@ public class RenderService {
 
     public String renderTemplateSvg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
 
+        var tmpKey = securedTimestampService.generate();
         var svg = template.getSvg();
         // Image Embedding Correction
         svg = svg.replace("https://embed.diagrams.net/{{", "{{");
+        svg = svg.replace("utils/barcode?", "utils/barcode?TMP_KEY=" + tmpKey + "&amp;");
+        svg = svg.replace("utils/qrcode?", "utils/qrcode?TMP_KEY=" + tmpKey + "&amp;");
         for (Map.Entry<String, Object> e : params.entrySet()) {
             svg = svg.replace("{{" + e.getKey() + "}}", e.getValue() == null ? "" : e.getValue().toString());
         }
