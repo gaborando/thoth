@@ -14,7 +14,7 @@ export class UtilsService extends AuthenticatedService{
   }
 
   async userAutocomplete(value: string): Promise<string[]>{
-    return fetch(environment.apiUrl + '/utils/user-autocomplete?value=' + value, {
+    return fetch((await environment()).apiUrl + '/utils/user-autocomplete?value=' + value, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
@@ -26,7 +26,7 @@ export class UtilsService extends AuthenticatedService{
   }
 
   async organizationAutocomplete(value: string): Promise<string[]>{
-    return fetch(environment.apiUrl + '/utils/organization-autocomplete?value=' + value, {
+    return fetch((await environment()).apiUrl + '/utils/organization-autocomplete?value=' + value, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {

@@ -15,7 +15,7 @@ export class ApiKeyService extends AuthenticatedService implements DataFetcher<A
   }
 
   async findAll(): Promise<Page<ApiKey>>{
-    return fetch(environment.apiUrl + '/api-key/', {
+    return fetch((await environment()).apiUrl + '/api-key/', {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
@@ -27,7 +27,7 @@ export class ApiKeyService extends AuthenticatedService implements DataFetcher<A
   }
 
   async create(name: string, expiry: number | null): Promise<ApiKey>{
-    return fetch(environment.apiUrl + '/api-key/', {
+    return fetch((await environment()).apiUrl + '/api-key/', {
       method: 'POST',
       headers: this.postHeaders(),
       body: JSON.stringify({
@@ -43,7 +43,7 @@ export class ApiKeyService extends AuthenticatedService implements DataFetcher<A
   }
 
   async delete(id: string): Promise<any>{
-    return fetch(environment.apiUrl + '/api-key/' + id, {
+    return fetch((await environment()).apiUrl + '/api-key/' + id, {
       method: 'DELETE',
       headers: this.getHeaders(),
     }).then(async r => {

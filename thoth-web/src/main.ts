@@ -7,9 +7,10 @@ import { environment } from './environments/environment';
 import 'codemirror/mode/sql/sql';
 import 'codemirror/addon/display/autorefresh';
 
-if (environment.production) {
-  enableProdMode();
-}
-
+environment().then((e: any) => {
+  if(e.production){
+    enableProdMode();
+  }
+})
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.log(err));

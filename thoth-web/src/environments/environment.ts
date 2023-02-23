@@ -14,7 +14,7 @@ function makeid(length: number) {
 }
 
 const state = makeid(32);
-export const environment = {
+export const environment = async  () => ({
   production: false,
   apiUrl: 'http://localhost:8080',
   oauth: {
@@ -29,7 +29,7 @@ export const environment = {
       'identity_provider=COGNITO&scope=email%20profile%20openid%20aws.cognito.signin.user.admin&state='+state+'&'+
       'response_type=token'
   }
-};
+});
 
 /*
  * For easier debugging in development mode, you can import the following file

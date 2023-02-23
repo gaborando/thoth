@@ -16,7 +16,7 @@ export class ClientService extends AuthenticatedService {
 
 
   async findAll(): Promise<Page<Client>>{
-    return fetch(environment.apiUrl + '/client/', {
+    return fetch((await environment()).apiUrl + '/client/', {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
@@ -28,7 +28,7 @@ export class ClientService extends AuthenticatedService {
   }
 
   async deleteById(identifier: string) {
-    return fetch(environment.apiUrl + '/client/' + identifier, {
+    return fetch((await environment()).apiUrl + '/client/' + identifier, {
       method: 'DELETE',
       headers: this.getHeaders()
     }).then(async r => {
@@ -40,7 +40,7 @@ export class ClientService extends AuthenticatedService {
   }
 
   async update(client: Client) {
-    return fetch(environment.apiUrl + '/client/' + client.identifier, {
+    return fetch((await environment()).apiUrl + '/client/' + client.identifier, {
       method: 'PUT',
       headers: this.postHeaders(),
       body: JSON.stringify({

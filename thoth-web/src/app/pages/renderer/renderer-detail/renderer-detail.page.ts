@@ -146,7 +146,7 @@ export class RendererDetailPage implements OnInit {
         query.append("access_token", accessToken);
       }
 
-      window.open(environment.apiUrl + '/renderer/' + this.renderer.id + '/render/pdf?' + query.toString())
+      window.open((await environment()).apiUrl + '/renderer/' + this.renderer.id + '/render/pdf?' + query.toString())
     }
   }
 

@@ -17,7 +17,7 @@ export class RendererService extends AuthenticatedService implements DataFetcher
   }
 
   async create(name: string | undefined, selectedTemplate: Template | undefined, selectedDatasource: Datasource[] | undefined, associationMap: any): Promise<Renderer> {
-    return fetch(environment.apiUrl + '/renderer/', {
+    return fetch((await environment()).apiUrl + '/renderer/', {
       method: 'POST',
       headers: this.postHeaders(),
       body: JSON.stringify({
@@ -36,7 +36,7 @@ export class RendererService extends AuthenticatedService implements DataFetcher
   }
 
   async findAll(page = 0): Promise<Page<Renderer>> {
-    return fetch(environment.apiUrl + '/renderer/?page=' + page, {
+    return fetch((await environment()).apiUrl + '/renderer/?page=' + page, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
@@ -48,7 +48,7 @@ export class RendererService extends AuthenticatedService implements DataFetcher
   }
 
   async findById(identifier: string | null): Promise<Renderer> {
-    return fetch(environment.apiUrl + '/renderer/' + identifier, {
+    return fetch((await environment()).apiUrl + '/renderer/' + identifier, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
@@ -60,7 +60,7 @@ export class RendererService extends AuthenticatedService implements DataFetcher
   }
 
   async delete(identifier: string) {
-    return fetch(environment.apiUrl + '/renderer/' + identifier, {
+    return fetch((await environment()).apiUrl + '/renderer/' + identifier, {
       method: 'DELETE',
       headers: this.getHeaders()
     }).then(async r => {
@@ -72,7 +72,7 @@ export class RendererService extends AuthenticatedService implements DataFetcher
   }
 
   async update(renderer: Renderer | null) {
-    return fetch(environment.apiUrl + '/renderer/' + renderer?.id, {
+    return fetch((await environment()).apiUrl + '/renderer/' + renderer?.id, {
       method: 'PUT',
       headers: this.postHeaders(),
       body: JSON.stringify(
@@ -92,7 +92,7 @@ export class RendererService extends AuthenticatedService implements DataFetcher
   }
 
   async print(renderer: string, parameters: any, clientIdentifier: string, printService: any, copies: number) {
-    return fetch(environment.apiUrl + '/renderer/' + renderer + '/print', {
+    return fetch((await environment()).apiUrl + '/renderer/' + renderer + '/print', {
       method: 'POST',
       headers: this.postHeaders(),
       body: JSON.stringify({

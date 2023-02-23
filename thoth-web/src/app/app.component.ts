@@ -8,26 +8,29 @@ import {environment} from "../environments/environment";
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
 
   public appPages = [
-    { title: 'Templates', url: '/template-list', icon: 'create' },
-    { title: 'Datasource', url: '/datasource-list', icon: 'server' },
-    { title: 'Renderers', url: '/renderer-list', icon: 'document-text' },
-    { title: 'Clients', url: '/client-list', icon: 'print' },
+    {title: 'Templates', url: '/template-list', icon: 'create'},
+    {title: 'Datasource', url: '/datasource-list', icon: 'server'},
+    {title: 'Renderers', url: '/renderer-list', icon: 'document-text'},
+    {title: 'Clients', url: '/client-list', icon: 'print'},
   ];
   showMenu = false;
 
-  openAccess = !environment.oauth ;
-  constructor() {}
+  openAccess = true;
 
-
-  ngOnInit(): void {
-    this.showMenu = window.location.pathname !== '/login'
+  constructor() {
   }
 
-  logout() {
+
+  async ngOnInit() {
+    this.showMenu = window.location.pathname !== '/login';
+    this.openAccess = !(await environment()).oauth
+  }
+
+  async logout() {
     localStorage.removeItem("access_token")
-    window.location.replace(environment.oauth?.logoutUrl);
+    window.location.replace((await environment()).oauth?.logoutUrl);
   }
 }

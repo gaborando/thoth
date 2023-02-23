@@ -18,7 +18,7 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
     const request = {... datasourceParameters};
     request.parameters = parameters;
     console.log(request)
-    return fetch(environment.apiUrl + '/datasource/check/' + type, {
+    return fetch((await environment()).apiUrl + '/datasource/check/' + type, {
       method: 'POST',
       headers: this.postHeaders(),
       body: JSON.stringify(request)
@@ -30,8 +30,8 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
     });
   }
 
-  saveParameters(type: string, jdbcDatasourceParameters: any) {
-    return fetch(environment.apiUrl + '/datasource/' + type, {
+  async saveParameters(type: string, jdbcDatasourceParameters: any) {
+    return fetch((await environment()).apiUrl + '/datasource/' + type, {
       method: 'POST',
       headers: this.postHeaders(),
       body: JSON.stringify(jdbcDatasourceParameters)
@@ -44,7 +44,7 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
   }
 
   async findAll(): Promise<Page<Datasource>> {
-    return fetch(environment.apiUrl + '/datasource/', {
+    return fetch((await environment()).apiUrl + '/datasource/', {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
@@ -56,7 +56,7 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
   }
 
   async findById(identifier: string | null) {
-    return fetch(environment.apiUrl + '/datasource/' + identifier, {
+    return fetch((await environment()).apiUrl + '/datasource/' + identifier, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
@@ -67,8 +67,8 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
     });
   }
 
-  updateParameters(type: string, request: any) {
-    return fetch(environment.apiUrl + '/datasource/' + type + '/' + request.id, {
+  async updateParameters(type: string, request: any) {
+    return fetch((await environment()).apiUrl + '/datasource/' + type + '/' + request.id, {
       method: 'POST',
       headers: this.postHeaders(),
       body: JSON.stringify(request)
@@ -81,7 +81,7 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
   }
 
   async deleteById(id: string) {
-    return fetch(environment.apiUrl + '/datasource/' + id, {
+    return fetch((await environment()).apiUrl + '/datasource/' + id, {
       method: 'DELETE',
       headers: this.getHeaders()
     }).then(async r => {

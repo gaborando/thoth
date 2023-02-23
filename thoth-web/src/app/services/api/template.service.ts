@@ -16,7 +16,7 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
   }
 
   async findAll(page = 0): Promise<Page<Template>>{
-    return fetch(environment.apiUrl + '/template/?page='+page, {
+    return fetch((await environment()).apiUrl + '/template/?page='+page, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
@@ -28,7 +28,7 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
   }
 
   async create(name: string) {
-    return fetch(environment.apiUrl + '/template/', {
+    return fetch((await environment()).apiUrl + '/template/', {
       method: 'POST',
       headers: this.postHeaders(),
       body: JSON.stringify({name})
@@ -42,7 +42,7 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
 
   async update(template: Template) {
 
-    return fetch(environment.apiUrl + '/template/' + template.id, {
+    return fetch((await environment()).apiUrl + '/template/' + template.id, {
       method: 'PUT',
       headers: this.postHeaders(),
       body: JSON.stringify(template)
@@ -55,7 +55,7 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
   }
 
   async delete(id: string) {
-    return fetch(environment.apiUrl + '/template/' + id, {
+    return fetch((await environment()).apiUrl + '/template/' + id, {
       method: 'DELETE',
       headers: this.getHeaders()
     }).then(async r => {
@@ -67,7 +67,7 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
   }
 
   async print(template: string, parameters: any, clientIdentifier: string, printService: any, copies: number) {
-    return fetch(environment.apiUrl + '/template/' + template + '/print', {
+    return fetch((await environment()).apiUrl + '/template/' + template + '/print', {
       method: 'POST',
       headers: this.postHeaders(),
       body: JSON.stringify({
@@ -85,7 +85,7 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
   }
 
   async findById(identifier: string | null): Promise<Template> {
-    return fetch(environment.apiUrl + '/template/'+identifier, {
+    return fetch((await environment()).apiUrl + '/template/'+identifier, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {

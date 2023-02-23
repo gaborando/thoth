@@ -21,11 +21,11 @@ export class AuthenticationGuard implements CanActivate {
     return JSON.parse(jsonPayload);
   }
 
-  canActivate(
+  async canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
-    if(!environment.oauth){
+    state: RouterStateSnapshot): Promise<boolean | UrlTree>  {
+    const e = (await environment());
+    if(!e.oauth){
       return true;
     }
 
@@ -45,7 +45,7 @@ export class AuthenticationGuard implements CanActivate {
     const currentToken = localStorage.getItem("access_token");
     if(!currentToken || ((this.parseJwt(currentToken || "").exp * 1000) < new Date().getTime())){
       localStorage.setItem("redirect_to", window.location.href);
-      window.location.replace(environment.oauth?.loginUrl);
+      window.location.replace(e.oauth?.loginUrl);
       return false;
     }
     return true;

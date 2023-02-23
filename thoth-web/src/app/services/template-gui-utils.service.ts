@@ -54,7 +54,7 @@ export class TemplateGuiUtilsService {
       if (accessToken) {
         query.append("access_token", accessToken);
       }
-      window.open(environment.apiUrl + '/template/' + t.id + '/render/pdf?' + query.toString())
+      window.open((await environment()).apiUrl + '/template/' + t.id + '/render/pdf?' + query.toString())
     }
   }
 
