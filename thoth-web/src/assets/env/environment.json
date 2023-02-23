@@ -1,8 +1,5 @@
 {
   "production": true,
   "apiUrl": "http://localhost:8080",
-  "oauth": {
-    "logoutUrl": "https://glc-thoth.auth.eu-west-1.amazoncognito.com/logout?client_id=3fg6d0vhqbag36ad21vge8vmim&logout_uri=http://localhost:4200/logout&identity_provider=COGNITO&scope=email%20profile%20openid%20aws.cognito.signin.user.admin&state=ksjdfnsqadijdf7u8dsaf&response_type=token",
-    "loginUrl": "https://glc-thoth.auth.eu-west-1.amazoncognito.com/login?client_id=3fg6d0vhqbag36ad21vge8vmim&redirect_uri=http://localhost:4200/token-redirect&identity_provider=COGNITO&scope=email%20profile%20openid%20aws.cognito.signin.user.admin&state=sfhjkdjsfhksdhf9d8fsfsdb&response_type=token"
-  }
+  "oauth": null
 }
