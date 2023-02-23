@@ -82,8 +82,9 @@ public class RendererController {
                                             @PathVariable String identifier) throws Exception {
 
         var params = new HashMap<String, Object>();
-        if(p1 != null) params.putAll(p1);
-        if(p2 != null) params.putAll(p2);var data = renderService.renderRendererPdf(identifier, params);
+        if (p1 != null) params.putAll(p1);
+        if (p2 != null) params.putAll(p2);
+        var data = renderService.renderRendererPdf(identifier, params);
         return ResponseEntity.ok(data);
 
     }
@@ -95,8 +96,9 @@ public class RendererController {
                                              @PathVariable String identifier) throws Exception {
 
         var params = new HashMap<String, Object>();
-        if(p1 != null) params.putAll(p1);
-        if(p2 != null) params.putAll(p2);var data = renderService.renderRendererJpeg(identifier, params);
+        if (p1 != null) params.putAll(p1);
+        if (p2 != null) params.putAll(p2);
+        var data = renderService.renderRendererJpeg(identifier, params);
         return ResponseEntity.ok(data);
 
     }
@@ -108,8 +110,9 @@ public class RendererController {
                                             @PathVariable String identifier) throws Exception {
 
         var params = new HashMap<String, Object>();
-        if(p1 != null) params.putAll(p1);
-        if(p2 != null) params.putAll(p2);var data = renderService.renderRendererSvg(identifier, params);
+        if (p1 != null) params.putAll(p1);
+        if (p2 != null) params.putAll(p2);
+        var data = renderService.renderRendererSvg(identifier, params);
         return ResponseEntity.ok(data.getBytes());
 
     }

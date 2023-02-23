@@ -63,14 +63,14 @@ public class TemplateController {
     }
 
     @Secured({"ROLE_USER", "ROLE_API"})
-    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/jpeg",produces = MediaType.IMAGE_JPEG_VALUE)
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderJpeg(@RequestParam(required = false) HashMap<String, Object> p1,
                                              @RequestBody(required = false) HashMap<String, Object> p2,
-                                         @PathVariable String identifier) throws IOException, InterruptedException {
+                                             @PathVariable String identifier) throws IOException, InterruptedException {
 
         var params = new HashMap<String, Object>();
-        if(p1 != null) params.putAll(p1);
-        if(p2 != null) params.putAll(p2);
+        if (p1 != null) params.putAll(p1);
+        if (p2 != null) params.putAll(p2);
         var data = renderService.renderTemplateJpeg(identifier, params);
         return ResponseEntity.ok(data);
 
@@ -80,11 +80,11 @@ public class TemplateController {
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderPdf(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,
-                                             @PathVariable String identifier) throws IOException, InterruptedException {
+                                            @PathVariable String identifier) throws IOException, InterruptedException {
 
         var params = new HashMap<String, Object>();
-        if(p1 != null) params.putAll(p1);
-        if(p2 != null) params.putAll(p2);
+        if (p1 != null) params.putAll(p1);
+        if (p2 != null) params.putAll(p2);
         var data = renderService.renderTemplatePdf(identifier, params);
         return ResponseEntity.ok(data);
 
@@ -97,8 +97,8 @@ public class TemplateController {
                                             @PathVariable String identifier) throws IOException, InterruptedException {
 
         var params = new HashMap<String, Object>();
-        if(p1 != null) params.putAll(p1);
-        if(p2 != null) params.putAll(p2);
+        if (p1 != null) params.putAll(p1);
+        if (p2 != null) params.putAll(p2);
         var data = renderService.renderTemplateSvg(identifier, params);
         return ResponseEntity.ok(data.getBytes());
 
