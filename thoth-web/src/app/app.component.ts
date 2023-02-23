@@ -17,6 +17,8 @@ export class AppComponent implements OnInit{
     { title: 'Clients', url: '/client-list', icon: 'print' },
   ];
   showMenu = false;
+
+  openAccess = !environment.oauth ;
   constructor() {}
 
 
