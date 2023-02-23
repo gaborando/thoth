@@ -40,3 +40,5 @@ out/
 tunnel.bat
 tunnel_mysql.bat
 tunnel_rabbitmq.bat
+
+docker/thoth-local
