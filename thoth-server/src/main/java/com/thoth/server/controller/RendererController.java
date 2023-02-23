@@ -76,32 +76,40 @@ public class RendererController {
     }
 
     @Secured({"ROLE_USER", "ROLE_API"})
-    @GetMapping(value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<byte[]> renderPdf(@RequestParam HashMap<String, Object> params,
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> renderPdf(@RequestParam(required = false) HashMap<String, Object> p1,
+                                            @RequestBody(required = false) HashMap<String, Object> p2,
                                             @PathVariable String identifier) throws Exception {
 
-        var data = renderService.renderRendererPdf(identifier, params);
-
+        var params = new HashMap<String, Object>();
+        if(p1 != null) params.putAll(p1);
+        if(p2 != null) params.putAll(p2);var data = renderService.renderRendererPdf(identifier, params);
         return ResponseEntity.ok(data);
 
     }
 
     @Secured({"ROLE_USER", "ROLE_API"})
-    @GetMapping(value = "/{identifier}/render/jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> renderJpeg(@RequestParam HashMap<String, Object> params,
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> renderJpeg(@RequestParam(required = false) HashMap<String, Object> p1,
+                                             @RequestBody(required = false) HashMap<String, Object> p2,
                                              @PathVariable String identifier) throws Exception {
 
-        var data = renderService.renderRendererJpeg(identifier, params);
+        var params = new HashMap<String, Object>();
+        if(p1 != null) params.putAll(p1);
+        if(p2 != null) params.putAll(p2);var data = renderService.renderRendererJpeg(identifier, params);
         return ResponseEntity.ok(data);
 
     }
 
     @Secured({"ROLE_USER", "ROLE_API"})
-    @GetMapping(value = "/{identifier}/render/svg", produces = "image/svg+xml")
-    public ResponseEntity<byte[]> renderSvg(@RequestParam HashMap<String, Object> params,
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/svg", produces = "image/svg+xml")
+    public ResponseEntity<byte[]> renderSvg(@RequestParam(required = false) HashMap<String, Object> p1,
+                                            @RequestBody(required = false) HashMap<String, Object> p2,
                                             @PathVariable String identifier) throws Exception {
 
-        var data = renderService.renderRendererSvg(identifier, params);
+        var params = new HashMap<String, Object>();
+        if(p1 != null) params.putAll(p1);
+        if(p2 != null) params.putAll(p2);var data = renderService.renderRendererSvg(identifier, params);
         return ResponseEntity.ok(data.getBytes());
 
     }

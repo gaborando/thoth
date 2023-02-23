@@ -63,30 +63,42 @@ public class TemplateController {
     }
 
     @Secured({"ROLE_USER", "ROLE_API"})
-    @GetMapping(value = "/{identifier}/render/jpeg",produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> renderJpeg(@RequestParam HashMap<String, Object> params,
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/jpeg",produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> renderJpeg(@RequestParam(required = false) HashMap<String, Object> p1,
+                                             @RequestBody(required = false) HashMap<String, Object> p2,
                                          @PathVariable String identifier) throws IOException, InterruptedException {
 
+        var params = new HashMap<String, Object>();
+        if(p1 != null) params.putAll(p1);
+        if(p2 != null) params.putAll(p2);
         var data = renderService.renderTemplateJpeg(identifier, params);
         return ResponseEntity.ok(data);
 
     }
 
     @Secured({"ROLE_USER", "ROLE_API"})
-    @GetMapping(value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-    public ResponseEntity<byte[]> renderPdf(@RequestParam HashMap<String, Object> params,
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> renderPdf(@RequestParam(required = false) HashMap<String, Object> p1,
+                                            @RequestBody(required = false) HashMap<String, Object> p2,
                                              @PathVariable String identifier) throws IOException, InterruptedException {
 
+        var params = new HashMap<String, Object>();
+        if(p1 != null) params.putAll(p1);
+        if(p2 != null) params.putAll(p2);
         var data = renderService.renderTemplatePdf(identifier, params);
         return ResponseEntity.ok(data);
 
     }
 
     @Secured({"ROLE_USER", "ROLE_API"})
-    @GetMapping(value = "/{identifier}/render/svg", produces = "image/svg+xml")
-    public ResponseEntity<byte[]> renderSvg(@RequestParam HashMap<String, Object> params,
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/svg", produces = "image/svg+xml")
+    public ResponseEntity<byte[]> renderSvg(@RequestParam(required = false) HashMap<String, Object> p1,
+                                            @RequestBody(required = false) HashMap<String, Object> p2,
                                             @PathVariable String identifier) throws IOException, InterruptedException {
 
+        var params = new HashMap<String, Object>();
+        if(p1 != null) params.putAll(p1);
+        if(p2 != null) params.putAll(p2);
         var data = renderService.renderTemplateSvg(identifier, params);
         return ResponseEntity.ok(data.getBytes());
 
@@ -95,6 +107,7 @@ public class TemplateController {
     @Secured({"ROLE_USER", "ROLE_API"})
     @PostMapping("/{identifier}/print")
     public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws IOException, InterruptedException {
+
         renderService.printTemplate(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService(), request.getCopies());
 
         return ResponseEntity.ok().build();
