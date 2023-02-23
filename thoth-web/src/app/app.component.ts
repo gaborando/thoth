@@ -26,6 +26,6 @@ export class AppComponent implements OnInit{
 
   logout() {
     localStorage.removeItem("access_token")
-    window.location.replace(environment.oauth.logoutUrl);
+    window.location.replace(environment.oauth?.logoutUrl);
   }
 }

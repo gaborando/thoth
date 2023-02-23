@@ -45,7 +45,7 @@ export class AuthenticationGuard implements CanActivate {
     const currentToken = localStorage.getItem("access_token");
     if(!currentToken || ((this.parseJwt(currentToken || "").exp * 1000) < new Date().getTime())){
       localStorage.setItem("redirect_to", window.location.href);
-      window.location.replace(environment.oauth.loginUrl);
+      window.location.replace(environment.oauth?.loginUrl);
       return false;
     }
     return true;
