@@ -17,7 +17,6 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
   async checkParameters(type: string, datasourceParameters: any, parameters: any) {
     const request = {... datasourceParameters};
     request.parameters = parameters;
-    console.log(request)
     return fetch((await environment()).apiUrl + '/datasource/check/' + type, {
       method: 'POST',
       headers: this.postHeaders(),

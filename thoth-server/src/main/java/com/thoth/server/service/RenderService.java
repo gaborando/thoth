@@ -47,13 +47,18 @@ public class RenderService {
 
     public String renderTemplateSvg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
 
+        var allParams = new  HashMap<String, Object>();
+        for (String marker : template.getMarkers()) {
+            allParams.put(marker, "");
+        }
+        allParams.putAll(params);
         var tmpKey = securedTimestampService.generate();
         var svg = template.getSvg();
         // Image Embedding Correction
         svg = svg.replace("https://embed.diagrams.net/{{", "{{");
         svg = svg.replace("utils/barcode?", "utils/barcode?TMP_KEY=" + tmpKey + "&amp;");
         svg = svg.replace("utils/qrcode?", "utils/qrcode?TMP_KEY=" + tmpKey + "&amp;");
-        for (Map.Entry<String, Object> e : params.entrySet()) {
+        for (Map.Entry<String, Object> e : allParams.entrySet()) {
             svg = svg.replace("{{" + e.getKey() + "}}", e.getValue() == null ? "" : e.getValue().toString());
         }
         return svg;

@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{title}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col [size]="parameters.length < 10 ? 12 : 6" *ngFor="let p of parameters">
+        <ion-item>
+          <ion-input [name]="p" [(ngModel)]="data[p]" [placeholder]="p"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="submit()">ok</ion-button>
+      <ion-button (click)="cancel()">cancel</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

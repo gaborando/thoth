@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import {Template} from "../common/types/template";
 import {environment} from "../../environments/environment";
 import {TemplateService} from "./api/template.service";
-import {AlertController, LoadingController} from "@ionic/angular";
+import {AlertController, LoadingController, ModalController} from "@ionic/angular";
 import {ClientService} from "./api/client.service";
 import {ScreenMessageService} from "./screen-message.service";
 import {GuiUtilsService} from "./gui-utils.service";
+import {ParametersFormComponent} from "../components/modals/parameters-form/parameters-form.component";
 
 @Injectable({
   providedIn: 'root'
@@ -17,38 +18,15 @@ export class TemplateGuiUtilsService {
               private clientService: ClientService,
               private screenMessageService: ScreenMessageService,
               private loadingController: LoadingController,
+              private modalController: ModalController,
               private guiUtils: GuiUtilsService) { }
 
   async renderTemplate(t: Template) {
-    const inputs: any[] = [];
-    t.markers.forEach(m => {
-      inputs.push({
-        id: m,
-        label: m,
-        name: m,
-        placeholder: m,
-      })
-    })
-    const alert = await this.alertController.create({
-      header: "Render a Template",
-      inputs: inputs,
-      buttons: [
-        {
-          text: 'ok'
-        },
-        {
-          text: 'cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    await alert.present();
-    const resp = await alert.onDidDismiss();
+    const resp = await this.guiUtils.parametersFormModal("Render a Template", t.markers);
     if (!resp.role) {
-
       var query = new URLSearchParams();
-      for (const key of Object.keys(resp.data.values || {})) {
-        query.append(key, resp.data.values[key]);
+      for (const key of Object.keys(resp.data || {})) {
+        query.append(key, resp.data[key]);
       }
       const accessToken = localStorage.getItem("access_token");
       if (accessToken) {
@@ -59,30 +37,7 @@ export class TemplateGuiUtilsService {
   }
 
   async printTemplate(t: Template) {
-    let inputs: any[] = [];
-    t.markers.forEach(m => {
-      inputs.push({
-        id: m,
-        label: m,
-        name: m,
-        placeholder: m,
-      })
-    })
-    const alert = await this.alertController.create({
-      header: "Print a Template",
-      inputs: inputs,
-      buttons: [
-        {
-          text: 'ok'
-        },
-        {
-          text: 'cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    await alert.present();
-    const resp = await alert.onDidDismiss();
+    const resp = await this.guiUtils.parametersFormModal("Print a Template", t.markers);
     if (!resp.role) {
       const params = resp.data.values || {};
       const {data, role} = await this.guiUtils.printRequestModal();

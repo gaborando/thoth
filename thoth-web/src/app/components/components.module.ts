@@ -11,6 +11,7 @@ import {
 } from "./datasource-parameters/rest-datasource-parameters/rest-datasource-parameters.component";
 import {PrintRequestModalComponent} from "./modals/print-request-modal/print-request-modal.component";
 import {SharingOptionsComponent} from "./sharing-options/sharing-options.component";
+import {ParametersFormComponent} from "./modals/parameters-form/parameters-form.component";
 
 
 
@@ -20,12 +21,14 @@ import {SharingOptionsComponent} from "./sharing-options/sharing-options.compone
     RestDatasourceParametersComponent,
     PrintRequestModalComponent,
     SharingOptionsComponent,
+    ParametersFormComponent
   ],
   exports: [
     JdbcDatasourceParametersComponent,
     RestDatasourceParametersComponent,
     PrintRequestModalComponent,
     SharingOptionsComponent,
+    ParametersFormComponent
   ],
     imports: [
         CommonModule,

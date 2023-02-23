@@ -77,7 +77,6 @@ export class RendererDetailPage implements OnInit {
         property: association.property
       }
     }
-    console.log(this.renderer);
   }
 
   async updateRenderer() {
@@ -98,47 +97,23 @@ export class RendererDetailPage implements OnInit {
     if (!this.renderer) {
       return;
     }
-    const inputs: any[] = [];
+    const inputs: string[] = [];
     for (const p of Object.keys(this.renderer.associationMap)) {
       if (this.renderer.associationMap[p].type === 'parameter') {
-        inputs.push({
-          id: p,
-          label: p,
-          name: p,
-          placeholder: p,
-        })
+        inputs.push(p)
       }
     }
     for (const ds of this.renderer.datasourceProperties) {
       for (const p of ds.parameters) {
-        inputs.push({
-          id: p,
-          label: p,
-          name: p,
-          placeholder: p,
-        })
+        inputs.push(p)
       }
     }
-    const alert = await this.alertController.create({
-      header: "Render a Template",
-      inputs: inputs,
-      buttons: [
-        {
-          text: 'ok'
-        },
-        {
-          text: 'cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    await alert.present();
-    const resp = await alert.onDidDismiss();
+    const resp = await this.guiUtils.parametersFormModal("Render a Template", inputs);
     if (!resp.role) {
 
       var query = new URLSearchParams();
-      for (const key of Object.keys(resp.data.values || {})) {
-        query.append(key, resp.data.values[key]);
+      for (const key of Object.keys(resp.data || {})) {
+        query.append(key, resp.data[key]);
       }
 
       const accessToken = localStorage.getItem("access_token");
@@ -182,44 +157,20 @@ export class RendererDetailPage implements OnInit {
     if (!this.renderer) {
       return;
     }
-    let inputs: any[] = [];
+    const inputs: string[] = [];
     for (const p of Object.keys(this.renderer.associationMap)) {
       if (this.renderer.associationMap[p].type === 'parameter') {
-        inputs.push({
-          id: p,
-          label: p,
-          name: p,
-          placeholder: p,
-        })
+        inputs.push(p)
       }
     }
     for (const ds of this.renderer.datasourceProperties) {
       for (const p of ds.parameters) {
-        inputs.push({
-          id: p,
-          label: p,
-          name: p,
-          placeholder: p,
-        })
+        inputs.push(p)
       }
     }
-    const alert = await this.alertController.create({
-      header: "Print a Template",
-      inputs: inputs,
-      buttons: [
-        {
-          text: 'ok'
-        },
-        {
-          text: 'cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    await alert.present();
-    const resp = await alert.onDidDismiss();
+    const resp = await this.guiUtils.parametersFormModal("Print a Template", inputs);
     if (!resp.role) {
-      const params = resp.data.values;
+      const params = resp.data;
       const {data, role} = await this.guiUtils.printRequestModal();
       if (role === 'confirm') {
 

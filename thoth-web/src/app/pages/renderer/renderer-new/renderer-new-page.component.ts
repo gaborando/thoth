@@ -43,15 +43,15 @@ export class RendererNewPage implements OnInit {
 
 
   updateAssociationMap(p: string, association: any) {
-    if(!association){
+    if (!association) {
       delete this.associationMap[p];
-    }else if(association === 'parameter'){
+    } else if (association === 'parameter') {
       this.associationMap[p] = {
         type: 'parameter',
         id: null,
         property: null
       }
-    }else{
+    } else {
       this.associationMap[p] = {
         type: 'datasource',
         id: association.ds.id,
@@ -60,20 +60,17 @@ export class RendererNewPage implements OnInit {
     }
   }
 
-  async createRenderer() {
-
-    const r = await this.rendererService.create(this.rendererName, this.selectedTemplate, this.selectedDatasource, this.associationMap);
-    await this.screenMessageService.showDone();
-    return this.navController.navigateForward('/renderer-detail/' + r.id);
-
-
+  createRenderer() {
+    return this.screenMessageService.loadingWrapper(async () => {
+      const r = await this.rendererService.create(this.rendererName, this.selectedTemplate, this.selectedDatasource, this.associationMap);
+      await this.screenMessageService.showDone();
+      return this.navController.navigateForward('/renderer-detail/' + r.id);
+    })
   }
 
   updateAvailableAssociations(event: any) {
-    const ds = event.detail.value;
-
     const tmp = [];
-    for (const d of ds.datasourceProperties) {
+    for (const d of event.detail.value) {
       for (const p of d.properties) {
         tmp.push({
           ds: d,
@@ -81,6 +78,6 @@ export class RendererNewPage implements OnInit {
         })
       }
     }
-    this.availableProperties = tmp.sort((a,b) =>  (a.ds.name + a.property).localeCompare(b.ds.name + b.property) );
+    this.availableProperties = tmp.sort((a, b) => (a.ds.name + a.property).localeCompare(b.ds.name + b.property));
   }
 }
