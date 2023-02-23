@@ -8,3 +8,5 @@ RUN ionic build --prod
 FROM nginx:alpine
 COPY --from=build /app/www /usr/share/nginx/html
 COPY ./docker/thoth-web/default.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/thoth-web/init-env.sh /init-env.sh
+CMD /init-env.sh
