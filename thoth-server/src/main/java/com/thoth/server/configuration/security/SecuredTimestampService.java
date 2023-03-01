@@ -14,13 +14,11 @@ import java.util.Formatter;
 
 @Service
 public class SecuredTimestampService {
-    private final MessageDigest crypt;
 
     private final String secret;
 
     public SecuredTimestampService(@Value("${thoth.security.secret}") String secret) throws NoSuchAlgorithmException {
         this.secret = secret;
-        this.crypt = MessageDigest.getInstance("SHA-1");
     }
 
     private static String byteToHex(final byte[] hash) {
@@ -34,6 +32,10 @@ public class SecuredTimestampService {
     }
 
     public String generate() {
+        return generate(60);
+    }
+
+    public String generate(int duration) {
         var timestamp = Instant.now();
         MessageDigest crypt = null;
         try {
@@ -42,9 +44,9 @@ public class SecuredTimestampService {
             throw new RuntimeException(e);
         }
         crypt.reset();
-        crypt.update((secret + timestamp.toEpochMilli()).getBytes());
+        crypt.update((duration + secret + timestamp.toEpochMilli()).getBytes());
         var sha = byteToHex(crypt.digest());
-        var str = timestamp.toEpochMilli() + ":" + sha;
+        var str = timestamp.toEpochMilli() + ":" + duration + ":" + sha;
         return Base64.getEncoder().encodeToString(str.getBytes());
     }
 
@@ -53,16 +55,17 @@ public class SecuredTimestampService {
             var str = new String(Base64.getDecoder().decode(string));
             var parts = str.split(":");
             var timestamp = Instant.ofEpochMilli(Long.parseLong(parts[0]));
+            var duration = Integer.parseInt(parts[1]);
             var crypt = MessageDigest.getInstance("SHA-1");
             crypt.reset();
-            crypt.update((secret + timestamp.toEpochMilli()).getBytes());
+            crypt.update((duration + secret + timestamp.toEpochMilli()).getBytes());
             var sha = byteToHex(crypt.digest());
 
-            if (!sha.equals(parts[1])) {
+            if (!sha.equals(parts[2])) {
                 throw new AccessDeniedException("Invalid Token");
             }
 
-            if (timestamp.isBefore(Instant.now().minus(60, ChronoUnit.SECONDS))) {
+            if (timestamp.isBefore(Instant.now().minus(duration, ChronoUnit.SECONDS))) {
                 throw new AccessDeniedException("Token Expired");
             }
 

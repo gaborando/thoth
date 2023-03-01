@@ -32,7 +32,7 @@ public class RendererController {
     }
 
 
-    @Secured("ROLE_USER")
+    @Secured({"ROLE_USER", "ROLE_API"})
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Renderer> create(@RequestBody RendererCreateRequest request) {
         return ResponseEntity.ok(rendererService.create(
@@ -44,7 +44,7 @@ public class RendererController {
     }
 
 
-    @Secured("ROLE_USER")
+    @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<Renderer>> findAll(
             @RequestParam(defaultValue = "0") int page
@@ -75,7 +75,7 @@ public class RendererController {
         rendererService.delete(rendererService.findById(identifier).orElseThrow());
     }
 
-    @Secured({"ROLE_USER", "ROLE_API"})
+    @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderPdf(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,
@@ -89,7 +89,7 @@ public class RendererController {
 
     }
 
-    @Secured({"ROLE_USER", "ROLE_API"})
+    @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderJpeg(@RequestParam(required = false) HashMap<String, Object> p1,
                                              @RequestBody(required = false) HashMap<String, Object> p2,
@@ -103,7 +103,7 @@ public class RendererController {
 
     }
 
-    @Secured({"ROLE_USER", "ROLE_API"})
+    @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/svg", produces = "image/svg+xml")
     public ResponseEntity<byte[]> renderSvg(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,

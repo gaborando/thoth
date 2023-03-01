@@ -61,7 +61,7 @@ public class TemplateService {
         return templateRepository.save(template);
     }
 
-    @PostAuthorize("@authenticationFacade.canAccess(returnObject)")
+    @PostAuthorize("@authenticationFacade.canAccess(returnObject) || hasRole('ROLE_TMP')")
     public Optional<Template> getById(String identifier) {
         return templateRepository.findById(identifier);
     }

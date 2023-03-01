@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@Secured("ROLE_USER")
 public class RendererService {
 
     private final TemplateRepository templateRepository;
@@ -66,7 +65,7 @@ public class RendererService {
         original.setName(update.getName());
         original.setAllowedOrganizationList(update.getAllowedOrganizationList());
         original.setAllowedUserList(update.getAllowedUserList());
-        return rendererRepository.save(update);
+        return rendererRepository.save(original);
     }
 
     @PreAuthorize("@authenticationFacade.canAccess(#renderer)")
@@ -74,7 +73,7 @@ public class RendererService {
         rendererRepository.delete(renderer);
     }
 
-    @PostAuthorize("@authenticationFacade.canAccess(returnObject)")
+    @PostAuthorize("@authenticationFacade.canAccess(returnObject) || hasRole('ROLE_TMP')")
     public Optional<Renderer> findById(String identifier) {
         return rendererRepository.findById(identifier);
     }

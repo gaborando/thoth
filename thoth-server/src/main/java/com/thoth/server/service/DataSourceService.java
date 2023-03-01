@@ -30,7 +30,6 @@ import java.time.Instant;
 import java.util.*;
 
 @Service
-@Secured("ROLE_USER")
 public class DataSourceService {
 
     private final ObjectMapper objectMapper;
@@ -38,15 +37,13 @@ public class DataSourceService {
     private final DatasourcePropertiesRepository datasourcePropertiesRepository;
 
     private final IAuthenticationFacade facade;
-    private final RendererRepository rendererRepository;
 
-    public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository, IAuthenticationFacade facade,
-                             RendererRepository rendererRepository) {
+    public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository, IAuthenticationFacade facade) {
         this.objectMapper = objectMapper;
         this.datasourcePropertiesRepository = datasourcePropertiesRepository;
         this.facade = facade;
-        this.rendererRepository = rendererRepository;
     }
+
 
     public String[] checkJdbc(String url, String username, String password, String query, HashMap<String, Object> parameters) {
         var dataSourceBuilder = DataSourceBuilder.create();
@@ -60,6 +57,7 @@ public class DataSourceService {
 
         return rs.getMetaData().getColumnNames();
     }
+
 
     public JdbcDatasourceProperties createJdbc(String name, String url, String username, String password, String query, List<String> parameters, List<String> properties) {
         var dsp = new JdbcDatasourceProperties();
@@ -77,6 +75,7 @@ public class DataSourceService {
         return datasourcePropertiesRepository.save(dsp);
     }
 
+
     public Page<DatasourceProperties> search(Specification<DatasourceProperties> specification, PageRequest pageable) {
         return datasourcePropertiesRepository.findAll(facade.securedSpecification(specification, DatasourceProperties.class), pageable);
     }
@@ -85,6 +84,7 @@ public class DataSourceService {
     public Optional<DatasourceProperties> findById(String identifier) {
         return datasourcePropertiesRepository.findById(identifier);
     }
+
 
 
     public DatasourceProperties update(String identifier, DatasourceProperties properties) {
@@ -113,7 +113,7 @@ public class DataSourceService {
         return true;
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#datasourceProperty)")
+    @PreAuthorize("@authenticationFacade.canAccess(#datasourceProperty) || hasRole('ROLE_TMP')")
     public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) throws JsonProcessingException {
         if(datasourceProperty instanceof JdbcDatasourceProperties j){
             var dataSourceBuilder = DataSourceBuilder.create();
