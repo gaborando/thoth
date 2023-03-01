@@ -20,7 +20,6 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping("/template")
-@Secured("ROLE_USER")
 public class TemplateController {
 
     private final TemplateService templateService;
@@ -33,6 +32,7 @@ public class TemplateController {
     }
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Secured({"ROLE_USER", "ROLE_API"})
     public ResponseEntity<Page<Template>> findAll(
             @RequestParam(defaultValue = "0") int page
     ) {
@@ -41,28 +41,32 @@ public class TemplateController {
     }
 
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Secured({"ROLE_USER", "ROLE_API"})
     public ResponseEntity<Template> findById(
             @PathVariable String identifier) {
         return ResponseEntity.ok(templateService.getById(identifier).orElseThrow());
     }
 
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Secured({"ROLE_USER"})
     public ResponseEntity<Template> create(@RequestBody CreateTemplateRequest request) {
         return ResponseEntity.ok(templateService.create(request.getName()));
     }
 
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Secured({"ROLE_USER"})
     public ResponseEntity<Template> update(@RequestBody Template template, @PathVariable String identifier) {
         return ResponseEntity.ok(templateService.update(identifier, template));
     }
 
     @DeleteMapping("/{identifier}")
+    @Secured({"ROLE_USER"})
     public void delete(@PathVariable String identifier) {
         var e = templateService.getById(identifier).orElseThrow();
         templateService.delete(e);
     }
 
-    @Secured({"ROLE_USER", "ROLE_API"})
+    @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderJpeg(@RequestParam(required = false) HashMap<String, Object> p1,
                                              @RequestBody(required = false) HashMap<String, Object> p2,
@@ -76,7 +80,7 @@ public class TemplateController {
 
     }
 
-    @Secured({"ROLE_USER", "ROLE_API"})
+    @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderPdf(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,
@@ -90,7 +94,7 @@ public class TemplateController {
 
     }
 
-    @Secured({"ROLE_USER", "ROLE_API"})
+    @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/svg", produces = "image/svg+xml")
     public ResponseEntity<byte[]> renderSvg(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,

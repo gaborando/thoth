@@ -22,6 +22,7 @@ public class ClientController {
         this.clientService = clientService;
     }
 
+    @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<Client>> findAll(
             @RequestParam(defaultValue = "0") int page

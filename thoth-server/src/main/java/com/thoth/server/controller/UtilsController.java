@@ -6,7 +6,9 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.Code128Writer;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.thoth.server.configuration.security.SecuredTimestampService;
 import com.thoth.server.service.SidService;
+import org.springdoc.core.service.SecurityService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +29,11 @@ public class UtilsController {
 
     private final SidService sidService;
 
-    public UtilsController(SidService sidService) {
+    private final SecuredTimestampService securedTimestampService;
+
+    public UtilsController(SidService sidService, SecuredTimestampService securedTimestampService) {
         this.sidService = sidService;
+        this.securedTimestampService = securedTimestampService;
     }
 
     @Secured({"ROLE_USER", "ROLE_TMP"})
@@ -60,6 +65,12 @@ public class UtilsController {
         var baos = new ByteArrayOutputStream();
         ImageIO.write(img, "jpeg", baos);
         return ResponseEntity.ok(baos.toByteArray());
+    }
+
+    @Secured({"ROLE_USER", "ROLE_API"})
+    @GetMapping(value = "/tmp-key", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> generateTempKey(@RequestParam(defaultValue = "60") int duration) throws WriterException, IOException {
+        return ResponseEntity.ok(securedTimestampService.generate(duration));
     }
 
     @Secured("ROLE_USER")
