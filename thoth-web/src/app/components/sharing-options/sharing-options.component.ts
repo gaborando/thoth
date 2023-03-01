@@ -21,7 +21,7 @@ export class SharingOptionsComponent implements OnInit {
 
   ngOnInit() {
     this.autocompleteData = [];
-    environment().then(e => {
+    environment().then((e: any) => {
       this.hasAuth = !!e.oauth;
     })
   }
