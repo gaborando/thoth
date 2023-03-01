@@ -6,6 +6,9 @@
     <ion-title>Datasource</ion-title>
 
     <ion-buttons slot="end">
+      <ion-button (click)="clone()" [disabled]="!validParameters">
+        <ion-icon slot="icon-only" name="copy" color="secondary"></ion-icon>
+      </ion-button>
       <ion-button (click)="delete()">
         <ion-icon slot="icon-only" name="trash" color="danger"></ion-icon>
       </ion-button>

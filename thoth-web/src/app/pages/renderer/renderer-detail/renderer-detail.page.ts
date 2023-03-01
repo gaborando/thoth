@@ -185,4 +185,13 @@ export class RendererDetailPage implements OnInit {
       }
     }
   }
+
+  clone() {
+    return this.screenMessageService.loadingWrapper(async () => {
+      const r = await this.rendererService.create(this.renderer?.name, this.renderer?.template, this.renderer?.datasourceProperties, this.renderer?.associationMap);
+      await this.screenMessageService.showDone();
+      return this.navController.navigateForward('/renderer-detail/' + r.id);
+    })
+
+  }
 }

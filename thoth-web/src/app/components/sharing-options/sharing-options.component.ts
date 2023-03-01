@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {SecuredResource} from "../../common/types/secured-resource";
 import {IonModal} from "@ionic/angular";
 import {UtilsService} from "../../services/api/utils.service";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-sharing-options',
@@ -15,10 +16,14 @@ export class SharingOptionsComponent implements OnInit {
 
   autocompleteData: string[] = []
   autocompleteLoading = false;
+  hasAuth = false;
   constructor(private utilsService: UtilsService) { }
 
   ngOnInit() {
     this.autocompleteData = [];
+    environment().then(e => {
+      this.hasAuth = !!e.oauth;
+    })
   }
 
   removeAllowedUser(sid: string) {

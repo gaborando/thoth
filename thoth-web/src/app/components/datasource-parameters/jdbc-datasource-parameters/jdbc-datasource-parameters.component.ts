@@ -116,6 +116,16 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
     return this.dataSourceService.saveParameters('jdbc', request)
   }
 
+  cloneParameters(name: string) {
+    const request = {...this.jdbcDatasourceParameters}
+    request.id = null;
+    request.parameters = this.queryParams;
+    request.name = name;
+    request.properties = this.detectedProperties;
+    return this.dataSourceService.saveParameters('jdbc', request)
+  }
+
+
   async updateParameters() {
     const request = {...this.jdbcDatasourceParameters}
     request.parameters = this.queryParams;
