@@ -115,6 +115,15 @@ export class RestDatasourceParametersComponent implements OnInit, DatasourcePara
     return this.dataSourceService.saveParameters('rest', request)
   }
 
+  cloneParameters(name: string) {
+    const request = {...this.restDatasourceParameters}
+    request.id = null;
+    request.parameters = this.parameters;
+    request.name = name;
+    request.properties = this.detectedProperties;
+    return this.dataSourceService.saveParameters('rest', request)
+  }
+
   async updateParameters() {
     const request = {...this.restDatasourceParameters}
     request.parameters = this.parameters;

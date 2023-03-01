@@ -27,7 +27,7 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
     });
   }
 
-  async create(name: string) {
+  async create(name: string): Promise<Template> {
     return fetch((await environment()).apiUrl + '/template/', {
       method: 'POST',
       headers: this.postHeaders(),

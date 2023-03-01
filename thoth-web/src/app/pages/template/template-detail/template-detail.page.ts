@@ -129,4 +129,22 @@ export class TemplateDetailPage implements OnInit {
       this.drawIoWindow?.focus();
     }
   }
+
+  async clone() {
+    if(!this.template){
+      return;
+    }
+    const t = await this.templateService.create(this.template.name);
+    t.xml = this.template.xml;
+    t.svg = this.template.svg;
+    t.img = this.template.img;
+    t.markers = this.template.markers;
+    t.allowedOrganizationList = this.template.allowedOrganizationList;
+    t.allowedUserList = this.template.allowedUserList;
+    return this.screenMessageService.loadingWrapper(async () => {
+      this.templateService.update(t).finally();
+      await this.screenMessageService.showDone();
+      return this.navController.navigateForward('/template-detail/' + t.id);
+    })
+  }
 }

@@ -45,4 +45,15 @@ export class DatasourceDetailPage implements OnInit {
       return this.navController.navigateBack('/datasource-list');
     })
   }
+
+  clone() {
+    if(!this.dsParameters){
+      return;
+    }
+    return this.screenMessageService.loadingWrapper(async () => {
+      const params = await this.dsParameters?.cloneParameters(this.datasource.name);
+      await this.screenMessageService.showDone();
+      return this.navController.navigateForward('/datasource-detail/' + params?.id);
+    })
+  }
 }
