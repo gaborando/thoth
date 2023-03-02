@@ -12,6 +12,7 @@ import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
 import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
 import com.thoth.server.model.repository.RendererRepository;
+import org.springframework.amqp.rabbit.connection.SimpleResourceHolder;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.*;
 
@@ -37,6 +39,7 @@ public class DataSourceService {
     private final DatasourcePropertiesRepository datasourcePropertiesRepository;
 
     private final IAuthenticationFacade facade;
+    private HashMap<String, DataSource> datasourceCache = new HashMap<>();
 
     public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository, IAuthenticationFacade facade) {
         this.objectMapper = objectMapper;
@@ -116,11 +119,15 @@ public class DataSourceService {
     @PreAuthorize("@authenticationFacade.canAccess(#datasourceProperty) || hasRole('ROLE_TMP')")
     public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) throws JsonProcessingException {
         if(datasourceProperty instanceof JdbcDatasourceProperties j){
-            var dataSourceBuilder = DataSourceBuilder.create();
-            dataSourceBuilder.url(j.getUrl());
-            dataSourceBuilder.username(j.getUsername());
-            dataSourceBuilder.password(j.getPassword());
-            var dataSource = dataSourceBuilder.build();
+            var dataSource = datasourceCache.get(j.getId());
+            if(dataSource == null){
+                var dataSourceBuilder = DataSourceBuilder.create();
+                dataSourceBuilder.url(j.getUrl());
+                dataSourceBuilder.username(j.getUsername());
+                dataSourceBuilder.password(j.getPassword());
+                dataSource = dataSourceBuilder.build();
+                datasourceCache.put(j.getId(), dataSource);
+            }
 
             for (Map.Entry<String, ?> e : parameters.entrySet()) {
                 parameters.put(e.getKey(), isNumeric(e.getValue()) ? Float.parseFloat(e.getValue().toString()) : e.getValue());
