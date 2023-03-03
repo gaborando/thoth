@@ -28,14 +28,22 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private final SecuredTimestampService securedTimestampService;
     private final boolean oAuthEnabled;
 
+    private final String userSidClaim;
+
+    private final String organizationSidClaim;
+
 
     public AuthenticationFilter(
             @Value("${thoth.oauth.enabled}") boolean oAuthEnabled,
-            JwtService jwtService, ApiKeyService apiKeyService, SecuredTimestampService securedTimestampService) {
+            JwtService jwtService, ApiKeyService apiKeyService, SecuredTimestampService securedTimestampService,
+            @Value("${thoth.oauth.claim.sid.user}") String userSidClaim,
+            @Value("${thoth.oauth.claim.sid.organization}") String organizationSidClaim) {
         this.jwtService = jwtService;
         this.oAuthEnabled = oAuthEnabled;
         this.apiKeyService = apiKeyService;
         this.securedTimestampService = securedTimestampService;
+        this.userSidClaim = userSidClaim;
+        this.organizationSidClaim = organizationSidClaim;
     }
 
     @Override
@@ -44,17 +52,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         try {
             if (!oAuthEnabled) {
                 var authentication = new DefaultAuthenticationToken();
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                filterChain.doFilter(request, response);
-                return;
-            }
-
-            String jwt = getJwtFromRequest(request);
-            if (StringUtils.hasText(jwt)) {
-                var claims = jwtService.verifyAndGetClaims(jwt);
-                var authentication = new JwtAuthenticationToken(
-                        claims,"username","cognito:groups");
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
                 return;
@@ -74,6 +71,18 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(tmpKey)) {
                 var key =  securedTimestampService.parse(tmpKey);
                 var authentication = new TempAuthenticationToken(key);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+
+            String jwt = getJwtFromRequest(request);
+            if (StringUtils.hasText(jwt)) {
+                var claims = jwtService.verifyAndGetClaims(jwt);
+                var authentication = new JwtAuthenticationToken(
+                        claims,userSidClaim,organizationSidClaim);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
