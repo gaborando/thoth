@@ -57,8 +57,12 @@ public class ClientService {
     public boolean printSvg(PrintRequest printRequest) throws IOException, InterruptedException, PrinterException {
         PrintService printService = Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
                 .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
+        logger.info("Print Request Received");
+        logger.info("Requested Printer: " + printService);
+        logger.info("Starting PDF Generation");
         var img = svg2Jpeg.convert(printRequest.getSvg());
         var pdf = Jpeg2Pdf.convert(img);
+        logger.info("PDF Generated");
         PDDocument document = Loader.loadPDF(pdf);
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintService(printService);
@@ -76,7 +80,9 @@ public class ClientService {
         }
         job.setPrintable(new PDFPrintable(document), pf);
         job.setCopies(printRequest.getCopies());
+        logger.info("Sending Printing Request...");
         job.print(attr);
+        logger.info("Document Printed");
         return true;
     }
 

@@ -30,7 +30,6 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
   }
 
   ngOnInit() {
-    return super.loadPageData();
   }
 
   async createTemplate() {
