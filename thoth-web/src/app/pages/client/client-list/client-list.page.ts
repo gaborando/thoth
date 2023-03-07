@@ -37,6 +37,7 @@ export class ClientListPage extends ListPage<Client> implements OnInit {
     const c = this.selectedClient;
     return this.screenMessageService.loadingWrapper(async () => {
       await this.clientService.update(c);
+      await this.screenMessageService.showDone();
       return modal.dismiss();
     })
   }
