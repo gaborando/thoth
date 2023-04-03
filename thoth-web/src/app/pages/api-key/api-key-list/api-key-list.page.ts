@@ -1,10 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {AlertController, IonModal, ToastController} from "@ionic/angular";
+import {AlertController, IonInput, IonModal, ToastController} from "@ionic/angular";
 import {ScreenMessageService} from "../../../services/screen-message.service";
 import {ApiKeyService} from "../../../services/api/api-key.service";
 import {ApiKey} from "../../../common/types/api-key";
 import {ListPage} from "../../../common/utils/ui-patterns/list-page";
-import {text} from "ionicons/icons";
 
 @Component({
   selector: 'app-api-key-list',
@@ -27,11 +26,17 @@ export class ApiKeyListPage extends ListPage<ApiKey> implements OnInit {
   ngOnInit() {
   }
 
-  createApiKey(modal: IonModal, name: any, expiry: any) {
+  createApiKey(modal: IonModal, name: any,
+               userSID:any,
+               organizationSID:any,
+               expiry: any) {
     const date = new Date(expiry);
     const millis = date ? date.getTime() / 1000 : null;
     return this.screenMessageService.loadingWrapper(async () => {
-      const key = await this.apiKeyService.create(name, millis);
+      const key = await this.apiKeyService.create(name,
+        userSID,
+        organizationSID,
+        millis);
       this.elements?.push(key);
       const alert = await this.alertController.create({
         header: "ApiKey",
@@ -69,5 +74,14 @@ export class ApiKeyListPage extends ListPage<ApiKey> implements OnInit {
       await this.apiKeyService.delete(key.id);
       this.elements = this.elements?.filter(k => k.id !== key.id);
     })
+  }
+
+  cleanSID(ev: any, field: IonInput, prefix: string) {
+    const value = ev.target!.value;
+    if(value.length <= prefix.length){
+      field.value =  prefix;
+      return;
+    }
+    field.value = prefix + value.replace(prefix, '').replace(/[^a-z0-9_]+/g, '');
   }
 }
