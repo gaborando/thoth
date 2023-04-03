@@ -26,13 +26,18 @@ export class ApiKeyService extends AuthenticatedService implements DataFetcher<A
     });
   }
 
-  async create(name: string, expiry: number | null): Promise<ApiKey>{
+  async create(name: string,
+               userSID: string,
+               organizationSID: string,
+               expiry: number | null): Promise<ApiKey>{
     return fetch((await environment()).apiUrl + '/api-key/', {
       method: 'POST',
       headers: this.postHeaders(),
       body: JSON.stringify({
         name,
-        expiry
+        expiry,
+        userSID,
+        organizationSID
       })
     }).then(async r => {
       if (!r.ok) {

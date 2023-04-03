@@ -26,9 +26,25 @@
     </ion-list>
   </ng-container>
   <ion-list>
-    <ion-item *ngFor="let key of elements" >
+    <ion-item *ngFor="let key of elements">
       <ion-label>
-        {{key.name}} <span class="ion-margin-start ion-padding-start" *ngIf="key.expiry">({{(key.expiry * 1000) | date:'YYYY/MM/dd HH:ss'}})</span>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              {{key.name}}
+            </ion-col>
+            <ion-col>
+              {{key.userSID}}
+            </ion-col>
+            <ion-col>
+              {{key.organizationSID}}
+            </ion-col>
+            <ion-col>
+              <span class="ion-margin-start ion-padding-start"
+                    *ngIf="key.expiry">({{(key.expiry * 1000) | date:'YYYY/MM/dd HH:ss'}})</span>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       </ion-label>
       <ion-icon (click)="delete(key)" slot="end" color="danger" tappable="true" name="trash"></ion-icon>
     </ion-item>
@@ -47,7 +63,11 @@
           </ion-buttons>
           <ion-title>Create ApiKey</ion-title>
           <ion-buttons slot="end">
-            <ion-button [disabled]="!name.value" (click)="createApiKey(modal, name.value, expiry.value)" [strong]="true">Confirm</ion-button>
+            <ion-button [disabled]="!name.value || !usid.value ||!osid.value" (click)="createApiKey(modal, name.value,
+             usid.value,
+             osid.value,
+             expiry.value)" [strong]="true">Confirm
+            </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
@@ -55,6 +75,16 @@
         <ion-item>
           <ion-label position="stacked">Enter Key name</ion-label>
           <ion-input #name type="text" placeholder="Key name"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">User SID</ion-label>
+          <ion-input #usid pattern="api_usid_[a-z0-9_]+" type="text" value="api_usid_default"
+                     (ionInput)="cleanSID($event, usid, 'api_usid_')"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Organization SID</ion-label>
+          <ion-input #osid pattern="api_osid_[a-z0-9_]+" type="text" value="api_osid_default"
+                     (ionInput)="cleanSID($event, osid, 'api_osid_')"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Expire At</ion-label>
