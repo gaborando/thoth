@@ -1,10 +1,12 @@
 package com.thoth.server.beans;
 
 import com.thoth.server.configuration.security.token.ThothAuthenticationToken;
+import com.thoth.server.model.domain.Permission;
 import com.thoth.server.model.domain.SecuredResource;
 import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.*;
 
@@ -28,14 +30,31 @@ public class AuthenticationFacade implements IAuthenticationFacade {
     }
 
     @Override
-    public boolean canAccess(SecuredResource securedResource) {
-        var orgs = getOrganizationSID();
-        return securedResource.getCreatedBy().equals(getUserSID()) || securedResource.getAllowedUserList().contains(getUserSID()) || securedResource.getAllowedOrganizationList().stream().anyMatch(orgs::contains);
+    public boolean canRead(Optional<? extends SecuredResource> securedResource) {
+        return securedResource.map(this::canRead).orElse(true);
     }
 
     @Override
-    public boolean canAccess(Optional<? extends SecuredResource> securedResource) {
-        return securedResource.map(this::canAccess).orElse(true);
+    public boolean canWrite(Optional<? extends SecuredResource> securedResource) {
+        return securedResource.map(this::canWrite).orElse(true);
+    }
+
+    @Override
+    public boolean canRead(SecuredResource securedResource) throws HttpClientErrorException.Unauthorized {
+        return securedResource.getCreatedBy().equals(getUserSID()) ||
+                securedResource.getAllowedUserList().stream().anyMatch(p -> p.getSid().equals(getUserSID())) ||
+                securedResource.getAllowedOrganizationList().stream().anyMatch(p -> p.getSid().equals(getOrganizationSID()));
+    }
+
+    @Override
+    public boolean canWrite(SecuredResource securedResource) throws HttpClientErrorException.Unauthorized {
+        return securedResource.getCreatedBy().equals(getUserSID()) ||
+                securedResource.getAllowedUserList().stream()
+                        .filter(p -> p.getPermission() == Permission.W)
+                        .anyMatch(p -> p.getSid().equals(getUserSID())) ||
+                securedResource.getAllowedOrganizationList().stream()
+                        .filter(p -> p.getPermission() == Permission.W)
+                        .anyMatch(p -> p.getSid().equals(getOrganizationSID()));
     }
 
     @Override
@@ -47,11 +66,11 @@ public class AuthenticationFacade implements IAuthenticationFacade {
                 })
                 .or((r, q, cb) -> {
                     q.distinct(true);
-                    return cb.equal(r.join("allowedUserList", JoinType.LEFT), getUserSID());
+                    return cb.equal(r.join("allowedUserList", JoinType.LEFT).get("sid"), getUserSID());
                 })
                 .or((r, q, cb) -> {
                     q.distinct(true);
-                    return cb.equal(r.join("allowedOrganizationList", JoinType.LEFT), getOrganizationSID());
+                    return cb.equal(r.join("allowedOrganizationList", JoinType.LEFT).get("sid"), getOrganizationSID());
                 }));
     }
 

@@ -15,8 +15,11 @@ public interface IAuthenticationFacade {
 
     String getOrganizationSID();
 
-    boolean canAccess(SecuredResource securedResource) throws HttpClientErrorException.Unauthorized;
-    boolean canAccess(Optional<? extends SecuredResource> securedResource);
+    boolean canRead(Optional<? extends SecuredResource> securedResource);
+    boolean canWrite(Optional<? extends SecuredResource> securedResource);
+
+    boolean canRead(SecuredResource securedResource) throws HttpClientErrorException.Unauthorized;
+    boolean canWrite(SecuredResource securedResource) throws HttpClientErrorException.Unauthorized;
 
     <T extends SecuredResource> Specification<T> securedSpecification(Specification<T> spec, Class<T> cls);
 

@@ -59,7 +59,7 @@ public class RendererService {
     public Renderer update(String identifier, Renderer properties) {
         return update(findById(identifier).orElseThrow(), properties);
     }
-    @PreAuthorize("@authenticationFacade.canAccess(#original)")
+    @PreAuthorize("@authenticationFacade.canWrite(#original)")
     private Renderer update(Renderer original, Renderer update) {
         original.setAssociationMap(update.getAssociationMap());
         original.setName(update.getName());
@@ -68,12 +68,12 @@ public class RendererService {
         return rendererRepository.save(original);
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#renderer)")
+    @PreAuthorize("@authenticationFacade.canWrite(#renderer)")
     public void delete(Renderer renderer) {
         rendererRepository.delete(renderer);
     }
 
-    @PostAuthorize("@authenticationFacade.canAccess(returnObject) || hasRole('ROLE_TMP')")
+    @PostAuthorize("@authenticationFacade.canRead(returnObject) || hasRole('ROLE_TMP')")
     public Optional<Renderer> findById(String identifier) {
         return rendererRepository.findById(identifier);
     }
