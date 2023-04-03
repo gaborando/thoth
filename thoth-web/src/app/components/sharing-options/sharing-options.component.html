@@ -14,12 +14,12 @@
                 Users
               </h1>
             </ion-row>
-            <ion-row *ngFor="let sid of securedResource?.allowedUserList">
+            <ion-row *ngFor="let p of securedResource?.allowedUserList">
               <ion-col>
-                {{sid}}
+                {{p.sid}}&nbsp;({{p.permission}})
               </ion-col>
               <ion-col size="1">
-                <ion-icon color="danger" name="trash" tappable="true" (click)="removeAllowedUser(sid)"></ion-icon>
+                <ion-icon color="danger" name="trash" tappable="true" (click)="removeAllowedUser(p.sid)"></ion-icon>
               </ion-col>
             </ion-row>
             <ion-row *ngIf="!securedResource?.allowedUserList?.length">
@@ -32,13 +32,13 @@
                 Organizations
               </h1>
             </ion-row>
-            <ion-row *ngFor="let sid of securedResource?.allowedOrganizationList">
+            <ion-row *ngFor="let p of securedResource?.allowedOrganizationList">
               <ion-col>
-                {{sid}}
+                {{p.sid}}&nbsp;({{p.permission}})
               </ion-col>
               <ion-col size="1">
                 <ion-icon color="danger" name="trash" tappable="true"
-                          (click)="removeAllowedOrganization(sid)"></ion-icon>
+                          (click)="removeAllowedOrganization(p.sid)"></ion-icon>
               </ion-col>
             </ion-row>
             <ion-row *ngIf="!securedResource?.allowedOrganizationList?.length">
@@ -63,7 +63,7 @@
             <ion-button (click)="modal.dismiss()">Cancel</ion-button>
           </ion-buttons>
           <ion-buttons slot="end">
-            <ion-button [disabled]="!sid.value || !type.value" (click)="addPermission(modal, type.value, sid.value)"
+            <ion-button [disabled]="!sid.value || !type.value" (click)="addPermission(modal, type.value, sid.value, permission.value)"
                         [strong]="true">Confirm
             </ion-button>
           </ion-buttons>
@@ -75,6 +75,13 @@
           <ion-select #type (ionChange)="sid.value = null; autocompleteData = []">
             <ion-select-option value="user">User</ion-select-option>
             <ion-select-option value="organization">Organization</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>Permission</ion-label>
+          <ion-select #permission value="R">
+            <ion-select-option value="R">Read</ion-select-option>
+            <ion-select-option value="E">Write</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>

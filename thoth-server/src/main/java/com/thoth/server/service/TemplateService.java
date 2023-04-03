@@ -26,24 +26,21 @@ public class TemplateService {
 
     private final TemplateRepository templateRepository;
     private final IAuthenticationFacade authenticationFacade;
-    private final RendererRepository rendererRepository;
 
-    public TemplateService(TemplateRepository templateRepository, IAuthenticationFacade authenticationFacade,
-                           RendererRepository rendererRepository) {
+    public TemplateService(TemplateRepository templateRepository, IAuthenticationFacade authenticationFacade) {
         this.templateRepository = templateRepository;
         this.authenticationFacade = authenticationFacade;
-        this.rendererRepository = rendererRepository;
     }
     public Template update(String identifier, Template properties) {
         return update(getById(identifier).orElseThrow(), properties);
     }
-    @PreAuthorize("@authenticationFacade.canAccess(#original)")
+    @PreAuthorize("@authenticationFacade.canWrite(#original)")
     private Template update(Template original, Template update) {
         update.setId(original.getId());
         return templateRepository.save(update);
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#template)")
+    @PreAuthorize("@authenticationFacade.canWrite(#template)")
     public void delete(Template template){
         templateRepository.delete(template);
     }
@@ -61,7 +58,7 @@ public class TemplateService {
         return templateRepository.save(template);
     }
 
-    @PostAuthorize("@authenticationFacade.canAccess(returnObject) || hasRole('ROLE_TMP')")
+    @PostAuthorize("@authenticationFacade.canRead(returnObject) || hasRole('ROLE_TMP')")
     public Optional<Template> getById(String identifier) {
         return templateRepository.findById(identifier);
     }

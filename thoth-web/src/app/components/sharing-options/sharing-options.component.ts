@@ -17,6 +17,7 @@ export class SharingOptionsComponent implements OnInit {
   autocompleteData: string[] = []
   autocompleteLoading = false;
   hasAuth = false;
+  permission = "R";
   constructor(private utilsService: UtilsService) { }
 
   ngOnInit() {
@@ -30,21 +31,21 @@ export class SharingOptionsComponent implements OnInit {
     if(!this.securedResource){
       return;
     }
-    this.securedResource.allowedUserList = this.securedResource?.allowedUserList.filter(s => s !== sid);
+    this.securedResource.allowedUserList = this.securedResource?.allowedUserList.filter(s => s.sid !== sid);
   }
 
   removeAllowedOrganization(sid: string) {
     if(!this.securedResource){
       return;
     }
-    this.securedResource.allowedOrganizationList = this.securedResource?.allowedOrganizationList.filter(s => s !== sid);
+    this.securedResource.allowedOrganizationList = this.securedResource?.allowedOrganizationList.filter(s => s.sid !== sid);
   }
 
-  addPermission(modal: IonModal, type: any, sid: any) {
+  addPermission(modal: IonModal, type: any, sid: any, permission: string) {
     if (type === 'user') {
-      this.securedResource?.allowedUserList?.push(sid);
+      this.securedResource?.allowedUserList?.push({sid, permission});
     }else if (type === 'organization') {
-      this.securedResource?.allowedOrganizationList?.push(sid);
+      this.securedResource?.allowedOrganizationList?.push({sid, permission});
     }
     return modal.dismiss();
   }

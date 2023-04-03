@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Getter
@@ -13,7 +15,7 @@ public abstract class SecuredResource {
     @Column(updatable = false)
     private String createdBy;
     @ElementCollection
-    private Set<String> allowedUserList;
+    private List<ResourcePermission> allowedUserList;
     @ElementCollection
-    private Set<String> allowedOrganizationList;
+    private List<ResourcePermission> allowedOrganizationList;
 }

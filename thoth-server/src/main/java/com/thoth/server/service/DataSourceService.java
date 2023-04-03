@@ -83,7 +83,7 @@ public class DataSourceService {
         return datasourcePropertiesRepository.findAll(facade.securedSpecification(specification, DatasourceProperties.class), pageable);
     }
 
-    @PostAuthorize("@authenticationFacade.canAccess(returnObject)")
+    @PostAuthorize("@authenticationFacade.canRead(returnObject)")
     public Optional<DatasourceProperties> findById(String identifier) {
         return datasourcePropertiesRepository.findById(identifier);
     }
@@ -93,13 +93,13 @@ public class DataSourceService {
     public DatasourceProperties update(String identifier, DatasourceProperties properties) {
         return update(findById(identifier).orElseThrow(), properties);
     }
-    @PreAuthorize("@authenticationFacade.canAccess(#original)")
+    @PreAuthorize("@authenticationFacade.canWrite(#original)")
     private DatasourceProperties update(DatasourceProperties original, DatasourceProperties update) {
         update.setId(original.getId());
         return datasourcePropertiesRepository.save(update);
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#properties)")
+    @PreAuthorize("@authenticationFacade.canWrite(#properties)")
     public void delete(DatasourceProperties properties) {
         datasourcePropertiesRepository.delete(properties);
     }
@@ -116,7 +116,7 @@ public class DataSourceService {
         return true;
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#datasourceProperty) || hasRole('ROLE_TMP')")
+    @PreAuthorize("@authenticationFacade.canRead(#datasourceProperty) || hasRole('ROLE_TMP')")
     public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) throws JsonProcessingException {
         if(datasourceProperty instanceof JdbcDatasourceProperties j){
             var dataSource = datasourceCache.get(j.getId());
@@ -184,7 +184,7 @@ public class DataSourceService {
         return fetchData(datasourcePropertiesRepository.findById(id).orElseThrow(), params);
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#request)")
+    @PreAuthorize("@authenticationFacade.canRead(#request)")
     public ArrayList<String> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
         var strBody = objectMapper.writeValueAsString(request);
         for (Map.Entry<String, String> e : parameters.entrySet()) {

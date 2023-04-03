@@ -41,7 +41,7 @@ public class ClientService {
         return repository.save(c);
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#client)")
+    @PreAuthorize("@authenticationFacade.canWrite(#client)")
     public void delete(Client client){
         repository.delete(client);
     }
@@ -59,7 +59,7 @@ public class ClientService {
         return repository.findAll(authenticationFacade.securedSpecification(where, Client.class), of);
     }
 
-    @PostAuthorize("@authenticationFacade.canAccess(returnObject)")
+    @PostAuthorize("@authenticationFacade.canRead(returnObject)")
     public Optional<Client> findById(String identifier) {
         return repository.findById(identifier);
     }
@@ -69,7 +69,7 @@ public class ClientService {
         return update(c, update);
     }
 
-    @PreAuthorize("@authenticationFacade.canAccess(#original)")
+    @PreAuthorize("@authenticationFacade.canWrite(#original)")
     private Client update(Client original, Client update) {
         original.setAllowedUserList(update.getAllowedUserList());
         original.setAllowedOrganizationList(update.getAllowedOrganizationList());

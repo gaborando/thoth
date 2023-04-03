@@ -1,4 +1,4 @@
 export interface SecuredResource {
-  allowedUserList: string[];
-  allowedOrganizationList: string[]
+  allowedUserList: {sid: string, permission:string}[];
+  allowedOrganizationList: {sid: string, permission:string}[];
 }
