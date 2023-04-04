@@ -9,8 +9,16 @@ import org.thoth.common.Jpeg2Pdf;
 import org.thoth.common.Svg2Jpeg;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class RenderService {
@@ -58,8 +66,23 @@ public class RenderService {
         svg = svg.replace("https://embed.diagrams.net/{{", "{{");
         svg = svg.replace("utils/barcode?", "utils/barcode?TMP_KEY=" + tmpKey + "&amp;");
         svg = svg.replace("utils/qrcode?", "utils/qrcode?TMP_KEY=" + tmpKey + "&amp;");
-        for (Map.Entry<String, Object> e : allParams.entrySet()) {
-            svg = svg.replace("{{" + e.getKey() + "}}", e.getValue() == null ? "" : e.getValue().toString());
+
+        final String regex = "\\{\\{([a-zA-Z0-9\\._]+)(\\|[a-zA-Z0-9]+(:[a-zA-Z0-9_'-\\.]+)*)*\\}\\}";
+
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(svg);
+
+        var markers = new HashSet<Marker>();
+
+        while (matcher.find()) {
+
+            var m = new Marker();
+            m.definition = matcher.group(0);
+            m.parameter = matcher.group(1);
+            markers.add(m);
+        }
+        for (Marker marker : markers) {
+            svg = svg.replace(marker.definition, allParams.get(marker.parameter) == null ? "" :  marker.compute(allParams.get(marker.parameter) .toString()));
         }
         return svg;
     }
@@ -158,5 +181,58 @@ public class RenderService {
 
     public void printTemplate(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService, Integer copies) throws IOException, InterruptedException {
         clientService.printSvg(clientIdentifier, printService, renderTemplateSvg(identifier, parameters), copies);
+    }
+
+    private class Marker {
+        String definition;
+        String parameter;
+
+        String compute(String value){
+            var parts = definition.replace("{{","").replace("}}","").split("\\|");
+            if(parts.length == 1){
+                return value;
+            }
+            var pipe = parts[1].split(":");
+            return switch (pipe[0]){
+                case "padding" -> paddingPipe(value, Integer.parseInt(pipe[1]), pipe[2].charAt(0));
+                case "date" -> datePipe(value, pipe[1]);
+                case "trim" -> trimPipe(value);
+                case "number" -> numberPipe(value, pipe[1]);
+                default -> value;
+            };
+        }
+
+        String paddingPipe(String value, int size, char character){
+            return String.format("%" + size + "s", value).replace(' ', character);
+        }
+
+        String datePipe(String value, String pattern){
+            return ZonedDateTime.parse(value).format(DateTimeFormatter.ofPattern(pattern));
+        }
+
+        String trimPipe(String value){
+            return value.trim();
+        }
+
+        String numberPipe(String value, String format){
+            return String.format("%" + format + "f", Double.parseDouble(value));
+        }
+        @Override
+        public int hashCode() {
+            return definition.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Marker marker = (Marker) o;
+            return Objects.equals(definition, marker.definition);
+        }
+
+        @Override
+        public String toString() {
+            return definition+" - "+parameter;
+        }
     }
 }
