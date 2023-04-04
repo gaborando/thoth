@@ -22,7 +22,6 @@ public class ApiKey {
     @Size(max = 256)
     private String name;
 
-
     @Column(updatable = false)
     private String apiKey;
 
@@ -31,6 +30,8 @@ public class ApiKey {
     private String organizationSID;
 
     private Instant expiry;
+
+    private String createdBy;
 
     private Instant createdAt;
 }

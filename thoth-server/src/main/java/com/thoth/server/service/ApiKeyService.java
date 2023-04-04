@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -31,14 +32,26 @@ public class ApiKeyService {
         this.facade = facade;
     }
 
-    public ApiKey create(String name, Instant expiry){
+    public ApiKey create(String name,
+                         String userSID,
+                         String organizationSID,
+                         Instant expiry) {
+        Assert.isTrue(
+                userSID.startsWith("api_usid_") &&
+                        userSID.matches("[a-z0-9_]+"),
+                "error.organization.sid.not.valid");
+        Assert.isTrue(
+                organizationSID.startsWith("api_osid_") &&
+                        organizationSID.matches("[a-z0-9_]+"),
+                "error.organization.sid.not.valid");
         var token = new ApiKey();
         token.setName(name);
-        token.setId("tkn_"  + UUID.randomUUID());
+        token.setId("tkn_" + UUID.randomUUID());
         token.setCreatedAt(Instant.now());
         token.setExpiry(expiry);
-        token.setUserSID(facade.getUserSID());
-        token.setOrganizationSID(facade.getOrganizationSID());
+        token.setUserSID(userSID);
+        token.setOrganizationSID(organizationSID);
+        token.setCreatedBy(facade.getUserSID());
 
         byte[] randomBytes = new byte[64];
         secureRandom.nextBytes(randomBytes);
@@ -46,19 +59,19 @@ public class ApiKeyService {
         return apiKeyRepository.save(token);
     }
 
-    @PreAuthorize("#apiKey.userSID == @authenticationFacade.userSID")
-    public void delete(ApiKey apiKey){
+    @PreAuthorize("#apiKey.createdBy == @authenticationFacade.userSID")
+    public void delete(ApiKey apiKey) {
         apiKeyRepository.delete(apiKey);
     }
 
-    public Page<ApiKey> search(Specification<ApiKey> specification, PageRequest pageable){
-        var s = specification.and((r,q,cb) -> cb.equal(r.get("userSID"), facade.getUserSID()));
+    public Page<ApiKey> search(Specification<ApiKey> specification, PageRequest pageable) {
+        var s = specification.and((r, q, cb) -> cb.equal(r.get("createdBy"), facade.getUserSID()));
         return apiKeyRepository.findAll(s, pageable);
     }
 
     public ApiKey checkKey(String apiKey) {
         var key = apiKeyRepository.findApiKeyByApiKey(apiKey).orElseThrow(() -> new AccessDeniedException("Invalid token"));
-        if(key.getExpiry() != null && key.getExpiry().isBefore(Instant.now())){
+        if (key.getExpiry() != null && key.getExpiry().isBefore(Instant.now())) {
             throw new AccessDeniedException("Token Expired");
         }
         return key;
