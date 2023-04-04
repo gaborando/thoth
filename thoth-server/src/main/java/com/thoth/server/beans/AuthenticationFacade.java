@@ -66,11 +66,11 @@ public class AuthenticationFacade implements IAuthenticationFacade {
                 })
                 .or((r, q, cb) -> {
                     q.distinct(true);
-                    return cb.equal(r.join("allowedUserList", JoinType.LEFT).get("sid"), getUserSID());
+                    return cb.equal(r.joinList("allowedUserList", JoinType.LEFT).get("sid"), getUserSID());
                 })
                 .or((r, q, cb) -> {
                     q.distinct(true);
-                    return cb.equal(r.join("allowedOrganizationList", JoinType.LEFT).get("sid"), getOrganizationSID());
+                    return cb.equal(r.joinList("allowedOrganizationList", JoinType.LEFT).get("sid"), getOrganizationSID());
                 }));
     }
 

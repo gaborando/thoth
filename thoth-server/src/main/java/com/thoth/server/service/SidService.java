@@ -23,34 +23,38 @@ public class SidService {
     }
 
     public List<String> findAllUsers(String value, PageRequest of) {
-        var params = new Object[]{likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), of.getPageSize(), of.getOffset()};
-        var types = new int[]{Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.INTEGER, Types.INTEGER};
+        var params = new Object[]{likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), of.getPageSize(), of.getOffset()};
+        var types = new int[]{Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.INTEGER, Types.INTEGER};
         return template.queryForList(
-                "select allowed_user_list from (select distinct allowed_user_list from client_allowed_user_list where allowed_user_list like ? " +
+                "select sid from (select distinct sid from client_allowed_user_list where sid like ? " +
                         "union distinct " +
-                        "select distinct allowed_user_list from datasource_properties_allowed_user_list  where allowed_user_list like ? " +
+                        "select distinct sid from datasource_properties_allowed_user_list  where sid like ? " +
                         "union distinct " +
-                        "select distinct allowed_user_list from renderer_allowed_user_list  where allowed_user_list like ? " +
+                        "select distinct sid from renderer_allowed_user_list  where sid like ? " +
                         "union distinct " +
-                        "select distinct allowed_user_list from template_allowed_user_list  where allowed_user_list like ? ) as a " +
-                        "order by allowed_user_list " +
+                        "select distinct usersid from api_key where usersid like ? " +
+                        "union distinct " +
+                        "select distinct sid from template_allowed_user_list  where sid like ? ) as a " +
+                        "order by sid " +
                         "limit ? offset ?",
                 params,
                 types, String.class);
     }
 
     public List<String> findAllOrganizations(String value, PageRequest of) {
-        var params = new Object[]{likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), of.getPageSize(), of.getOffset()};
-        var types = new int[]{Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.INTEGER, Types.INTEGER};
+        var params = new Object[]{likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), of.getPageSize(), of.getOffset()};
+        var types = new int[]{Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.INTEGER, Types.INTEGER};
         return template.queryForList(
-                "select allowed_organization_list from (select distinct allowed_organization_list from client_allowed_organization_list where allowed_organization_list like ? " +
+                "select sid from (select distinct sid from client_allowed_organization_list where sid like ? " +
                         "union distinct " +
-                        "select distinct allowed_organization_list from datasource_properties_allowed_organization_list  where allowed_organization_list like ? " +
+                        "select distinct sid from datasource_properties_allowed_organization_list  where sid like ? " +
                         "union distinct " +
-                        "select distinct allowed_organization_list from renderer_allowed_organization_list  where allowed_organization_list like ? " +
+                        "select distinct sid from renderer_allowed_organization_list  where sid like ? " +
                         "union distinct " +
-                        "select distinct allowed_organization_list from template_allowed_organization_list  where allowed_organization_list like ? ) as a " +
-                        "order by allowed_organization_list " +
+                        "select distinct organizationsid from api_key  where organizationsid like ? " +
+                        "union distinct " +
+                        "select distinct sid from template_allowed_organization_list  where sid like ? ) as a " +
+                        "order by sid " +
                         "limit ? offset ?",
                 params,
                 types, String.class);
