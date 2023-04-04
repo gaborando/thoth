@@ -67,7 +67,7 @@ public class RenderService {
         svg = svg.replace("utils/barcode?", "utils/barcode?TMP_KEY=" + tmpKey + "&amp;");
         svg = svg.replace("utils/qrcode?", "utils/qrcode?TMP_KEY=" + tmpKey + "&amp;");
 
-        final String regex = "\\{\\{([a-zA-Z0-9\\._]+)(\\|[a-zA-Z0-9]+(:[a-zA-Z0-9_'-\\.]+)*)*\\}\\}";
+        final String regex = "\\{\\{([a-zA-Z0-9\\._]+)(\\|[a-zA-Z0-9]+(:[a-zA-Z0-9_'-\\.\\\\/~]+)*)*\\}\\}";
 
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(svg);

@@ -31,6 +31,7 @@ export class TemplateDetailPage implements OnInit {
   async ionViewWillEnter() {
     this.template = await this.templateService.findById(this.route.snapshot.paramMap.get('identifier'))
   }
+
   ngOnInit() {
   }
 
@@ -70,7 +71,7 @@ export class TemplateDetailPage implements OnInit {
 
   openEditor() {
 
-    if(!this.template){
+    if (!this.template) {
       return;
     }
     const template = this.template;
@@ -103,12 +104,24 @@ export class TemplateDetailPage implements OnInit {
             template.svg = atob(msg.data.replace('data:image/svg+xml;base64,', ''));
             template.markers = [];
 
-            const pattern = new RegExp(/{{([a-zA-Z0-9\\._]+)}}/g);
-            let z;
-            while (null != (z = pattern.exec(template.svg))) {
-              template.markers.push(z[1]);
+            const regex = /{{([a-zA-Z0-9\._]+)(\|[a-zA-Z0-9]+(:[a-zA-Z0-9_'-\.\\/~]+)*)*}}/g;
+
+            let m;
+
+            while ((m = regex.exec(template.svg)) !== null) {
+              // This is necessary to avoid infinite loops with zero-width matches
+              if (m.index === regex.lastIndex) {
+                regex.lastIndex++;
+              }
+
+              // The result can be accessed through the `m`-variable.
+              m.forEach((match, groupIndex) => {
+                if (groupIndex === 1) {
+                  template.markers.push(match);
+                }
+              });
             }
-            template.markers = [...new Set(template.markers)]
+            template.markers = [...new Set(template.markers)];
           }
 
           // Received if the user clicks exit or after export
@@ -131,7 +144,7 @@ export class TemplateDetailPage implements OnInit {
   }
 
   async clone() {
-    if(!this.template){
+    if (!this.template) {
       return;
     }
     const t = await this.templateService.create(this.template.name);

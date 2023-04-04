@@ -91,7 +91,7 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
             template.svg = atob(msg.data.replace('data:image/svg+xml;base64,', ''));
             template.markers = [];
 
-            const regex = /{{([a-zA-Z0-9\._]+)(\|[a-zA-Z0-9]+(:[a-zA-Z0-9_'-\.]+)*)*}}/g;
+            const regex = /{{([a-zA-Z0-9\._]+)(\|[a-zA-Z0-9]+(:[a-zA-Z0-9_'-\.\\/~]+)*)*}}/g;
 
             let m;
 
