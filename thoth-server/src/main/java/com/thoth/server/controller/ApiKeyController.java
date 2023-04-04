@@ -40,7 +40,11 @@ public class ApiKeyController {
 
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiKey> create(@RequestBody ApiKeyCreateRequest request) {
-        return ResponseEntity.ok(apiKeyService.create(request.getName(), request.getExpiry()));
+        return ResponseEntity.ok(apiKeyService.create(
+                request.getName(),
+                request.getUserSID(),
+                request.getOrganizationSID(),
+                request.getExpiry()));
     }
 
     @DeleteMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
