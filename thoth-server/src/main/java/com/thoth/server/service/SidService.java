@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public class SidService {
-     private final JdbcTemplate template;
+    private final JdbcTemplate template;
 
     public SidService(JdbcTemplate template) {
         this.template = template;
@@ -23,8 +23,10 @@ public class SidService {
     }
 
     public List<String> findAllUsers(String value, PageRequest of) {
-        var params = new Object[]{likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), of.getPageSize(), of.getOffset()};
-        var types = new int[]{Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.INTEGER, Types.INTEGER};
+        var params = new Object[]{likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value),
+                likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), of.getPageSize(), of.getOffset()};
+        var types = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
+                Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.INTEGER};
         return template.queryForList(
                 "select sid from (select distinct sid from client_allowed_user_list where sid like ? " +
                         "union distinct " +
@@ -33,6 +35,14 @@ public class SidService {
                         "select distinct sid from renderer_allowed_user_list  where sid like ? " +
                         "union distinct " +
                         "select distinct usersid from api_key where usersid like ? " +
+                        "union distinct " +
+                        "select distinct created_by from client where created_by like ? " +
+                        "union distinct " +
+                        "select distinct created_by from datasource_properties where created_by like ? " +
+                        "union distinct " +
+                        "select distinct created_by from renderer where created_by like ? " +
+                        "union distinct " +
+                        "select distinct created_by from template where created_by like ? " +
                         "union distinct " +
                         "select distinct sid from template_allowed_user_list  where sid like ? ) as a " +
                         "order by sid " +
@@ -43,7 +53,7 @@ public class SidService {
 
     public List<String> findAllOrganizations(String value, PageRequest of) {
         var params = new Object[]{likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), likeWrap(value), of.getPageSize(), of.getOffset()};
-        var types = new int[]{Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.VARCHAR,Types.INTEGER, Types.INTEGER};
+        var types = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.INTEGER};
         return template.queryForList(
                 "select sid from (select distinct sid from client_allowed_organization_list where sid like ? " +
                         "union distinct " +
