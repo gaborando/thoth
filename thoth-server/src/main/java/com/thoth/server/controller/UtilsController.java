@@ -4,6 +4,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.oned.Code128Reader;
 import com.google.zxing.oned.Code128Writer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.thoth.server.configuration.security.SecuredTimestampService;
@@ -41,13 +42,20 @@ public class UtilsController {
     public ResponseEntity<byte[]> renderBarcode(
             @RequestParam String code,
             @RequestParam(defaultValue = "300") int width,
-            @RequestParam(defaultValue = "150") int height) throws IOException {
+            @RequestParam(defaultValue = "150") int height,
+            @RequestParam(defaultValue = "false") boolean gs1) throws IOException {
+
 
         Code128Writer barcodeWriter = new Code128Writer();
-        BitMatrix bitMatrix = barcodeWriter.encode(code.replace("{","").replace("}",""),
+        code = code.replace("{","").replace("}","");
+        if(gs1){
+            code = code.replace("(","\u00f1").replace(")","");
+        }
+        BitMatrix bitMatrix = barcodeWriter.encode(code,
                 BarcodeFormat.CODE_128, width, height);
 
         var img =  MatrixToImageWriter.toBufferedImage(bitMatrix);
+
         var baos = new ByteArrayOutputStream();
         ImageIO.write(img, "jpeg", baos);
         return ResponseEntity.ok(baos.toByteArray());
