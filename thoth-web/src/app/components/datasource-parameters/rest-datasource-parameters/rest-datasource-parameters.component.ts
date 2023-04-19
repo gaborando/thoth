@@ -102,6 +102,7 @@ export class RestDatasourceParametersComponent implements OnInit, DatasourcePara
           await this.screenMessageService.showDone();
         } catch (e: any) {
           this.checkError = e.message;
+          await this.screenMessageService.showError(e);
         }
       })
     }

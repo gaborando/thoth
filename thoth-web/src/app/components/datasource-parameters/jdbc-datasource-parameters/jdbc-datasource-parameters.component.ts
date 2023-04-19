@@ -88,6 +88,7 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
           await this.screenMessageService.showDone();
         } catch (e: any) {
           this.checkError = e.message;
+          await this.screenMessageService.showError(e);
         }
       })
     }
@@ -97,7 +98,7 @@ export class JdbcDatasourceParametersComponent implements OnInit, DatasourcePara
   detectQueryParameters() {
     this.queryParams = [];
     const markers = [];
-    const pattern = new RegExp(/:([a-zA-Z0-9\\._]+)/g);
+    const pattern = new RegExp(/:([a-z0-9\\._]{5,})/g);
     let z;
     while (null != (z = pattern.exec(this.jdbcDatasourceParameters.query))) {
       markers.push(z[1]);
