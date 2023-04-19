@@ -184,7 +184,6 @@ public class DataSourceService {
         return fetchData(datasourcePropertiesRepository.findById(id).orElseThrow(), params);
     }
 
-    @PreAuthorize("@authenticationFacade.canRead(#request)")
     public ArrayList<String> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
         var strBody = objectMapper.writeValueAsString(request);
         for (Map.Entry<String, String> e : parameters.entrySet()) {
