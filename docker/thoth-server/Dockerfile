@@ -5,9 +5,11 @@ RUN gradle :thoth-server:bootJar --no-daemon
 
 FROM mcr.microsoft.com/playwright/java:v1.30.0-focal
 
-RUN apt install openjdk-19-jre-headless -y
+RUN curl -O https://download.oracle.com/java/20/latest/jdk-20_linux-x64_bin.deb
 
-RUN java -version
+RUN apt-get -qqy install ./jdk-20_linux-x64_bin.deb
+
+RUN update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-20/bin/java 2020
 
 EXPOSE 8080
 
