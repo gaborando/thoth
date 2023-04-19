@@ -97,15 +97,15 @@ export class RendererDetailPage implements OnInit {
     if (!this.renderer) {
       return;
     }
-    const inputs: string[] = [];
+    const inputs = new Set<string>();
     for (const p of Object.keys(this.renderer.associationMap)) {
       if (this.renderer.associationMap[p].type === 'parameter') {
-        inputs.push(p)
+        inputs.add(p)
       }
     }
     for (const ds of this.renderer.datasourceProperties) {
       for (const p of ds.parameters) {
-        inputs.push(p)
+        inputs.add(p)
       }
     }
     const resp = await this.guiUtils.parametersFormModal("Render a Template", inputs);
@@ -157,15 +157,15 @@ export class RendererDetailPage implements OnInit {
     if (!this.renderer) {
       return;
     }
-    const inputs: string[] = [];
+    const inputs = new Set<string>();
     for (const p of Object.keys(this.renderer.associationMap)) {
       if (this.renderer.associationMap[p].type === 'parameter') {
-        inputs.push(p)
+        inputs.add(p)
       }
     }
     for (const ds of this.renderer.datasourceProperties) {
       for (const p of ds.parameters) {
-        inputs.push(p)
+        inputs.add(p)
       }
     }
     const resp = await this.guiUtils.parametersFormModal("Print a Template", inputs);

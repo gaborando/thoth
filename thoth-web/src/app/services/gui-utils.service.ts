@@ -18,7 +18,7 @@ export class GuiUtilsService {
     return modal.onWillDismiss()
   }
 
-  async parametersFormModal(title: string, parameters: string[]){
+  async parametersFormModal(title: string, parameters: Set<string>){
     const m = await this.modalController.create({
       component: ParametersFormComponent,
       componentProps: {
