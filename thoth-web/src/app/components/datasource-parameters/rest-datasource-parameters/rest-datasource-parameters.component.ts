@@ -178,7 +178,7 @@ export class RestDatasourceParametersComponent implements OnInit, DatasourcePara
      *     },
      *     body: {}
      */
-    const pattern = new RegExp(/{{([a-zA-Z0-9\\._]+)}}/g);
+    const pattern = new RegExp(/:([a-z0-9\\._]{5,})/g);
     const markers = [];
     let z;
     while (null != (z = pattern.exec(JSON.stringify(this.restDatasourceParameters)))) {
