@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 
@@ -129,12 +130,14 @@ public class DataSourceService {
                 datasourceCache.put(j.getId(), dataSource);
             }
 
+            var localParameters = new HashMap<String, Object>();
+
             for (Map.Entry<String, ?> e : parameters.entrySet()) {
-                parameters.put(e.getKey(), isNumeric(e.getValue()) ? Float.parseFloat(e.getValue().toString()) : e.getValue());
+                localParameters.put(e.getKey(), isNumeric(e.getValue()) ? toNumeric(e.getValue().toString()) : e.getValue());
             }
 
             NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-            var rs = jdbcTemplate.queryForRowSet(j.getQuery(), parameters);
+            var rs = jdbcTemplate.queryForRowSet(j.getQuery(), localParameters);
 
             if(!rs.next()){
                 return new HashMap<>();
@@ -177,6 +180,14 @@ public class DataSourceService {
             return getNodeFieldsMap(root, "");
         }
        return new HashMap<>();
+    }
+
+    private Object toNumeric(String string) {
+        var num = Float.parseFloat(string);
+        if(BigDecimal.valueOf(num).divideAndRemainder(BigDecimal.ONE)[1].equals(BigDecimal.ZERO)){
+            return (int) num;
+        }
+        return num;
     }
 
 

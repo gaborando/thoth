@@ -7,6 +7,7 @@ import com.thoth.server.controller.dto.datasource.RestDatasourceParametersCheckR
 import com.thoth.server.controller.dto.datasource.RestDatasourceParametersCreateRequest;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
+import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.service.DataSourceService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -93,6 +94,11 @@ public class DataSourceController {
 
     @PostMapping(value = "/jdbc/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DatasourceProperties> updateJdbcParameters(@RequestBody JdbcDatasourceProperties properties, @PathVariable String identifier) throws SQLException {
+        return ResponseEntity.ok(dataSourceService.update(identifier, properties));
+    }
+
+    @PostMapping(value = "/rest/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DatasourceProperties> updateRestParameters(@RequestBody RestDatasourceProperties properties, @PathVariable String identifier) throws SQLException {
         return ResponseEntity.ok(dataSourceService.update(identifier, properties));
     }
 
