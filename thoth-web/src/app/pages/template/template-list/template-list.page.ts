@@ -2,13 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {TemplateService} from "../../../services/api/template.service";
 import {Template} from "../../../common/types/template";
 import {AlertController, LoadingController} from "@ionic/angular";
-import {DomSanitizer} from "@angular/platform-browser";
-import {environment} from "../../../../environments/environment";
 import {ClientService} from "../../../services/api/client.service";
 import {ScreenMessageService} from "../../../services/screen-message.service";
 import {ListPage} from "../../../common/utils/ui-patterns/list-page";
 import {GuiUtilsService} from "../../../services/gui-utils.service";
 import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.service";
+
 
 @Component({
   selector: 'app-template-list',
@@ -70,15 +69,15 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
       const receive = (evt: any) => {
         if (evt.data.length > 0 && evt.source == this.drawIoWindow) {
           var msg = JSON.parse(evt.data);
-
+          console.log(msg);
           // Received if the editor is ready
           if (msg.event == 'init') {
             // Sends the data URI with embedded XML to editor
             this.drawIoWindow?.postMessage(JSON.stringify(
-              {action: 'load', xml: template.xml}), '*');
+              {action: 'load', xml: template.xml, autosave: 1}), '*');
           }
           // Received if the user clicks save
-          else if (msg.event == 'save') {
+          else if (msg.event == 'save' || msg.event == 'autosave') {
             // Sends a request to export the diagram as XML with embedded PNG
             template.xml = msg.xml;
             this.drawIoWindow?.postMessage(JSON.stringify(
@@ -109,10 +108,25 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
               });
             }
             template.markers = [...new Set(template.markers)];
+
+            if(!template.markers.includes('block**') && (template.markers.includes('_barcode') || template.markers.includes('_qrcode'))){
+              this.drawIoWindow?.postMessage(JSON.stringify(
+                {action: 'prompt', title: 'Specify marker for barcode', ok: 'Insert', defaultValue: 'barcode'} ), '*');
+            }
+          } else if (msg.event == 'prompt') {
+
+            var xmlDoc = new DOMParser().parseFromString(template.xml || '', 'application/xml');
+            var diagrams = xmlDoc.getElementsByTagName('diagram');
+            const node: any = diagrams[0].children.item(0)?.outerHTML;
+            // @ts-ignore
+            const n = node.replaceAll('{{_barcode}}', '{{'+msg.value+'}}');
+            this.drawIoWindow?.postMessage(JSON.stringify(
+              {action: 'merge', xml: n} ), '*');
+
           }
 
           // Received if the user clicks exit or after export
-          if (msg.event == 'exit' || msg.event == 'export') {
+          if (msg.event == 'exit') {
             // Closes the editor
             window.removeEventListener('message', receive);
             this.drawIoWindow?.close();
