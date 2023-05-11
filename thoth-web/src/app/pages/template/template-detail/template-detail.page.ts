@@ -83,15 +83,15 @@ export class TemplateDetailPage implements OnInit {
       const receive = (evt: any) => {
         if (evt.data.length > 0 && evt.source == this.drawIoWindow) {
           var msg = JSON.parse(evt.data);
-
+          console.log(msg);
           // Received if the editor is ready
           if (msg.event == 'init') {
             // Sends the data URI with embedded XML to editor
             this.drawIoWindow?.postMessage(JSON.stringify(
-              {action: 'load', xml: template.xml}), '*');
+              {action: 'load', xml: template.xml, autosave: 1}), '*');
           }
           // Received if the user clicks save
-          else if (msg.event == 'save') {
+          else if (msg.event == 'save' || msg.event == 'autosave') {
             // Sends a request to export the diagram as XML with embedded PNG
             template.xml = msg.xml;
             this.drawIoWindow?.postMessage(JSON.stringify(
@@ -116,7 +116,7 @@ export class TemplateDetailPage implements OnInit {
 
               // The result can be accessed through the `m`-variable.
               m.forEach((match, groupIndex) => {
-                if (groupIndex === 1) {
+                if(groupIndex === 1){
                   template.markers.push(match);
                 }
               });
@@ -125,11 +125,12 @@ export class TemplateDetailPage implements OnInit {
           }
 
           // Received if the user clicks exit or after export
-          if (msg.event == 'exit' || msg.event == 'export') {
+          if (msg.event == 'exit') {
             // Closes the editor
             window.removeEventListener('message', receive);
             this.drawIoWindow?.close();
             this.drawIoWindow = null;
+            this.templateService.update(template).finally();
           }
         }
       };
