@@ -69,7 +69,6 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
       const receive = (evt: any) => {
         if (evt.data.length > 0 && evt.source == this.drawIoWindow) {
           var msg = JSON.parse(evt.data);
-          console.log(msg);
           // Received if the editor is ready
           if (msg.event == 'init') {
             // Sends the data URI with embedded XML to editor
