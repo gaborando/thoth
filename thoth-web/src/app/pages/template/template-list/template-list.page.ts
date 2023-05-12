@@ -109,9 +109,24 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
             }
             template.markers = [...new Set(template.markers)];
 
-            if(!template.markers.includes('block**') && (template.markers.includes('_barcode') || template.markers.includes('_qrcode'))){
-              this.drawIoWindow?.postMessage(JSON.stringify(
-                {action: 'prompt', title: 'Specify marker for barcode', ok: 'Insert', defaultValue: 'barcode'} ), '*');
+            if(!template.markers.includes('block**') ){
+              if(template.markers.includes('_barcode')) {
+                this.drawIoWindow?.postMessage(JSON.stringify(
+                  {
+                    action: 'prompt',
+                    title: 'Specify marker for barcode',
+                    ok: 'Insert',
+                    defaultValue: '{{barcode}}'
+                  }), '*');
+              }else  if(template.markers.includes('_qrcode')) {
+                this.drawIoWindow?.postMessage(JSON.stringify(
+                  {
+                    action: 'prompt',
+                    title: 'Specify marker for qrcode',
+                    ok: 'Insert',
+                    defaultValue: '{{qrcode}}'
+                  }), '*');
+              }
             }
           } else if (msg.event == 'prompt') {
 
@@ -119,9 +134,15 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
             var diagrams = xmlDoc.getElementsByTagName('diagram');
             const node: any = diagrams[0].children.item(0)?.outerHTML;
             // @ts-ignore
-            const n = node.replaceAll('{{_barcode}}', '{{'+msg.value+'}}');
-            this.drawIoWindow?.postMessage(JSON.stringify(
-              {action: 'merge', xml: n} ), '*');
+            if(msg.message.defaultValue === '{{barcode}}') {
+              const n = node.replaceAll('{{_barcode}}', msg.value);
+              this.drawIoWindow?.postMessage(JSON.stringify(
+                {action: 'merge', xml: n}), '*');
+            }else if(msg.message.defaultValue === '{{qrcode}}') {
+              const n = node.replaceAll('{{_qrcode}}', msg.value);
+              this.drawIoWindow?.postMessage(JSON.stringify(
+                {action: 'merge', xml: n}), '*');
+            }
 
           }
 
