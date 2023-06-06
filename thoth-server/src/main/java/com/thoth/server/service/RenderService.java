@@ -11,6 +11,9 @@ import org.thoth.common.Svg2Jpeg;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -188,18 +191,23 @@ public class RenderService {
         String parameter;
 
         String compute(String value){
-            var parts = definition.replace("{{","").replace("}}","").split("\\|");
-            if(parts.length == 1){
+            try {
+                var parts = definition.replace("{{", "").replace("}}", "").split("\\|");
+                if (parts.length == 1) {
+                    return value;
+                }
+                var pipe = parts[1].split(":");
+                return switch (pipe[0]) {
+                    case "padding" -> paddingPipe(value, Integer.parseInt(pipe[1]), pipe[2].charAt(0));
+                    case "date" -> datePipe(value, pipe[1]);
+                    case "trim" -> trimPipe(value);
+                    case "number" -> numberPipe(value, pipe[1]);
+                    default -> value;
+                };
+            }catch (Exception e){
+                e.printStackTrace();
                 return value;
             }
-            var pipe = parts[1].split(":");
-            return switch (pipe[0]){
-                case "padding" -> paddingPipe(value, Integer.parseInt(pipe[1]), pipe[2].charAt(0));
-                case "date" -> datePipe(value, pipe[1]);
-                case "trim" -> trimPipe(value);
-                case "number" -> numberPipe(value, pipe[1]);
-                default -> value;
-            };
         }
 
         String paddingPipe(String value, int size, char character){
@@ -207,6 +215,12 @@ public class RenderService {
         }
 
         String datePipe(String value, String pattern){
+            // SAP DATE PARSING
+            if(value.startsWith("/Date(")) {
+                value = value.replace("/Date(", "").replace(")/", "");
+                return ZonedDateTime.from(Instant.ofEpochMilli(Long.parseLong(value)).atZone(ZoneOffset.UTC))
+                        .format(DateTimeFormatter.ofPattern(pattern));
+            }
             return ZonedDateTime.parse(value).format(DateTimeFormatter.ofPattern(pattern));
         }
 

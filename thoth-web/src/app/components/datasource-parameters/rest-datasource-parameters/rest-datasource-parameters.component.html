@@ -8,11 +8,11 @@
     <form #frm>
       <ion-item>
         <ion-label>Server URL</ion-label>
-        <ion-input name="url" [(ngModel)]="restDatasourceParameters.url" type="url"></ion-input>
+        <ion-input name="url" [(ngModel)]="restDatasourceParameters.url" type="url" (ionChange)="this.detectParameters()"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Request Method</ion-label>
-        <ion-select name="method" [(ngModel)]="restDatasourceParameters.method">
+        <ion-select name="method" [(ngModel)]="restDatasourceParameters.method" (ionChange)="this.detectParameters()">
           <ion-select-option *ngFor="let m of ['GET','POST','PUT','DELETE']" [value]="m">{{m}}</ion-select-option>
         </ion-select>
       </ion-item>
