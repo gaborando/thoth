@@ -8,6 +8,7 @@ import { RenderNewPageRoutingModule } from './renderer-new-routing.module';
 
 import { RendererNewPage } from './renderer-new-page.component';
 import {ComponentsModule} from "../../../components/components.module";
+import {TypeaheadSelectComponent} from "../../../components/typeahead-select/typeahead-select.component";
 
 @NgModule({
   imports: [
@@ -16,6 +17,8 @@ import {ComponentsModule} from "../../../components/components.module";
     IonicModule,
     RenderNewPageRoutingModule,
     ComponentsModule
+  ],
+  exports: [
   ],
   declarations: [RendererNewPage]
 })

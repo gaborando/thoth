@@ -42,8 +42,8 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
     });
   }
 
-  async findAll(): Promise<Page<Datasource>> {
-    return fetch((await environment()).apiUrl + '/datasource/', {
+  async findAll(page = 0): Promise<Page<Datasource>> {
+    return fetch((await environment()).apiUrl + '/datasource/?page=' + page, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {

@@ -13,8 +13,6 @@ import {NavController} from "@ionic/angular";
   styleUrls: ['./renderer-new.page.scss'],
 })
 export class RendererNewPage implements OnInit {
-  templates: Template[] = [];
-  datasource: Datasource[] = [];
   selectedTemplate: Template | undefined;
   selectedDatasource: Datasource[] | undefined;
 
@@ -24,8 +22,8 @@ export class RendererNewPage implements OnInit {
   rendererName: string | undefined;
 
   constructor(
-    private templateService: TemplateService,
-    private datasourceService: DataSourceService,
+    public templateService: TemplateService,
+    public datasourceService: DataSourceService,
     private rendererService: RendererService,
     private screenMessageService: ScreenMessageService,
     private navController: NavController
@@ -33,12 +31,6 @@ export class RendererNewPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.templateService.findAll().then(r => {
-      this.templates = r.content;
-    })
-    this.datasourceService.findAll().then(r => {
-      this.datasource = r.content;
-    })
   }
 
 
@@ -70,7 +62,7 @@ export class RendererNewPage implements OnInit {
 
   updateAvailableAssociations(event: any) {
     const tmp = [];
-    for (const d of event.detail.value) {
+    for (const d of this.selectedDatasource || []) {
       for (const p of d.properties) {
         tmp.push({
           ds: d,
@@ -79,5 +71,9 @@ export class RendererNewPage implements OnInit {
       }
     }
     this.availableProperties = tmp.sort((a, b) => (a.ds.name + a.property).localeCompare(b.ds.name + b.property));
+  }
+
+  manage($event: any) {
+    console.log($event);
   }
 }

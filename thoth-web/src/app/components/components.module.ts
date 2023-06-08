@@ -12,6 +12,7 @@ import {
 import {PrintRequestModalComponent} from "./modals/print-request-modal/print-request-modal.component";
 import {SharingOptionsComponent} from "./sharing-options/sharing-options.component";
 import {ParametersFormComponent} from "./modals/parameters-form/parameters-form.component";
+import {TypeaheadSelectComponent} from "./typeahead-select/typeahead-select.component";
 
 
 
@@ -21,20 +22,22 @@ import {ParametersFormComponent} from "./modals/parameters-form/parameters-form.
     RestDatasourceParametersComponent,
     PrintRequestModalComponent,
     SharingOptionsComponent,
-    ParametersFormComponent
+    ParametersFormComponent,
+    TypeaheadSelectComponent
   ],
   exports: [
     JdbcDatasourceParametersComponent,
     RestDatasourceParametersComponent,
     PrintRequestModalComponent,
     SharingOptionsComponent,
-    ParametersFormComponent
+    ParametersFormComponent,
+    TypeaheadSelectComponent
   ],
-    imports: [
-        CommonModule,
-        IonicModule,
-        FormsModule,
-        CodemirrorModule
-    ]
+  imports: [
+    CommonModule,
+    IonicModule,
+    FormsModule,
+    CodemirrorModule
+  ]
 })
 export class ComponentsModule { }

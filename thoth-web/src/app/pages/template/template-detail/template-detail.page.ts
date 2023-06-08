@@ -7,6 +7,7 @@ import {ScreenMessageService} from "../../../services/screen-message.service";
 import {GuiUtilsService} from "../../../services/gui-utils.service";
 import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.service";
 import {ActivatedRoute} from "@angular/router";
+import {Editor} from "../editor";
 
 @Component({
   selector: 'app-template-detail',
@@ -15,7 +16,7 @@ import {ActivatedRoute} from "@angular/router";
 })
 export class TemplateDetailPage implements OnInit {
   template: Template | undefined;
-  private drawIoWindow: Window | null = null;
+  private editor = new Editor();
 
   constructor(private templateService: TemplateService,
               private alertController: AlertController,
@@ -76,72 +77,7 @@ export class TemplateDetailPage implements OnInit {
     }
     const template = this.template;
 
-    var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1';
-
-    if (this.drawIoWindow == null || this.drawIoWindow.closed) {
-      // Implements protocol for loading and exporting with embedded XML
-      const receive = (evt: any) => {
-        if (evt.data.length > 0 && evt.source == this.drawIoWindow) {
-          var msg = JSON.parse(evt.data);
-          console.log(msg);
-          // Received if the editor is ready
-          if (msg.event == 'init') {
-            // Sends the data URI with embedded XML to editor
-            this.drawIoWindow?.postMessage(JSON.stringify(
-              {action: 'load', xml: template.xml, autosave: 1}), '*');
-          }
-          // Received if the user clicks save
-          else if (msg.event == 'save' || msg.event == 'autosave') {
-            // Sends a request to export the diagram as XML with embedded PNG
-            template.xml = msg.xml;
-            this.drawIoWindow?.postMessage(JSON.stringify(
-              {action: 'export', format: 'svg', spinKey: 'saving', embedImages: false}), '*');
-          }
-          // Received if the export request was processed
-          else if (msg.event == 'export') {
-            // Updates the data URI of the image
-            template.img = msg.data;
-            template.svg = atob(msg.data.replace('data:image/svg+xml;base64,', ''));
-            template.markers = [];
-
-            const regex = /{{([a-zA-Z0-9\._]+)(\|[a-zA-Z0-9]+(:[a-zA-Z0-9_'-\.\\/~]+)*)*}}/g;
-
-            let m;
-
-            while ((m = regex.exec(template.svg)) !== null) {
-              // This is necessary to avoid infinite loops with zero-width matches
-              if (m.index === regex.lastIndex) {
-                regex.lastIndex++;
-              }
-
-              // The result can be accessed through the `m`-variable.
-              m.forEach((match, groupIndex) => {
-                if(groupIndex === 1){
-                  template.markers.push(match);
-                }
-              });
-            }
-            template.markers = [...new Set(template.markers)];
-          }
-
-          // Received if the user clicks exit or after export
-          if (msg.event == 'exit') {
-            // Closes the editor
-            window.removeEventListener('message', receive);
-            this.drawIoWindow?.close();
-            this.drawIoWindow = null;
-            this.templateService.update(template).finally();
-          }
-        }
-      };
-
-      // Opens the editor
-      window.addEventListener('message', receive);
-      this.drawIoWindow = window.open(url);
-    } else {
-      // Shows existing editor window
-      this.drawIoWindow?.focus();
-    }
+    this.editor.openEditor(template, this.templateService);
   }
 
   async clone() {
