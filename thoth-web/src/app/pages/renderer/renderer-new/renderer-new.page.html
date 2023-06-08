@@ -16,18 +16,19 @@
     </ion-item>
     <ion-item>
       <ion-label>Template</ion-label>
+      <app-typeahead-select slot="end" [fetcher]="templateService" [value]="selectedTemplate" (confirm)="selectedTemplate = $event"></app-typeahead-select>
+      <!--
       <ion-select name="template" [(ngModel)]="selectedTemplate">
         <ion-select-option *ngFor="let t of templates" [value]="t">
           {{t.name}}
         </ion-select-option>
       </ion-select>
+      -->
     </ion-item>
     <ion-item>
       <ion-label>Datasource</ion-label>
-      <ion-select name="datasource" [(ngModel)]="selectedDatasource" [multiple]="true"
-                  (ionChange)="updateAvailableAssociations($event)">
-        <ion-select-option *ngFor="let ds of datasource" [value]="ds">{{ds.name}}</ion-select-option>
-      </ion-select>
+      <app-typeahead-select slot="end" [multiple]="true" [fetcher]="datasourceService" [value]="selectedDatasource"
+                            (confirm)="selectedDatasource = $event; updateAvailableAssociations($event)"></app-typeahead-select>
     </ion-item>
     <ion-grid>
       <ion-row>
@@ -73,7 +74,7 @@
 <ion-footer class="ion-text-end">
   <ion-toolbar>
     <ion-button fill="clear" (click)="createRenderer()" class="ion-margin-horizontal"
-                [disabled]="!rendererName || !selectedTemplate || !datasource.length">Save
+                [disabled]="!rendererName || !selectedTemplate || !selectedDatasource?.length">Save
     </ion-button>
   </ion-toolbar>
 </ion-footer>

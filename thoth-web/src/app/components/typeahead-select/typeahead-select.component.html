@@ -1,0 +1,59 @@
+
+<div style="width: 100%;">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="auto" *ngIf="multiple"><span *ngFor="let i of value">{{i.name}}, </span></ion-col>
+      <ion-col size="auto" *ngIf="!multiple">{{value?.name}}</ion-col>
+      <ion-col size="1">
+
+        <ion-icon color="medium" name="caret-down-outline"></ion-icon>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>
+<div style="position: absolute; top: 0; bottom: 0; left: 0; right: 0" (click)="modal.present()"></div>
+<ion-modal #modal>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="modal.dismiss();">Cancel</ion-button>
+        </ion-buttons>
+        <ion-title>{{ title }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="confirmChanges(); modal.dismiss();">Done</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-list>
+        <ion-item *ngIf="loading">
+          <ion-label>Loading...</ion-label>
+          <ion-spinner></ion-spinner>
+        </ion-item>
+        <ng-container *ngIf="multiple else radio">
+          <ion-item *ngFor="let item of items;">
+            <ion-label>{{ item.name }}</ion-label>
+            <ion-checkbox [value]="item" [checked]="isChecked(item.id)"
+                          (ionChange)="checkboxChange($event)"></ion-checkbox>
+          </ion-item>
+        </ng-container>
+        <ng-template #radio>
+          <ion-radio-group [(ngModel)]="selectedItems[0]">
+            <ion-item *ngFor="let item of items;">
+              <ion-label>{{ item.name }}</ion-label>
+              <ion-radio [value]="item"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </ng-template>
+
+      </ion-list>
+      <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+        <ion-infinite-scroll-content>
+
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ion-content>
+  </ng-template>
+</ion-modal>

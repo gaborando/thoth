@@ -14,13 +14,13 @@
 <ion-content>
   <ion-item>
     <ion-label>Copies</ion-label>
-    <ion-input class="ion-text-end" type="number" min="1" max="100" name="copies" [(ngModel)]="request.copies"></ion-input>
+    <ion-input class="ion-text-end" type="number" min="1" max="100" name="copies"
+               [(ngModel)]="request.copies"></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>Client</ion-label>
-    <ion-select name="client" [(ngModel)]="request.client">
-      <ion-select-option *ngFor="let c of clients" [value]="c">{{c.name}}</ion-select-option>
-    </ion-select>
+    <app-typeahead-select [fetcher]="clientService" [value]="request.client"
+                          (confirm)="request.client = $event"></app-typeahead-select>
   </ion-item>
 
   <ion-item [disabled]="!request.client">

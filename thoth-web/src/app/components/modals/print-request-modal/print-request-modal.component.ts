@@ -11,7 +11,6 @@ import {Client} from "../../../common/types/client";
 })
 export class PrintRequestModalComponent implements OnInit {
 
-  clients: Client[] = []
   request: {
     client: Client | null,
     printService: string[],
@@ -23,7 +22,7 @@ export class PrintRequestModalComponent implements OnInit {
   }
 
   constructor(private modalCtrl: ModalController,
-              private clientService: ClientService) {}
+              public clientService: ClientService) {}
 
   cancel() {
     return this.modalCtrl.dismiss(null, 'cancel');
@@ -34,7 +33,6 @@ export class PrintRequestModalComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.clients = (await this.clientService.findAll()).content;
   }
 
 
