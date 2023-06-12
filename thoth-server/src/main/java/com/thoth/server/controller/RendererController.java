@@ -2,6 +2,7 @@ package com.thoth.server.controller;
 
 import com.thoth.server.controller.dto.renderer.RendererCreateRequest;
 import com.thoth.server.controller.dto.PrintRequest;
+import com.thoth.server.controller.dto.renderer.RendererListItem;
 import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.service.render.RenderService;
 import com.thoth.server.service.RendererService;
@@ -44,11 +45,12 @@ public class RendererController {
 
     @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<Renderer>> findAll(
+    public ResponseEntity<Page<RendererListItem>> findAll(
             @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(rendererService.search(Specification.where(null),
-                PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt")))));
+                PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt"))))
+                .map(RendererListItem::new));
     }
 
 

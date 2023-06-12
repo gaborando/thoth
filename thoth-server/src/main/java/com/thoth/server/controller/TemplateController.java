@@ -1,9 +1,9 @@
 package com.thoth.server.controller;
 
 import com.nimbusds.jose.shaded.gson.Gson;
-import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.thoth.server.controller.dto.PrintRequest;
 import com.thoth.server.controller.dto.template.CreateTemplateRequest;
+import com.thoth.server.controller.dto.template.TemplateListItem;
 import com.thoth.server.model.domain.Template;
 import com.thoth.server.service.render.RenderService;
 import com.thoth.server.service.TemplateService;
@@ -73,16 +73,7 @@ public class TemplateController {
                                              @RequestBody(required = false) HashMap<String, Object> p2,
                                              @PathVariable String identifier) throws IOException, InterruptedException {
 
-        var params = new HashMap<String, Object>();
-        if (p1 != null) params.putAll(p1);
-        if (p2 != null) params.putAll(p2);
-        if(params.containsKey("json")){
-            var j = new Gson().fromJson(params.get("json").toString(), HashMap.class);
-            for (Object s : j.keySet()) {
-                params.put(s.toString(), j.get(s));
-            }
-        }
-        var data = renderService.renderTemplateJpeg(identifier, params);
+        var data = renderService.renderTemplateJpeg(identifier, parseParams(p1, p2));
         return ResponseEntity.ok(data);
 
     }
@@ -92,16 +83,8 @@ public class TemplateController {
     public ResponseEntity<byte[]> renderPdf(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,
                                             @PathVariable String identifier) throws IOException, InterruptedException {
-        var params = new HashMap<String, Object>();
-        if (p1 != null) params.putAll(p1);
-        if (p2 != null) params.putAll(p2);
-        if(params.containsKey("json")){
-           var j = new Gson().fromJson(params.get("json").toString(), HashMap.class);
-            for (Object s : j.keySet()) {
-                params.put(s.toString(), j.get(s));
-            }
-        }
-        var data = renderService.renderTemplatePdf(identifier, params);
+
+        var data = renderService.renderTemplatePdf(identifier, parseParams(p1, p2));
         return ResponseEntity.ok(data);
 
     }
@@ -112,6 +95,12 @@ public class TemplateController {
                                             @RequestBody(required = false) HashMap<String, Object> p2,
                                             @PathVariable String identifier) throws IOException, InterruptedException {
 
+        var data = renderService.renderTemplateSvg(identifier,  parseParams(p1, p2));
+        return ResponseEntity.ok(data.getBytes());
+
+    }
+
+    private HashMap<String, Object> parseParams(@RequestParam(required = false) HashMap<String, Object> p1, @RequestBody(required = false) HashMap<String, Object> p2) {
         var params = new HashMap<String, Object>();
         if (p1 != null) params.putAll(p1);
         if (p2 != null) params.putAll(p2);
@@ -121,9 +110,7 @@ public class TemplateController {
                 params.put(s.toString(), j.get(s));
             }
         }
-        var data = renderService.renderTemplateSvg(identifier, params);
-        return ResponseEntity.ok(data.getBytes());
-
+        return params;
     }
 
     @Secured({"ROLE_USER", "ROLE_API"})
