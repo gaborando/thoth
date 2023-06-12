@@ -120,8 +120,36 @@ export class RendererDetailPage implements OnInit {
       if (accessToken) {
         query.append("access_token", accessToken);
       }
+      const alert = await this.alertController.create({
+        header: 'Type',
+        inputs: [
+          {
+            label: 'PDF',
+            type: 'radio',
+            value: 'pdf'
+          },
+          {
+            label: 'JPEG',
+            type: 'radio',
+            value: 'jpg'
+          },
+          {
+            label: 'SVG',
+            type: 'radio',
+            value: 'svg'
+          }
+        ],
+        buttons: [
+          {text: 'Cancel', role: 'cancel'},
+          {
+            text: 'OK', handler: async (e) =>
+              window.open((await environment()).apiUrl + '/renderer/' + this.renderer?.id + '/render/'+e+'?' + query.toString())
+          }
+        ]
+      });
+      await alert.present();
 
-      window.open((await environment()).apiUrl + '/renderer/' + this.renderer.id + '/render/pdf?' + query.toString())
+
     }
   }
 

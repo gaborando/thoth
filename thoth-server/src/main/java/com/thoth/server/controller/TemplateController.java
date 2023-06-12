@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.HashMap;
 
@@ -56,7 +57,7 @@ public class TemplateController {
 
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER"})
-    public ResponseEntity<Template> update(@RequestBody Template template, @PathVariable String identifier) {
+    public ResponseEntity<Template> update(@RequestBody Template template, @PathVariable String identifier) throws ParserConfigurationException {
         return ResponseEntity.ok(templateService.update(identifier, template));
     }
 

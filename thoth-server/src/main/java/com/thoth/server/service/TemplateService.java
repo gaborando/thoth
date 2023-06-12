@@ -15,8 +15,25 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.time.Instant;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -35,9 +52,74 @@ public class TemplateService {
         return update(getById(identifier).orElseThrow(), properties);
     }
     @PreAuthorize("@authenticationFacade.canWrite(#original)")
-    private Template update(Template original, Template update) {
+    private Template update(Template original, Template update)  {
         update.setId(original.getId());
+        update.setSvg(cleanSVG(update.getSvg()));
         return templateRepository.save(update);
+    }
+
+    private String cleanSVG(String svg) {
+        try {
+            // Create a DocumentBuilderFactory
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            // Create a DocumentBuilder
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            // Parse the XML file
+
+            // Create an InputSource from the XML string
+            InputSource inputSource = new InputSource(new StringReader(svg));
+
+            // Parse the XML string
+            Document document = builder.parse(inputSource);
+
+            var queue = new LinkedList<Node>();
+            queue.add(document);
+
+            while (!queue.isEmpty()){
+                var el = queue.remove();
+                for (int i = 0; i <el.getChildNodes().getLength(); i++) {
+                    queue.add(el.getChildNodes().item(i));
+                }
+                if(el.getNodeName().equals("text")){
+                    el.getParentNode().removeChild(el);
+                    el.setTextContent("");
+                }
+            }
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+
+            // Convert the XML document to a string
+            DOMSource source = new DOMSource(document);
+            StringWriter stringWriter = new StringWriter();
+            StreamResult result = new StreamResult(stringWriter);
+            transformer.transform(source, result);
+
+            // Get the XML string from the StringWriter
+            return stringWriter.toString();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return svg;
+    }
+
+    private static NodeList findNestedNodesByTagName(Element element, String tagName) {
+        NodeList matchedNodes = element.getElementsByTagName(tagName);
+        if(matchedNodes == null){
+            return null;
+        }
+        NodeList childNodes = element.getChildNodes();
+        if(childNodes == null){
+            return matchedNodes;
+        }
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            org.w3c.dom.Node childNode = childNodes.item(i);
+
+            findNestedNodesByTagName((Element) childNode, tagName);
+
+
+        }
+        return matchedNodes;
     }
 
     @PreAuthorize("@authenticationFacade.canWrite(#template)")
