@@ -1,10 +1,7 @@
 package com.thoth.server.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.thoth.server.controller.dto.datasource.JdbcDatasourceParametersCheckRequest;
-import com.thoth.server.controller.dto.datasource.JdbcDatasourceParametersCreateRequest;
-import com.thoth.server.controller.dto.datasource.RestDatasourceParametersCheckRequest;
-import com.thoth.server.controller.dto.datasource.RestDatasourceParametersCreateRequest;
+import com.thoth.server.controller.dto.datasource.*;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
 import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
@@ -80,11 +77,11 @@ public class DataSourceController {
     }
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<DatasourceProperties>> findAll(
+    public ResponseEntity<Page<DatasourcePropertyListItem>> findAll(
             @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(dataSourceService.search(Specification.where(null),
-                PageRequest.of(page, 10)));
+                PageRequest.of(page, 10)).map(DatasourcePropertyListItem::new));
     }
 
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
