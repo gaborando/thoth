@@ -3,19 +3,17 @@ package com.thoth.server.controller;
 import com.thoth.server.controller.dto.renderer.RendererCreateRequest;
 import com.thoth.server.controller.dto.PrintRequest;
 import com.thoth.server.model.domain.Renderer;
-import com.thoth.server.service.RenderService;
+import com.thoth.server.service.render.RenderService;
 import com.thoth.server.service.RendererService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 @RestController

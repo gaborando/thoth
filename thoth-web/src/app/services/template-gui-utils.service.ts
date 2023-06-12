@@ -22,12 +22,10 @@ export class TemplateGuiUtilsService {
               private guiUtils: GuiUtilsService) { }
 
   async renderTemplate(t: Template) {
-    const resp = await this.guiUtils.parametersFormModal("Render a Template", new Set<string>(t.markers));
+    const resp = await this.guiUtils.parametersFormModal("Render a Template", new Set<string>(t.markers), t.id);
     if (!resp.role) {
       var query = new URLSearchParams();
-      for (const key of Object.keys(resp.data || {})) {
-        query.append(key, resp.data[key]);
-      }
+      query.append("json", JSON.stringify(resp.data));
       const accessToken = localStorage.getItem("access_token");
       if (accessToken) {
         query.append("access_token", accessToken);
@@ -37,9 +35,9 @@ export class TemplateGuiUtilsService {
   }
 
   async printTemplate(t: Template) {
-    const resp = await this.guiUtils.parametersFormModal("Print a Template", new Set<string>(t.markers));
+    const resp = await this.guiUtils.parametersFormModal("Print a Template", new Set<string>(t.markers), t.id);
     if (!resp.role) {
-      const params = resp.data.values || {};
+      const params = {"json": JSON.stringify(resp.data.values)} || {};
       const {data, role} = await this.guiUtils.printRequestModal();
       if(role === 'confirm'){
 

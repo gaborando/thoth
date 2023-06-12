@@ -54,6 +54,7 @@ dependencies {
 // https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt
 	implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.30.2'
 
+	implementation 'com.hubspot.jinjava:jinjava:2.7.0'
 
 
 	implementation project(':thoth-common')
