@@ -108,7 +108,7 @@ export class RendererDetailPage implements OnInit {
         inputs.add(p)
       }
     }
-    const resp = await this.guiUtils.parametersFormModal("Render a Template", inputs);
+    const resp = await this.guiUtils.parametersFormModal("Render a Template", inputs, this.renderer.id);
     if (!resp.role) {
 
       var query = new URLSearchParams();
@@ -168,7 +168,7 @@ export class RendererDetailPage implements OnInit {
         inputs.add(p)
       }
     }
-    const resp = await this.guiUtils.parametersFormModal("Print a Template", inputs);
+    const resp = await this.guiUtils.parametersFormModal("Print a Template", inputs, this.renderer.id);
     if (!resp.role) {
       const params = resp.data;
       const {data, role} = await this.guiUtils.printRequestModal();

@@ -4,15 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.nimbusds.jose.shaded.gson.Gson;
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.dto.datasource.RestDatasourceParameters;
-import com.thoth.server.model.domain.Client;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
 import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
-import com.thoth.server.model.repository.RendererRepository;
-import org.springframework.amqp.rabbit.connection.SimpleResourceHolder;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +19,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,7 @@ import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class DataSourceService {
@@ -90,10 +88,10 @@ public class DataSourceService {
     }
 
 
-
     public DatasourceProperties update(String identifier, DatasourceProperties properties) {
         return update(findById(identifier).orElseThrow(), properties);
     }
+
     @PreAuthorize("@authenticationFacade.canWrite(#original)")
     private DatasourceProperties update(DatasourceProperties original, DatasourceProperties update) {
         update.setId(original.getId());
@@ -119,9 +117,9 @@ public class DataSourceService {
 
     @PreAuthorize("@authenticationFacade.canRead(#datasourceProperty) || hasRole('ROLE_TMP')")
     public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) throws JsonProcessingException {
-        if(datasourceProperty instanceof JdbcDatasourceProperties j){
+        if (datasourceProperty instanceof JdbcDatasourceProperties j) {
             var dataSource = datasourceCache.get(j.getId());
-            if(dataSource == null){
+            if (dataSource == null) {
                 var dataSourceBuilder = DataSourceBuilder.create();
                 dataSourceBuilder.url(j.getUrl());
                 dataSourceBuilder.username(j.getUsername());
@@ -139,7 +137,7 @@ public class DataSourceService {
             NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
             var rs = jdbcTemplate.queryForRowSet(j.getQuery(), localParameters);
 
-            if(!rs.next()){
+            if (!rs.next()) {
                 return new HashMap<>();
             }
             var resp = new HashMap<String, Object>();
@@ -148,8 +146,8 @@ public class DataSourceService {
             }
             return resp;
         }
-        if(datasourceProperty instanceof RestDatasourceProperties j){
-            var request  = new RestDatasourceParameters();
+        if (datasourceProperty instanceof RestDatasourceProperties j) {
+            var request = new RestDatasourceParameters();
             request.setBody(j.getBody());
             request.setUrl(j.getUrl());
             request.setHeaders(j.getHeaders());
@@ -158,7 +156,7 @@ public class DataSourceService {
             request.setJsonQuery(j.getJsonQuery());
             var strBody = objectMapper.writeValueAsString(request);
             for (Map.Entry<String, Object> e : parameters.entrySet()) {
-                strBody = strBody.replace("{{"+e.getKey()+"}}", e.getValue().toString());
+                strBody = strBody.replace("{{" + e.getKey() + "}}", e.getValue().toString());
             }
             request = objectMapper.readValue(strBody, RestDatasourceParameters.class);
             var restTemplate = new RestTemplate();
@@ -174,17 +172,17 @@ public class DataSourceService {
             );
 
             var root = objectMapper.readTree(resp.getBody()).at(request.getJsonQuery());
-            if(!root.getNodeType().equals(JsonNodeType.OBJECT))
+            if (!root.getNodeType().equals(JsonNodeType.OBJECT))
                 throw new IllegalArgumentException("Invalid json Object fetched");
 
             return getNodeFieldsMap(root, "");
         }
-       return new HashMap<>();
+        return new HashMap<>();
     }
 
     private Object toNumeric(String string) {
         var num = Float.parseFloat(string);
-        if(BigDecimal.valueOf(num).divideAndRemainder(BigDecimal.ONE)[1].equals(BigDecimal.ZERO)){
+        if (BigDecimal.valueOf(num).divideAndRemainder(BigDecimal.ONE)[1].equals(BigDecimal.ZERO)) {
             return (int) num;
         }
         return num;
@@ -198,7 +196,7 @@ public class DataSourceService {
     public ArrayList<String> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
         var strBody = objectMapper.writeValueAsString(request);
         for (Map.Entry<String, String> e : parameters.entrySet()) {
-            strBody = strBody.replace("{{"+e.getKey()+"}}", e.getValue());
+            strBody = strBody.replace("{{" + e.getKey() + "}}", e.getValue());
         }
         request = objectMapper.readValue(strBody, RestDatasourceParameters.class);
         var restTemplate = new RestTemplate();
@@ -214,7 +212,7 @@ public class DataSourceService {
         );
 
         var root = objectMapper.readTree(resp.getBody()).at(request.getJsonQuery());
-        if(!root.getNodeType().equals(JsonNodeType.OBJECT))
+        if (!root.getNodeType().equals(JsonNodeType.OBJECT))
             throw new IllegalArgumentException("Invalid json Object fetched");
 
         return getNodeFields(root, "");
@@ -222,25 +220,30 @@ public class DataSourceService {
 
     private ArrayList<String> getNodeFields(JsonNode root, String s) {
         var fields = new ArrayList<String>();
-        root.fields().forEachRemaining(e -> {
-            if(e.getValue().getNodeType() == JsonNodeType.OBJECT){
-                fields.addAll(getNodeFields(e.getValue(), e.getKey() + '/'));
-            }
-            else if(e.getValue().getNodeType() != JsonNodeType.ARRAY){
-                fields.add(s + e.getKey());
-            }
-        });
+        AtomicBoolean fieldAdded = new AtomicBoolean(true);
+        while (fieldAdded.get()) {
+            fieldAdded.set(false);
+            root.fields().forEachRemaining(e -> {
+                if (e.getValue().getNodeType() == JsonNodeType.OBJECT) {
+                    fields.addAll(getNodeFields(e.getValue(), e.getKey() + '/'));
+                    fieldAdded.set(true);
+                } else {
+                    fields.add(s + e.getKey());
+                }
+            });
+        }
         return fields;
     }
 
     private HashMap<String, Object> getNodeFieldsMap(JsonNode root, String s) {
         var fields = new HashMap<String, Object>();
         root.fields().forEachRemaining(e -> {
-            if(e.getValue().getNodeType() == JsonNodeType.OBJECT){
+            if (e.getValue().getNodeType() == JsonNodeType.OBJECT) {
                 fields.putAll(getNodeFieldsMap(e.getValue(), e.getKey() + '/'));
-            }
-            else if(e.getValue().getNodeType() != JsonNodeType.ARRAY){
+            } else if (e.getValue().getNodeType() != JsonNodeType.ARRAY) {
                 fields.put(s + e.getKey(), e.getValue().asText());
+            }else {
+                fields.put(s + e.getKey(), e.getValue());
             }
         });
         return fields;

@@ -4,15 +4,34 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col [size]="parameters.length < 10 ? 12 : 6" *ngFor="let p of parameters">
-        <ion-item>
-          <ion-input [name]="p" [(ngModel)]="data[p]" [placeholder]="p"></ion-input>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <ion-segment #segment value="form">
+    <ion-segment-button value="form">Form</ion-segment-button>
+    <ion-segment-button value="json">Json</ion-segment-button>
+  </ion-segment>
+  <ng-container *ngIf="segment.value === 'form'">
+    <ion-grid>
+      <ion-row>
+        <ion-col [size]="parameters.length < 10 ? 12 : 6" *ngFor="let p of parameters">
+          <ion-item>
+            <ion-input [name]="p" [(ngModel)]="data[p]" [placeholder]="p"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
+  <ng-container *ngIf="segment.value === 'json'">
+    <ngx-codemirror (codeMirrorLoaded)="codeLoaded($event)" name="json"
+                    (keyup)="jsonChanged($event)"
+                    [(ngModel)]="jsonData"
+                    [options]="{
+    theme: 'default',
+    autoRefresh: true,
+    mode: 'json',
+    inputStyle: 'textarea',
+    lineNumbers: true
+  }" [autoFocus]="true"
+    ></ngx-codemirror>
+  </ng-container>
 
 </ion-content>
 <ion-footer>

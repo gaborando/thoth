@@ -18,12 +18,13 @@ export class GuiUtilsService {
     return modal.onWillDismiss()
   }
 
-  async parametersFormModal(title: string, parameters: Set<string>){
+  async parametersFormModal(title: string, parameters: Set<string>, resourceId: string){
     const m = await this.modalController.create({
       component: ParametersFormComponent,
       componentProps: {
         parameters,
-        title
+        title,
+        resourceId
       }
     });
     await m.present();

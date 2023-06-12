@@ -1,15 +1,16 @@
 package com.thoth.server.controller;
 
+import com.nimbusds.jose.shaded.gson.Gson;
+import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.thoth.server.controller.dto.PrintRequest;
 import com.thoth.server.controller.dto.template.CreateTemplateRequest;
 import com.thoth.server.model.domain.Template;
-import com.thoth.server.service.RenderService;
+import com.thoth.server.service.render.RenderService;
 import com.thoth.server.service.TemplateService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -75,6 +76,12 @@ public class TemplateController {
         var params = new HashMap<String, Object>();
         if (p1 != null) params.putAll(p1);
         if (p2 != null) params.putAll(p2);
+        if(params.containsKey("json")){
+            var j = new Gson().fromJson(params.get("json").toString(), HashMap.class);
+            for (Object s : j.keySet()) {
+                params.put(s.toString(), j.get(s));
+            }
+        }
         var data = renderService.renderTemplateJpeg(identifier, params);
         return ResponseEntity.ok(data);
 
@@ -85,10 +92,15 @@ public class TemplateController {
     public ResponseEntity<byte[]> renderPdf(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,
                                             @PathVariable String identifier) throws IOException, InterruptedException {
-
         var params = new HashMap<String, Object>();
         if (p1 != null) params.putAll(p1);
         if (p2 != null) params.putAll(p2);
+        if(params.containsKey("json")){
+           var j = new Gson().fromJson(params.get("json").toString(), HashMap.class);
+            for (Object s : j.keySet()) {
+                params.put(s.toString(), j.get(s));
+            }
+        }
         var data = renderService.renderTemplatePdf(identifier, params);
         return ResponseEntity.ok(data);
 
@@ -103,6 +115,12 @@ public class TemplateController {
         var params = new HashMap<String, Object>();
         if (p1 != null) params.putAll(p1);
         if (p2 != null) params.putAll(p2);
+        if(params.containsKey("json")){
+            var j = new Gson().fromJson(params.get("json").toString(), HashMap.class);
+            for (Object s : j.keySet()) {
+                params.put(s.toString(), j.get(s));
+            }
+        }
         var data = renderService.renderTemplateSvg(identifier, params);
         return ResponseEntity.ok(data.getBytes());
 
