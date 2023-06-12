@@ -3,7 +3,7 @@
 ## Pipes
 ### Padding
 ```
-{{ value | padding:size:character }}
+{{ value | padding(size,'character') }}
 ```
 ```java
 String.format("%" + size + "s", value).replace(' ', character)
@@ -17,14 +17,14 @@ value.trim()
 ```
 ### Date
 ```
-{{ value | date:pattern }}
+{{ value | date('pattern') }}
 ```
 ```java
 ZonedDateTime.parse(value).format(DateTimeFormatter.ofPattern(pattern));
 ```
 ### Number
 ```
-{{ value | number:pattern }}
+{{ value | number('pattern') }}
 ```
 ```java
 String.format("%" + format + "f", Double.parseDouble(value));
