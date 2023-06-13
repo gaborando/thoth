@@ -131,7 +131,7 @@ export class RendererDetailPage implements OnInit {
           {
             label: 'JPEG',
             type: 'radio',
-            value: 'jpg'
+            value: 'jpeg'
           },
           {
             label: 'SVG',

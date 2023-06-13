@@ -43,7 +43,7 @@ export class TemplateGuiUtilsService {
           {
             label: 'JPEG',
             type: 'radio',
-            value: 'jpg'
+            value: 'jpeg'
           },
           {
             label: 'SVG',
