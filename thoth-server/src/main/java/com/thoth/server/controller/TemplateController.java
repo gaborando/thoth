@@ -91,7 +91,8 @@ public class TemplateController {
     }
 
     @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
-    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/svg", produces = "image/svg+xml")
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
+            value = "/{identifier}/render/svg", produces = "image/svg+xml")
     public ResponseEntity<byte[]> renderSvg(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,
                                             @PathVariable String identifier) throws IOException, InterruptedException {
