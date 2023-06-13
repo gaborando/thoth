@@ -36,156 +36,159 @@ export class Editor {
 
 
   private drawIoWindow: Window | null = null;
+  private currentTemplate: string | null = null;
+  private currentListener: any | null = null;
 
   openEditor(template: Template,
              templateService: TemplateService) {
-    var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1&configure=1';
-
-    if (this.drawIoWindow == null || this.drawIoWindow.closed) {
-      // Implements protocol for loading and exporting with embedded XML
-      const receive = (evt: any) => {
-        if (evt.data.length > 0 && evt.source == this.drawIoWindow) {
-          var msg = JSON.parse(evt.data);
-          if (msg.event === 'configure') {
-            this.drawIoWindow?.postMessage(JSON.stringify({
-              action: 'configure',
-              config: {
-                defaultLibraries: "general;thoth-elements",
-                enableCustomLibraries: true,
-                enabledLibraries: ["general", "thoth-elements"],
-                libraries: [{
+    var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1&configure=1&template=' + template.id;
+    if (this.drawIoWindow != null) {
+      this.drawIoWindow?.close();
+    }
+    if (this.currentListener != null) {
+      window.removeEventListener('message', this.currentListener)
+    }
+    
+    // Implements protocol for loading and exporting with embedded XML
+    this.currentListener = (evt: any) => {
+      if (evt.data.length > 0 && this.currentTemplate == template.id) {
+        var msg = JSON.parse(evt.data);
+        if (msg.event === 'configure') {
+          this.drawIoWindow?.postMessage(JSON.stringify({
+            action: 'configure',
+            config: {
+              defaultLibraries: "general;thoth-elements",
+              enableCustomLibraries: true,
+              enabledLibraries: ["general", "thoth-elements"],
+              libraries: [{
+                "title": {
+                  "main": "THOTH"
+                },
+                "entries": [{
+                  "id": "thoth-elements",
                   "title": {
-                    "main": "THOTH"
+                    "main": "Thoth Elements"
                   },
-                  "entries": [{
-                    "id": "thoth-elements",
+                  "desc": {
+                    "main": "Thoth Graphic Elements"
+                  },
+                  "libs": [{
                     "title": {
-                      "main": "Thoth Elements"
-                    },
-                    "desc": {
                       "main": "Thoth Graphic Elements"
                     },
-                    "libs": [{
-                      "title": {
-                        "main": "Thoth Graphic Elements"
-                      },
-                      "data": library
-                    }]
+                    "data": library
                   }]
                 }]
-              }
-            }), '*');
-          }
-          // Received if the editor is ready
-          else if (msg.event == 'init') {
-            // Sends the data URI with embedded XML to editor
-            this.drawIoWindow?.postMessage(JSON.stringify(
-              {action: 'load', xml: template.xml, autosave: 1}), '*');
-          }
-          // Received if the user clicks save
-          else if (msg.event == 'save' || msg.event == 'autosave') {
-            // Sends a request to export the diagram as XML with embedded PNG
-            template.xml = msg.xml;
-            this.drawIoWindow?.postMessage(JSON.stringify(
-              {action: 'export', format: 'svg', spinKey: 'saving', embedImages: false}), '*');
-          }
-          // Received if the export request was processed
-          else if (msg.event == 'export') {
-            // Updates the data URI of the image
-            template.img = msg.data;
-            template.svg = atob(msg.data.replace('data:image/svg+xml;base64,', ''));
-            template.markers = [];
-
-            const regex = /{{ *([a-zA-Z0-9\._]+)[^{]*}}/g;
-
-            let m;
-
-            while ((m = regex.exec(template.svg)) !== null) {
-              // This is necessary to avoid infinite loops with zero-width matches
-              if (m.index === regex.lastIndex) {
-                regex.lastIndex++;
-              }
-
-              // The result can be accessed through the `m`-variable.
-              m.forEach((match, groupIndex) => {
-                if (groupIndex === 1) {
-                  template.markers.push(match);
-                }
-              });
+              }]
             }
-            template.markers = [...new Set(template.markers)];
-            console.log('etchu');
-            if (!template.markers.includes('block**')) {
-              if (template.markers.includes('_barcode')) {
-                this.drawIoWindow?.postMessage(JSON.stringify(
-                  {
-                    action: 'prompt',
-                    title: 'Specify marker for barcode',
-                    ok: 'Insert',
-                    defaultValue: '{{barcode}}'
-                  }), '*');
-              } else if (template.markers.includes('_qrcode')) {
-                this.drawIoWindow?.postMessage(JSON.stringify(
-                  {
-                    action: 'prompt',
-                    title: 'Specify marker for qrcode',
-                    ok: 'Insert',
-                    defaultValue: '{{qrcode}}'
-                  }), '*');
-              } else if (template.markers.includes('_marker')) {
-                this.drawIoWindow?.postMessage(JSON.stringify(
-                  {
-                    action: 'prompt',
-                    title: 'Specify the marker',
-                    ok: 'Insert',
-                    defaultValue: '{{marker}}'
-                  }), '*');
-              } else {
-                this.save(template, templateService);
+          }), '*');
+        }
+        // Received if the editor is ready
+        else if (msg.event == 'init') {
+          // Sends the data URI with embedded XML to editor
+          this.drawIoWindow?.postMessage(JSON.stringify(
+            {action: 'load', xml: template.xml, autosave: 1}), '*');
+        }
+        // Received if the user clicks save
+        else if (msg.event == 'save' || msg.event == 'autosave') {
+          // Sends a request to export the diagram as XML with embedded PNG
+          template.xml = msg.xml;
+          this.drawIoWindow?.postMessage(JSON.stringify(
+            {action: 'export', format: 'svg', spinKey: 'saving', embedImages: false}), '*');
+        }
+        // Received if the export request was processed
+        else if (msg.event == 'export') {
+          // Updates the data URI of the image
+          template.img = msg.data;
+          template.svg = atob(msg.data.replace('data:image/svg+xml;base64,', ''));
+          template.markers = [];
+
+          const regex = /{{ *([a-zA-Z0-9\._]+)[^{]*}}/g;
+
+          let m;
+
+          while ((m = regex.exec(template.svg)) !== null) {
+            // This is necessary to avoid infinite loops with zero-width matches
+            if (m.index === regex.lastIndex) {
+              regex.lastIndex++;
+            }
+
+            // The result can be accessed through the `m`-variable.
+            m.forEach((match, groupIndex) => {
+              if (groupIndex === 1) {
+                template.markers.push(match);
               }
+            });
+          }
+          template.markers = [...new Set(template.markers)];
+          if (!template.markers.includes('block**')) {
+            if (template.markers.includes('_barcode')) {
+              this.drawIoWindow?.postMessage(JSON.stringify(
+                {
+                  action: 'prompt',
+                  title: 'Specify marker for barcode',
+                  ok: 'Insert',
+                  defaultValue: '{{barcode}}'
+                }), '*');
+            } else if (template.markers.includes('_qrcode')) {
+              this.drawIoWindow?.postMessage(JSON.stringify(
+                {
+                  action: 'prompt',
+                  title: 'Specify marker for qrcode',
+                  ok: 'Insert',
+                  defaultValue: '{{qrcode}}'
+                }), '*');
+            } else if (template.markers.includes('_marker')) {
+              this.drawIoWindow?.postMessage(JSON.stringify(
+                {
+                  action: 'prompt',
+                  title: 'Specify the marker',
+                  ok: 'Insert',
+                  defaultValue: '{{marker}}'
+                }), '*');
             } else {
               this.save(template, templateService);
             }
-          } else if (msg.event == 'prompt') {
+          } else {
+            this.save(template, templateService);
+          }
+        } else if (msg.event == 'prompt') {
 
-            var xmlDoc = new DOMParser().parseFromString(template.xml || '', 'application/xml');
-            var diagrams = xmlDoc.getElementsByTagName('diagram');
-            const node: any = diagrams[0].children.item(0)?.outerHTML;
-            // @ts-ignore
-            if (msg.message.defaultValue === '{{barcode}}') {
-              const n = node.replaceAll('{{_barcode}}', msg.value);
-              this.drawIoWindow?.postMessage(JSON.stringify(
-                {action: 'merge', xml: n}), '*');
-            } else if (msg.message.defaultValue === '{{qrcode}}') {
-              const n = node.replaceAll('{{_qrcode}}', msg.value);
-              this.drawIoWindow?.postMessage(JSON.stringify(
-                {action: 'merge', xml: n}), '*');
-            } else if (msg.message.defaultValue === '{{marker}}') {
-              const n = node.replaceAll('{{_marker}}', msg.value);
-              this.drawIoWindow?.postMessage(JSON.stringify(
-                {action: 'merge', xml: n}), '*');
-            }
-
+          var xmlDoc = new DOMParser().parseFromString(template.xml || '', 'application/xml');
+          var diagrams = xmlDoc.getElementsByTagName('diagram');
+          const node: any = diagrams[0].children.item(0)?.outerHTML;
+          // @ts-ignore
+          if (msg.message.defaultValue === '{{barcode}}') {
+            const n = node.replaceAll('{{_barcode}}', msg.value);
+            this.drawIoWindow?.postMessage(JSON.stringify(
+              {action: 'merge', xml: n}), '*');
+          } else if (msg.message.defaultValue === '{{qrcode}}') {
+            const n = node.replaceAll('{{_qrcode}}', msg.value);
+            this.drawIoWindow?.postMessage(JSON.stringify(
+              {action: 'merge', xml: n}), '*');
+          } else if (msg.message.defaultValue === '{{marker}}') {
+            const n = node.replaceAll('{{_marker}}', msg.value);
+            this.drawIoWindow?.postMessage(JSON.stringify(
+              {action: 'merge', xml: n}), '*');
           }
 
-          // Received if the user clicks exit or after export
-          if (msg.event == 'exit') {
-            // Closes the editor
-            window.removeEventListener('message', receive);
-            this.drawIoWindow?.close();
-            this.drawIoWindow = null;
-            templateService.update(template).finally();
-          }
         }
-      };
 
-      // Opens the editor
-      window.addEventListener('message', receive);
-      this.drawIoWindow = window.open(url);
-    } else {
-      // Shows existing editor window
-      this.drawIoWindow?.focus();
-    }
+        // Received if the user clicks exit or after export
+        if (msg.event == 'exit') {
+          // Closes the editor
+          window.removeEventListener('message', this.currentListener);
+          this.drawIoWindow?.close();
+          this.drawIoWindow = null;
+          templateService.update(template).finally();
+        }
+      }
+    };
+
+    // Opens the editor
+    window.addEventListener('message', this.currentListener);
+    this.currentTemplate = template.id;
+    this.drawIoWindow = window.open(url);
   }
 
   save(template: Template, templateService: TemplateService) {
