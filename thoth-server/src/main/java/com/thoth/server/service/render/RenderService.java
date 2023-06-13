@@ -32,6 +32,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 @Service
 public class RenderService {
 
@@ -85,7 +87,7 @@ public class RenderService {
         svg = svg.replace("utils/barcode?", "utils/barcode?TMP_KEY=" + tmpKey + "&amp;");
         svg = svg.replace("utils/qrcode?", "utils/qrcode?TMP_KEY=" + tmpKey + "&amp;");
 
-        return jinjava.render(svg, allParams);
+        return new String(jinjava.render(svg, allParams).getBytes(), ISO_8859_1);
     }
 
     private byte[] renderTemplateJpeg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
