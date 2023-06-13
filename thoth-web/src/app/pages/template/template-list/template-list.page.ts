@@ -57,7 +57,7 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
     const resp = await alert.onDidDismiss();
     if (!resp.role) {
       const t = await this.templateService.create(resp.data.values.name);
-      this.elements?.push(t);
+      this.elements?.unshift(t);
       return this.openEditor(t);
     }
   }
