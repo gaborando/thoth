@@ -66,7 +66,7 @@ export class TemplateGuiUtilsService {
   async printTemplate(t: Template) {
     const resp = await this.guiUtils.parametersFormModal("Print a Template", new Set<string>(t.markers), t.id);
     if (!resp.role) {
-      const params = {"json": JSON.stringify(resp.data.values)} || {};
+      const params = resp.data || {};
       const {data, role} = await this.guiUtils.printRequestModal();
       if (role === 'confirm') {
 

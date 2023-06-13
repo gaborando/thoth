@@ -104,7 +104,9 @@ public class TemplateController {
 
     }
 
-    private HashMap<String, Object> parseParams(@RequestParam(required = false) HashMap<String, Object> p1, @RequestBody(required = false) HashMap<String, Object> p2) {
+    private HashMap<String, Object> parseParams(
+            @RequestParam(required = false) HashMap<String, Object> p1,
+            @RequestBody(required = false) HashMap<String, Object> p2) {
         var params = new HashMap<String, Object>();
         if (p1 != null) params.putAll(p1);
         if (p2 != null) params.putAll(p2);
