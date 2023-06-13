@@ -48,7 +48,7 @@ export class Editor {
     if (this.currentListener != null) {
       window.removeEventListener('message', this.currentListener)
     }
-    
+
     // Implements protocol for loading and exporting with embedded XML
     this.currentListener = (evt: any) => {
       if (evt.data.length > 0 && this.currentTemplate == template.id) {
