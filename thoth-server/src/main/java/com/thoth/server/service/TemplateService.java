@@ -61,7 +61,6 @@ public class TemplateService {
     }
 
     private String cleanSVG(String svg) {
-        svg = new String(svg.getBytes(), StandardCharsets.UTF_8);
         try {
             // Create a DocumentBuilderFactory
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

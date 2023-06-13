@@ -100,7 +100,7 @@ export class Editor {
         else if (msg.event == 'export') {
           // Updates the data URI of the image
           template.img = msg.data;
-          template.svg = atob(msg.data.replace('data:image/svg+xml;base64,', ''));
+          template.svg = decodeURIComponent(escape(atob(msg.data.replace('data:image/svg+xml;base64,', ''))));
           template.markers = [];
 
           const regex = /{{ *([a-zA-Z0-9\._]+)[^{]*}}/g;
