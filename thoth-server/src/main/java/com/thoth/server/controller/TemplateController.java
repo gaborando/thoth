@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 @RestController
@@ -57,7 +58,8 @@ public class TemplateController {
 
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER"})
-    public ResponseEntity<Template> update(@RequestBody Template template, @PathVariable String identifier) throws ParserConfigurationException {
+    public ResponseEntity<Template> update(@RequestBody Template template,
+                                           @PathVariable String identifier) throws ParserConfigurationException {
         return ResponseEntity.ok(templateService.update(identifier, template));
     }
 
@@ -98,7 +100,7 @@ public class TemplateController {
                                             @PathVariable String identifier) throws IOException, InterruptedException {
 
         var data = renderService.renderTemplateSvg(identifier,  parseParams(p1, p2));
-        return ResponseEntity.ok(data.getBytes());
+        return ResponseEntity.ok(data.getBytes(StandardCharsets.UTF_8));
 
     }
 
