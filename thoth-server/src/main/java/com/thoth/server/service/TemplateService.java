@@ -32,6 +32,8 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -59,6 +61,7 @@ public class TemplateService {
     }
 
     private String cleanSVG(String svg) {
+        svg = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(svg.getBytes())).toString();
         try {
             // Create a DocumentBuilderFactory
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
