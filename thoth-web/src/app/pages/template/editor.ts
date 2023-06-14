@@ -192,11 +192,13 @@ export class Editor {
   }
 
   save(template: Template, templateService: TemplateService) {
-    templateService.update(template).finally();
-    this.drawIoWindow?.postMessage(JSON.stringify({
-      action: 'status',
-      message: 'Saved',
-      modified: false
-    }), '*');
+    templateService.update(template).then(ok => {
+      this.drawIoWindow?.postMessage(JSON.stringify({
+        action: 'status',
+        message: 'Saved',
+        modified: false
+      }), '*');
+    });
+
   }
 }
