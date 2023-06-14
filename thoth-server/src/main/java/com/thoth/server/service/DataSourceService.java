@@ -234,7 +234,7 @@ public class DataSourceService {
         var fields = new HashMap<String, Object>();
         root.fields().forEachRemaining(e -> {
             if (e.getValue().getNodeType() == JsonNodeType.OBJECT) {
-                fields.putAll(getNodeFieldsMap(e.getValue(), e.getKey() + '/'));
+                fields.putAll(getNodeFieldsMap(e.getValue(), s + e.getKey() + '/'));
             } else if (e.getValue().getNodeType() != JsonNodeType.ARRAY) {
                 fields.put(s + e.getKey(), e.getValue().asText());
             } else {
