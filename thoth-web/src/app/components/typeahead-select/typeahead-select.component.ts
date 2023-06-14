@@ -19,6 +19,7 @@ export class TypeaheadSelectComponent implements OnInit {
 
   private page = 0;
   loading = true;
+  selectedMap: any = {};
 
 
   constructor(private parent: IonItem) {
@@ -30,28 +31,24 @@ export class TypeaheadSelectComponent implements OnInit {
       this.items = page.content;
       if (this.multiple) {
         this.selectedItems = this.value || [];
+        for (let selectedItem of this.selectedItems) {
+          this.selectedMap[selectedItem.id] = true;
+        }
       }
       this.loading = false;
     })
   }
 
-  trackItems(index: number, item: any) {
-    return item.value;
-  }
-
-
-  isChecked(value: string) {
-    return this.selectedItems.find((item) => item === value);
-  }
-
   checkboxChange(ev: any) {
     const {checked, value} = ev.detail;
-
-    if (checked) {
+    if(this.selectedMap[value.id]){
+      this.selectedItems = this.selectedItems.filter((item) => item.id !== value.id);
+      this.selectedMap[value.id] = false;
+    }else{
       this.selectedItems = [...this.selectedItems, value];
-    } else {
-      this.selectedItems = this.selectedItems.filter((item) => item !== value);
+      this.selectedMap[value.id] = true;
     }
+
   }
 
   onIonInfinite($event: any) {

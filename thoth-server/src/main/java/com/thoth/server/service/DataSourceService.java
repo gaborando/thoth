@@ -222,7 +222,7 @@ public class DataSourceService {
         var fields = new ArrayList<String>();
         root.fields().forEachRemaining(e -> {
             if (e.getValue().getNodeType() == JsonNodeType.OBJECT) {
-                fields.addAll(getNodeFields(e.getValue(), e.getKey() + '/'));
+                fields.addAll(getNodeFields(e.getValue(), s + e.getKey() + '/'));
             } else {
                 fields.add(s + e.getKey());
             }

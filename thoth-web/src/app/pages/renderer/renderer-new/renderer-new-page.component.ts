@@ -62,7 +62,7 @@ export class RendererNewPage implements OnInit {
 
   updateAvailableAssociations(event: any) {
     const tmp = [];
-    for (const d of this.selectedDatasource || []) {
+    for (const d of event || []) {
       for (const p of d.properties) {
         tmp.push({
           ds: d,
