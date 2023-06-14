@@ -220,18 +220,13 @@ public class DataSourceService {
 
     private ArrayList<String> getNodeFields(JsonNode root, String s) {
         var fields = new ArrayList<String>();
-        AtomicBoolean fieldAdded = new AtomicBoolean(true);
-        while (fieldAdded.get()) {
-            fieldAdded.set(false);
-            root.fields().forEachRemaining(e -> {
-                if (e.getValue().getNodeType() == JsonNodeType.OBJECT) {
-                    fields.addAll(getNodeFields(e.getValue(), e.getKey() + '/'));
-                    fieldAdded.set(true);
-                } else {
-                    fields.add(s + e.getKey());
-                }
-            });
-        }
+        root.fields().forEachRemaining(e -> {
+            if (e.getValue().getNodeType() == JsonNodeType.OBJECT) {
+                fields.addAll(getNodeFields(e.getValue(), e.getKey() + '/'));
+            } else {
+                fields.add(s + e.getKey());
+            }
+        });
         return fields;
     }
 
@@ -242,14 +237,16 @@ public class DataSourceService {
                 fields.putAll(getNodeFieldsMap(e.getValue(), e.getKey() + '/'));
             } else if (e.getValue().getNodeType() != JsonNodeType.ARRAY) {
                 fields.put(s + e.getKey(), e.getValue().asText());
-            }else {
+            } else {
                 fields.put(s + e.getKey(), e.getValue());
             }
         });
         return fields;
     }
 
-    public RestDatasourceProperties createRest(String name, String url, String method, Map<String, String> queryParameters, Map<String, String> headers, String jsonQuery, Map<String, Object> body, List<String> parameters, List<String> properties) {
+    public RestDatasourceProperties createRest(String name, String url, String
+            method, Map<String, String> queryParameters, Map<String, String> headers, String
+                                                       jsonQuery, Map<String, Object> body, List<String> parameters, List<String> properties) {
         var dsp = new RestDatasourceProperties();
         dsp.setId("dsp_rest_" + UUID.randomUUID());
         dsp.setUrl(url);

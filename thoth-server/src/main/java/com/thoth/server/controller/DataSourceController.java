@@ -81,7 +81,7 @@ public class DataSourceController {
             @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(dataSourceService.search(Specification.where(null),
-                PageRequest.of(page, 10)).map(DatasourcePropertyListItem::new));
+                PageRequest.of(page, 30)).map(DatasourcePropertyListItem::new));
     }
 
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
