@@ -32,9 +32,9 @@ public abstract class DatasourceProperties extends SecuredResource {
     @Column(updatable = false)
     private Instant createdAt;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<@NotBlank @Size(min = 1, max = 256) String> parameters;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<@NotBlank @Size(min = 1, max = 256) String> properties;
 }
