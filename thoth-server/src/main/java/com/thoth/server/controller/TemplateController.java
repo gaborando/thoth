@@ -40,7 +40,7 @@ public class TemplateController {
             @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(templateService.search(Specification.where(null),
-                PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt")))));
+                PageRequest.of(page, 15, Sort.by(Sort.Order.desc("createdAt")))));
     }
 
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -99,7 +99,7 @@ public class TemplateController {
                                             @RequestBody(required = false) HashMap<String, Object> p2,
                                             @PathVariable String identifier) throws IOException, InterruptedException {
 
-        var data = renderService.renderTemplateSvg(identifier,  parseParams(p1, p2));
+        var data = renderService.renderTemplateSvg(identifier, parseParams(p1, p2));
         return ResponseEntity.ok(data.getBytes(StandardCharsets.UTF_8));
 
     }
@@ -110,7 +110,7 @@ public class TemplateController {
         var params = new HashMap<String, Object>();
         if (p1 != null) params.putAll(p1);
         if (p2 != null) params.putAll(p2);
-        if(params.containsKey("json")){
+        if (params.containsKey("json")) {
             var j = new Gson().fromJson(params.get("json").toString(), HashMap.class);
             for (Object s : j.keySet()) {
                 params.put(s.toString(), j.get(s));
@@ -122,9 +122,12 @@ public class TemplateController {
     @Secured({"ROLE_USER", "ROLE_API"})
     @PostMapping("/{identifier}/print")
     public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws IOException, InterruptedException {
-
-        renderService.printTemplate(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService(), request.getCopies());
-
+        renderService.printTemplate(
+                identifier,
+                request.getParameters(),
+                request.getClientIdentifier(),
+                request.getPrintService(),
+                request.getCopies());
         return ResponseEntity.ok().build();
     }
 

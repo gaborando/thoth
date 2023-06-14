@@ -49,7 +49,7 @@ public class RendererController {
             @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(rendererService.search(Specification.where(null),
-                PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt"))))
+                PageRequest.of(page, 30, Sort.by(Sort.Order.desc("createdAt"))))
                 .map(RendererListItem::new));
     }
 

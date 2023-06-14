@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 public class DatePipe implements Filter {
     @Override
     public Object filter(Object var, JinjavaInterpreter interpreter, String... args) {
+        if(var == null) return "";
         var value = var.toString();
         var pattern = args[0];
         if(value.startsWith("/Date(")) {

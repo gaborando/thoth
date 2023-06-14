@@ -28,7 +28,7 @@ public class ClientController {
             @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(clientService.search(Specification.where(null),
-                PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createdAt")))));
+                PageRequest.of(page, 30, Sort.by(Sort.Order.desc("createdAt")))));
     }
 
     @PutMapping("/{identifier}")
