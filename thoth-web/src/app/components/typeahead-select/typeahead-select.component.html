@@ -2,8 +2,8 @@
 <div style="width: 100%;">
   <ion-grid>
     <ion-row>
-      <ion-col size="auto" *ngIf="multiple"><span *ngFor="let i of value">{{i.name}}, </span></ion-col>
-      <ion-col size="auto" *ngIf="!multiple">{{value?.name}}</ion-col>
+      <ion-col size="11" *ngIf="multiple"><span *ngFor="let i of value">{{i.name}}, </span></ion-col>
+      <ion-col size="11" *ngIf="!multiple">{{value?.name}}</ion-col>
       <ion-col size="1">
 
         <ion-icon color="medium" name="caret-down-outline"></ion-icon>
@@ -35,7 +35,7 @@
         <ng-container *ngIf="multiple else radio">
           <ion-item *ngFor="let item of items;">
             <ion-label>{{ item.name }}</ion-label>
-            <ion-checkbox [value]="item" [checked]="isChecked(item.id)"
+            <ion-checkbox [value]="item" [checked]="selectedMap[item.id]"
                           (ionChange)="checkboxChange($event)"></ion-checkbox>
           </ion-item>
         </ng-container>
