@@ -11,15 +11,18 @@ import java.time.format.DateTimeFormatter;
 public class DatePipe implements Filter {
     @Override
     public Object filter(Object var, JinjavaInterpreter interpreter, String... args) {
-        if(var == null) return "";
-        var value = var.toString();
-        var pattern = args[0];
-        if(value.startsWith("/Date(")) {
-            value = value.replace("/Date(", "").replace(")/", "");
-            return ZonedDateTime.from(Instant.ofEpochMilli(Long.parseLong(value)).atZone(ZoneOffset.UTC))
-                    .format(DateTimeFormatter.ofPattern(pattern));
+        try {
+            var value = var.toString();
+            var pattern = args[0];
+            if (value.startsWith("/Date(")) {
+                value = value.replace("/Date(", "").replace(")/", "");
+                return ZonedDateTime.from(Instant.ofEpochMilli(Long.parseLong(value)).atZone(ZoneOffset.UTC))
+                        .format(DateTimeFormatter.ofPattern(pattern));
+            }
+            return ZonedDateTime.parse(value).format(DateTimeFormatter.ofPattern(pattern));
+        }catch (Exception e){
+            return var;
         }
-        return ZonedDateTime.parse(value).format(DateTimeFormatter.ofPattern(pattern));
     }
 
     @Override

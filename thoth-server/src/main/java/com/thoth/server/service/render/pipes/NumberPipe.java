@@ -6,10 +6,13 @@ import com.hubspot.jinjava.lib.filter.Filter;
 public class NumberPipe implements Filter {
     @Override
     public Object filter(Object var, JinjavaInterpreter interpreter, String... args) {
-        if(var == null) return "";
-        var value = var.toString();
-        var format = args[0];
-        return String.format("%" + format + "f", Double.parseDouble(value));
+        try {
+            var value = var.toString();
+            var format = args[0];
+            return String.format("%" + format + "f", Double.parseDouble(value));
+        }catch (Exception e){
+            return var;
+        }
     }
 
     @Override
