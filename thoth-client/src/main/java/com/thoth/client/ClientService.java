@@ -55,35 +55,42 @@ public class ClientService {
 
     @RabbitListener(queues = "thoth.${thoth.client.identifier}.rpc.requests")
     public boolean printSvg(PrintRequest printRequest) throws IOException, InterruptedException, PrinterException {
-        PrintService printService = Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
-                .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
         logger.info("Print Request Received");
-        logger.info("Requested Printer: " + printService);
-        logger.info("Starting PDF Generation");
-        var img = svg2Jpeg.convert(printRequest.getSvg());
-        var pdf = Jpeg2Pdf.convert(img);
-        logger.info("PDF Generated");
-        PDDocument document = Loader.loadPDF(pdf);
-        PrinterJob job = PrinterJob.getPrinterJob();
-        job.setPrintService(printService);
-        PageFormat pf = job.defaultPage();
-        HashPrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
-        if (document.getPage(0).getBBox().getWidth() <= document.getPage(0).getBBox().getHeight())
-        {
-            pf.setOrientation(PageFormat.PORTRAIT);
-            attr.add(new MediaPrintableArea(0f, 0f, 210f, 297f, MediaPrintableArea.MM));
+        logger.info("Requested Printer: " + printRequest.getPrintService());
+        if("NONE".equalsIgnoreCase(printRequest.getPrintService())){
+            logger.info("Document Skipped");
+            return true;
         }
-        else
-        {
-            pf.setOrientation(PageFormat.LANDSCAPE);
-            attr.add(new MediaPrintableArea(0f, 0f, 210f, 297f, MediaPrintableArea.MM));
+        try {
+            PrintService printService = Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
+                    .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
+
+            logger.info("Starting PDF Generation");
+            var img = svg2Jpeg.convert(printRequest.getSvg());
+            var pdf = Jpeg2Pdf.convert(img);
+            logger.info("PDF Generated");
+            PDDocument document = Loader.loadPDF(pdf);
+            PrinterJob job = PrinterJob.getPrinterJob();
+            job.setPrintService(printService);
+            PageFormat pf = job.defaultPage();
+            HashPrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
+            if (document.getPage(0).getBBox().getWidth() <= document.getPage(0).getBBox().getHeight()) {
+                pf.setOrientation(PageFormat.PORTRAIT);
+                attr.add(new MediaPrintableArea(0f, 0f, 210f, 297f, MediaPrintableArea.MM));
+            } else {
+                pf.setOrientation(PageFormat.LANDSCAPE);
+                attr.add(new MediaPrintableArea(0f, 0f, 210f, 297f, MediaPrintableArea.MM));
+            }
+            job.setPrintable(new PDFPrintable(document), pf);
+            job.setCopies(printRequest.getCopies());
+            logger.info("Sending Printing Request...");
+            job.print(attr);
+            logger.info("Document Printed");
+            return true;
+        }catch (Exception e){
+            logger.error(e);
+            return false;
         }
-        job.setPrintable(new PDFPrintable(document), pf);
-        job.setCopies(printRequest.getCopies());
-        logger.info("Sending Printing Request...");
-        job.print(attr);
-        logger.info("Document Printed");
-        return true;
     }
 
     public void register() {
@@ -93,6 +100,7 @@ public class ClientService {
         request.setOwnerSID(ownerSID);
         request.setPrintServices(Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
                 .map(PrintService::getName).collect(Collectors.toList()));
+        request.getPrintServices().add("NONE");
         logger.info("Registering client " + request.getName() + " ["+request.getIdentifier()+"]");
         logger.info("Detected PrintServices:");
         for (String printService : request.getPrintServices()) {
