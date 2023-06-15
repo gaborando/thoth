@@ -6,8 +6,11 @@ import com.hubspot.jinjava.lib.filter.Filter;
 public class TrimPipe implements Filter {
     @Override
     public Object filter(Object var, JinjavaInterpreter interpreter, String... args) {
-        if(var == null) return "";
-        return var.toString().trim();
+        try {
+            return var.toString().trim();
+        }catch (Exception e){
+            return var;
+        }
     }
 
     @Override
