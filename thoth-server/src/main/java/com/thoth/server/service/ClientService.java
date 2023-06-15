@@ -32,7 +32,7 @@ public class ClientService {
     }
 
     public Client register(String identifier, String name, String ownerSID, List<String> printServices){
-        var c = new Client();
+        var c = repository.findById(identifier).orElse(new Client());
         c.setName(name);
         c.setIdentifier(identifier);
         c.setCreatedBy(ownerSID);
