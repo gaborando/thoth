@@ -82,7 +82,7 @@ public class TemplateService {
                 for (int i = 0; i <el.getChildNodes().getLength(); i++) {
                     queue.add(el.getChildNodes().item(i));
                 }
-                if(el.getNodeName().equals("text")){
+                if(el.getNodeName().equals("text") && el.getTextContent().endsWith("...")){
                     el.getParentNode().removeChild(el);
                     el.setTextContent("");
                 }
