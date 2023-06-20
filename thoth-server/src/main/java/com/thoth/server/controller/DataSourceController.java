@@ -8,6 +8,7 @@ import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.service.DataSourceService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -81,7 +82,7 @@ public class DataSourceController {
             @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(dataSourceService.search(Specification.where(null),
-                PageRequest.of(page, 30)).map(DatasourcePropertyListItem::new));
+                PageRequest.of(page, 30, Sort.by(Sort.Order.desc("createdAt")))).map(DatasourcePropertyListItem::new));
     }
 
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
