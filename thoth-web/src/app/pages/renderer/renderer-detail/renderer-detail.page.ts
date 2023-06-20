@@ -222,4 +222,8 @@ export class RendererDetailPage implements OnInit {
     })
 
   }
+
+  ku($event: KeyboardEvent) {
+    console.log($event);
+  }
 }
