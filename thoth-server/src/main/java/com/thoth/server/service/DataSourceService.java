@@ -12,6 +12,7 @@ import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
 import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -95,6 +96,7 @@ public class DataSourceService {
     @PreAuthorize("@authenticationFacade.canWrite(#original)")
     private DatasourceProperties update(DatasourceProperties original, DatasourceProperties update) {
         update.setId(original.getId());
+        datasourceCache.remove(original.getId());
         return datasourcePropertiesRepository.save(update);
     }
 
@@ -119,6 +121,7 @@ public class DataSourceService {
     public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) throws JsonProcessingException {
         if (datasourceProperty instanceof JdbcDatasourceProperties j) {
             var dataSource = datasourceCache.get(j.getId());
+
             if (dataSource == null) {
                 var dataSourceBuilder = DataSourceBuilder.create();
                 dataSourceBuilder.url(j.getUrl());
