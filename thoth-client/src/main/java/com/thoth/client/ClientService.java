@@ -39,6 +39,8 @@ public class ClientService {
     private final DirectExchange serverExchange;
     private final String ownerSID;
 
+    private long printCount = 0;
+
     public ClientService(RabbitTemplate rabbitTemplate,
                          @Value("${thoth.client.name}") String clientName,
                          @Value("${thoth.client.identifier}") String clientIdentifier,
@@ -55,7 +57,9 @@ public class ClientService {
 
     @RabbitListener(queues = "thoth.${thoth.client.identifier}.rpc.requests")
     public boolean printSvg(PrintRequest printRequest) throws IOException, InterruptedException, PrinterException {
-        logger.info("Print Request Received");
+        printCount++;
+        printCount = printCount % 1000000;
+        logger.info("Print Request Received ({})", printCount);
         logger.info("Requested Printer: " + printRequest.getPrintService());
         if("NONE".equalsIgnoreCase(printRequest.getPrintService())){
             logger.info("Document Skipped");
