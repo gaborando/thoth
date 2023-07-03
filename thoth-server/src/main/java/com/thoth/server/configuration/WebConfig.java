@@ -14,24 +14,25 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
-  @Override
-  public void addCorsMappings(CorsRegistry registry) {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
 
-    registry.addMapping("/**")
-      .allowedOrigins("*")
-      .allowedHeaders("*")
-      .allowedMethods("*");
-  }
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedOriginPatterns("*")
+                .allowedHeaders("*")
+                .allowedMethods("*");
+    }
 
-  @Bean
-  public ConfigurableServletWebServerFactory webServerFactory() {
-    TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
-    factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-      @Override
-      public void customize(Connector connector) {
-        connector.setProperty("relaxedQueryChars", "|{}[]");
-      }
-    });
-    return factory;
-  }
+    @Bean
+    public ConfigurableServletWebServerFactory webServerFactory() {
+        TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+        factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+            @Override
+            public void customize(Connector connector) {
+                connector.setProperty("relaxedQueryChars", "|{}[]");
+            }
+        });
+        return factory;
+    }
 }
