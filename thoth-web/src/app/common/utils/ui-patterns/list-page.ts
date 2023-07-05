@@ -1,6 +1,6 @@
 import {DataFetcher} from "../service-patterns/data-fetcher";
 
-export abstract class ListPage<E>{
+export abstract class ListPage<E> {
 
   public elements: E[] | undefined
   protected page = 0;
@@ -13,15 +13,19 @@ export abstract class ListPage<E>{
   }
 
 
-  async loadPageData(){
+  async loadPageData() {
     this.page = 0;
     this.elements = undefined;
-    this.elements = (await this.fetcher.findAll(this.page)).content;
+    this.elements = (await this.findAll()).content;
   }
 
-  async loadMore(){
+  async loadMore() {
     this.page++;
-    this.elements = this.elements?.concat((await this.fetcher.findAll(this.page)).content);
+    this.elements = this.elements?.concat((await this.findAll()).content);
+  }
+
+  findAll() {
+    return this.fetcher.findAll(this.page)
   }
 
   public async handleRefresh(event: any) {

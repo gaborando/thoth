@@ -10,12 +10,31 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-breadcrumbs>
+      <ion-breadcrumb routerLink="/template-list">Root</ion-breadcrumb>
+      <ion-breadcrumb *ngFor="let folder of currentFolder" [routerLink]="'/template-list' + folder.path">{{folder.name}}</ion-breadcrumb>
+
+    </ion-breadcrumbs>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
+
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+  <ion-grid>
+    <ion-row>
+      <ion-col *ngFor="let folder of folders" size="4">
+        <ion-card [routerLink]="folder.path">
+          <ion-card-content>
+            <ion-icon name="folder"></ion-icon>&nbsp;{{folder.name}}
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
   <ion-grid>
     <ion-row>
       <ng-container *ngIf="!elements">

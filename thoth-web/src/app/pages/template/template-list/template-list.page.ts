@@ -1,13 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {TemplateService} from "../../../services/api/template.service";
 import {Template} from "../../../common/types/template";
-import {AlertController, LoadingController} from "@ionic/angular";
+import {AlertController, LoadingController, NavController} from "@ionic/angular";
 import {ClientService} from "../../../services/api/client.service";
 import {ScreenMessageService} from "../../../services/screen-message.service";
 import {ListPage} from "../../../common/utils/ui-patterns/list-page";
 import {GuiUtilsService} from "../../../services/gui-utils.service";
 import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.service";
 import {Editor} from "../editor";
+import {Page} from "../../../common/utils/fetchUtils";
+import {ActivatedRoute} from "@angular/router";
+import {Subscription} from "rxjs";
+import {navigate} from "ionicons/icons";
 
 
 @Component({
@@ -15,9 +19,12 @@ import {Editor} from "../editor";
   templateUrl: './template-list.page.html',
   styleUrls: ['./template-list.page.scss'],
 })
-export class TemplateListPage extends ListPage<Template> implements OnInit {
+export class TemplateListPage extends ListPage<Template> implements OnInit, OnDestroy {
 
+  public currentFolder: { name: string, path: string }[] = [];
   private editor = new Editor();
+  public folders: { name: string, path: string }[] = [];
+  private sub: Subscription | undefined;
 
   constructor(private templateService: TemplateService,
               private alertController: AlertController,
@@ -25,11 +32,57 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
               private screenMessageService: ScreenMessageService,
               private loadingController: LoadingController,
               private guiUtils: GuiUtilsService,
-              private templateGuiUtils: TemplateGuiUtilsService) {
+              private templateGuiUtils: TemplateGuiUtilsService,
+              private route: ActivatedRoute,
+              private navController: NavController) {
     super(templateService);
+
+  }
+
+
+  override async ionViewWillEnter(): Promise<void> {
+  }
+
+  ngOnDestroy() {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+
   }
 
   ngOnInit() {
+    this.sub = this.route.url.subscribe(async u => {
+      let last = "/";
+      const cf = [];
+      for (const folder of u) {
+        cf.push({
+          name: folder.path,
+          path: last + folder
+        })
+        last += folder + "/"
+      }
+      const current = '/' + u.map(u => u.path).join('/');
+      this.currentFolder = cf;
+      const folders = new Set((await this.templateService.getFolders()).filter(s => s.startsWith(current))
+        .map(s => s.replace(current, '')
+          .split('/'))
+        .map(s => s[0] || s[1])
+        .filter(s => s))
+      const a = [];
+      for (const folder of folders) {
+        a.push({
+          name: folder,
+          path: ['/template-list'].concat(u.map(u => u.path)).join('/') + '/' + folder
+        })
+      }
+      this.folders = a;
+      return this.loadPageData();
+    })
+  }
+
+
+  override findAll(): Promise<Page<Template>> {
+    return this.templateService.findAll(this.page, 'folder==/' + window.location.pathname.substring(15))
   }
 
   async createTemplate() {
@@ -80,5 +133,11 @@ export class TemplateListPage extends ListPage<Template> implements OnInit {
 
   async printTemplate(t: Template) {
     return this.templateGuiUtils.printTemplate(t);
+  }
+
+  protected readonly navigate = navigate;
+
+  navigateTo(folder: string) {
+    // return this.navController.navigateForward();
   }
 }

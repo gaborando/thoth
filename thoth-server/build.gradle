@@ -55,6 +55,8 @@ dependencies {
 	implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.30.2'
 
 	implementation 'com.hubspot.jinjava:jinjava:2.7.0'
+	implementation 'io.github.perplexhub:rsql-jpa-spring-boot-starter:6.0.5'
+	implementation 'io.github.perplexhub:rsql-querydsl-spring-boot-starter:6.0.5'
 
 
 	implementation project(':thoth-common')

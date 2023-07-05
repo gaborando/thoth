@@ -55,12 +55,22 @@ export class TemplateGuiUtilsService {
           {text: 'Cancel', role: 'cancel'},
           {
             text: 'OK', handler: async (e) =>
-              window.open((await environment()).apiUrl + '/template/' + t.id + '/render/'+e+'?' + query.toString())
+              window.open((await environment()).apiUrl + '/template/' + t.id + '/render/' + e + '?' + query.toString())
           }
         ]
       });
       await alert.present();
     }
+  }
+
+  async getRenderedJpegUrl(t: string, json: string) {
+    const query = new URLSearchParams();
+    query.append("json", json);
+    const accessToken = localStorage.getItem("access_token");
+    if (accessToken) {
+      query.append("access_token", accessToken);
+    }
+    return (await environment()).apiUrl + '/template/' + t + '/render/jpeg' + '?' + query.toString()
   }
 
   async printTemplate(t: Template) {

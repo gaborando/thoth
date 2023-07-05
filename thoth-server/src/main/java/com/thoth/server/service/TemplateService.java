@@ -35,10 +35,7 @@ import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class TemplateService {
@@ -57,6 +54,12 @@ public class TemplateService {
     private Template update(Template original, Template update)  {
         update.setId(original.getId());
         update.setSvg(cleanSVG(update.getSvg()));
+        if(update.getFolder() == null){
+            update.setFolder("/");
+        }
+        if(!update.getFolder().startsWith("/")){
+            update.setFolder("/" + update.getFolder());
+        }
         return templateRepository.save(update);
     }
 
@@ -105,24 +108,6 @@ public class TemplateService {
         return svg;
     }
 
-    private static NodeList findNestedNodesByTagName(Element element, String tagName) {
-        NodeList matchedNodes = element.getElementsByTagName(tagName);
-        if(matchedNodes == null){
-            return null;
-        }
-        NodeList childNodes = element.getChildNodes();
-        if(childNodes == null){
-            return matchedNodes;
-        }
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            org.w3c.dom.Node childNode = childNodes.item(i);
-
-            findNestedNodesByTagName((Element) childNode, tagName);
-
-
-        }
-        return matchedNodes;
-    }
 
     @PreAuthorize("@authenticationFacade.canWrite(#template)")
     public void delete(Template template){
@@ -138,6 +123,7 @@ public class TemplateService {
         template.setId("tpl_" + UUID.randomUUID().toString());
         template.setName(name);
         template.setCreatedAt(Instant.now());
+        template.setFolder("/");
         authenticationFacade.fillSecuredResource(template);
         return templateRepository.save(template);
     }
@@ -145,5 +131,9 @@ public class TemplateService {
     @PostAuthorize("@authenticationFacade.canRead(returnObject) || hasRole('ROLE_TMP')")
     public Optional<Template> getById(String identifier) {
         return templateRepository.findById(identifier);
+    }
+
+    public List<String> getFolders() {
+        return templateRepository.getFolders(authenticationFacade.getUserSID(), authenticationFacade.getOrganizationSID());
     }
 }

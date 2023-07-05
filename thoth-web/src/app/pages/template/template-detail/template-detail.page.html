@@ -31,6 +31,10 @@
           <ion-label>Name</ion-label>
           <ion-input name="name" [(ngModel)]="template.name"></ion-input>
         </ion-item>
+        <ion-item>
+          <ion-label>Folder</ion-label>
+          <ion-input pattern="^\/(.)*" name="folder" [(ngModel)]="template.folder"></ion-input>
+        </ion-item>
       </ion-card-content>
     </ion-card>
     <ion-card>
@@ -44,6 +48,7 @@
       </ion-card-content>
       <div class="ion-text-end">
         <ion-button fill="clear" color="primary" (click)="openEditor()">Draw</ion-button>
+        <!--<ion-button fill="clear" color="primary" (click)="openJinjaEditor()">Edit Jinja Blocks</ion-button>-->
       </div>
     </ion-card>
     <app-sharing-options [securedResource]="template"></app-sharing-options>

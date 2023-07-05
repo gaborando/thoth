@@ -15,8 +15,8 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
     super()
   }
 
-  async findAll(page = 0): Promise<Page<Template>>{
-    return fetch((await environment()).apiUrl + '/template/?page='+page, {
+  async findAll(page = 0, filter=''): Promise<Page<Template>>{
+    return fetch((await environment()).apiUrl + '/template/?page='+page+'&filter='+filter, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
@@ -86,6 +86,18 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
 
   async findById(identifier: string | null): Promise<Template> {
     return fetch((await environment()).apiUrl + '/template/'+identifier, {
+      method: 'GET',
+      headers: this.getHeaders()
+    }).then(async r => {
+      if (!r.ok) {
+        throw await r.json()
+      }
+      return await r.json()
+    });
+  }
+
+  async getFolders(): Promise<string[]> {
+    return fetch((await environment()).apiUrl + '/template/folders', {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {
