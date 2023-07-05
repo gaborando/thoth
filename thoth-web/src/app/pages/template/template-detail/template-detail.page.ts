@@ -8,6 +8,7 @@ import {GuiUtilsService} from "../../../services/gui-utils.service";
 import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.service";
 import {ActivatedRoute} from "@angular/router";
 import {Editor} from "../editor";
+import {AutocompleteProvider} from "../../../common/directives/autocomplete.directive";
 
 @Component({
   selector: 'app-template-detail',
@@ -17,6 +18,7 @@ import {Editor} from "../editor";
 export class TemplateDetailPage implements OnInit {
   template: Template | undefined;
   private editor = new Editor();
+  public folderAutocomplete: AutocompleteProvider
 
   constructor(private templateService: TemplateService,
               private alertController: AlertController,
@@ -27,6 +29,11 @@ export class TemplateDetailPage implements OnInit {
               private navController: NavController,
               private templateGuiUtils: TemplateGuiUtilsService,
               private route: ActivatedRoute) {
+    this.folderAutocomplete = {
+      async fetch(txt: string){
+        return templateService.getFolders().then(s => s.filter(ss => ss.startsWith(txt)));
+      }
+    }
   }
 
   async ionViewWillEnter() {
@@ -101,5 +108,9 @@ export class TemplateDetailPage implements OnInit {
 
   openJinjaEditor() {
     return this.navController.navigateForward('/template-jinja-editor/' + this.template?.id)
+  }
+
+  showAutocomplete($event: any) {
+    console.log($event);
   }
 }
