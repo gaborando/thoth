@@ -91,10 +91,15 @@ export class TemplateDetailPage implements OnInit {
     t.markers = this.template.markers;
     t.allowedOrganizationList = this.template.allowedOrganizationList;
     t.allowedUserList = this.template.allowedUserList;
+    t.folder = this.template.folder
     return this.screenMessageService.loadingWrapper(async () => {
       this.templateService.update(t).finally();
       await this.screenMessageService.showDone();
       return this.navController.navigateForward('/template-detail/' + t.id);
     })
+  }
+
+  openJinjaEditor() {
+    return this.navController.navigateForward('/template-jinja-editor/' + this.template?.id)
   }
 }

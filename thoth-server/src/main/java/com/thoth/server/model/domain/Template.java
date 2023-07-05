@@ -42,4 +42,8 @@ public class Template extends SecuredResource {
     @ElementCollection
     private Set<@NotBlank @Size(min = 2, max = 256) String> markers;
 
+    @NotBlank
+    @Size(min = 3, max = 256)
+    private String folder;
+
 }

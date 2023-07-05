@@ -7,8 +7,10 @@ import com.thoth.server.controller.dto.template.TemplateListItem;
 import com.thoth.server.model.domain.Template;
 import com.thoth.server.service.render.RenderService;
 import com.thoth.server.service.TemplateService;
+import io.github.perplexhub.rsql.RSQLJPASupport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
@@ -20,6 +22,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
+import java.util.function.Predicate;
 
 @RestController
 @RequestMapping("/template")
@@ -37,10 +41,22 @@ public class TemplateController {
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER", "ROLE_API"})
     public ResponseEntity<Page<Template>> findAll(
-            @RequestParam(defaultValue = "0") int page
+            @RequestParam(value = "filter", defaultValue = "") String filter,
+            @RequestParam(value = "sort", defaultValue = "createdAt,desc") String sort,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "15") int size
+
     ) {
-        return ResponseEntity.ok(templateService.search(Specification.where(null),
-                PageRequest.of(page, 15, Sort.by(Sort.Order.desc("createdAt")))));
+
+        Specification<Template> f = RSQLJPASupport.toSpecification(filter);
+        f = f.and(RSQLJPASupport.toSort(sort));
+        return ResponseEntity.ok(templateService.search(f
+                , PageRequest.of(page, size)));
+    }
+    @GetMapping(value = "/folders", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Secured({"ROLE_USER"})
+    public ResponseEntity<List<String>> findAllFolders() {
+        return ResponseEntity.ok(templateService.getFolders());
     }
 
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -7,5 +7,6 @@ export interface Template extends SecuredResource {
   img: string | undefined;
   xml: string | undefined;
   markers: string[];
+  folder: string;
 
 }

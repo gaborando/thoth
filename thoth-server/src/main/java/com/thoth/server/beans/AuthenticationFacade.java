@@ -3,7 +3,7 @@ package com.thoth.server.beans;
 import com.thoth.server.configuration.security.token.ThothAuthenticationToken;
 import com.thoth.server.model.domain.Permission;
 import com.thoth.server.model.domain.SecuredResource;
-import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.HttpClientErrorException;
@@ -59,12 +59,10 @@ public class AuthenticationFacade implements IAuthenticationFacade {
 
     @Override
     public <T extends SecuredResource> Specification<T> securedSpecification(Specification<T> spec, Class<T> cls) {
-        return spec.and(spec
-                .or((r, q, qb) -> {
-                    q.distinct(true);
-                    return qb.equal(r.get("createdBy"), getUserSID());
-                })
-                .or((r, q, cb) -> {
+        return spec.and(((Specification<T>) (r, q, qb) -> {
+            q.distinct(true);
+            return qb.equal(r.get("createdBy"), getUserSID());
+        }).or((r, q, cb) -> {
                     q.distinct(true);
                     return cb.equal(r.joinList("allowedUserList", JoinType.LEFT).get("sid"), getUserSID());
                 })
@@ -72,6 +70,8 @@ public class AuthenticationFacade implements IAuthenticationFacade {
                     q.distinct(true);
                     return cb.equal(r.joinList("allowedOrganizationList", JoinType.LEFT).get("sid"), getOrganizationSID());
                 }));
+
+
     }
 
     @Override

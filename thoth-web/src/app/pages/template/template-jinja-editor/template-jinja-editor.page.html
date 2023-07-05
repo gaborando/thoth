@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Jinja Blocks Editor</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">
+        <ion-row>
+          <ion-col>
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>
+                  Template
+                </ion-card-title>
+                <ion-button (click)="format(cm)"> Format </ion-button>
+              </ion-card-header>
+              <ion-card-content>
+                <ngx-codemirror #cm (codeMirrorLoaded)="codeLoaded($event)" name="html"
+                                (keyup)="htmlChanged($event)"
+                                [(ngModel)]="html"
+                                [options]="{
+    theme: 'default',
+    autoRefresh: true,
+    mode: 'htmlmixed',
+    inputStyle: 'textarea',
+    lineNumbers: true
+  }" [autoFocus]="true"
+                ></ngx-codemirror>
+              </ion-card-content>
+            </ion-card>
+
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>
+                  Parameters
+                </ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ngx-codemirror (codeMirrorLoaded)="codeLoaded($event)" name="json"
+                                (keyup)="jsonChanged($event)"
+                                [(ngModel)]="jsonData"
+                                [options]="{
+    theme: 'default',
+    autoRefresh: true,
+    mode: 'json',
+    inputStyle: 'textarea',
+    lineNumbers: true
+  }" [autoFocus]="true"
+                ></ngx-codemirror>
+              </ion-card-content>
+            </ion-card>
+
+          </ion-col>
+
+        </ion-row>
+      </ion-col>
+
+      <ion-col size="6">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              Rendered Template
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-img [src]="renderUrl"></ion-img>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="render()">
+        Render
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

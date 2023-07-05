@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {AuthenticationGuard} from "./guards/authentication.guard";
 
 const routes: Routes = [
@@ -35,45 +35,50 @@ const routes: Routes = [
   },
   {
     path: 'datasource-list',
-    loadChildren: () => import('./pages/datasource/datasource-list/datasource-list.module').then( m => m.DatasourceListPageModule),
+    loadChildren: () => import('./pages/datasource/datasource-list/datasource-list.module').then(m => m.DatasourceListPageModule),
     canActivate: [AuthenticationGuard]
   },
   {
     path: 'datasource-new',
-    loadChildren: () => import('./pages/datasource/datasource-new/datasource-new.module').then( m => m.DatasourceNewPageModule),
+    loadChildren: () => import('./pages/datasource/datasource-new/datasource-new.module').then(m => m.DatasourceNewPageModule),
     canActivate: [AuthenticationGuard]
   },
   {
     path: 'datasource-detail/:identifier',
-    loadChildren: () => import('./pages/datasource/datasource-detail/datasource-detail.module').then( m => m.DatasourceDetailPageModule),
+    loadChildren: () => import('./pages/datasource/datasource-detail/datasource-detail.module').then(m => m.DatasourceDetailPageModule),
     canActivate: [AuthenticationGuard]
   },
   {
     path: 'renderer-detail/:identifier',
-    loadChildren: () => import('./pages/renderer/renderer-detail/renderer-detail.module').then( m => m.RendererDetailPageModule),
+    loadChildren: () => import('./pages/renderer/renderer-detail/renderer-detail.module').then(m => m.RendererDetailPageModule),
     canActivate: [AuthenticationGuard]
   },
   {
     path: 'client-list',
-    loadChildren: () => import('./pages/client/client-list/client-list.module').then( m => m.ClientListPageModule),
+    loadChildren: () => import('./pages/client/client-list/client-list.module').then(m => m.ClientListPageModule),
     canActivate: [AuthenticationGuard]
   },
   {
     path: 'template-detail/:identifier',
-    loadChildren: () => import('./pages/template/template-detail/template-detail.module').then( m => m.TemplateDetailPageModule),
+    loadChildren: () => import('./pages/template/template-detail/template-detail.module').then(m => m.TemplateDetailPageModule),
     canActivate: [AuthenticationGuard]
   },
   {
     path: 'api-key-list',
-    loadChildren: () => import('./pages/api-key/api-key-list/api-key-list.module').then( m => m.ApiKeyListPageModule),
+    loadChildren: () => import('./pages/api-key/api-key-list/api-key-list.module').then(m => m.ApiKeyListPageModule),
     canActivate: [AuthenticationGuard]
+  },
+  {
+    path: 'template-jinja-editor/:identifier',
+    loadChildren: () => import('./pages/template/template-jinja-editor/template-jinja-editor.module').then(m => m.TemplateJinjaEditorPageModule)
   }
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, {preloadingStrategy: PreloadAllModules})
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

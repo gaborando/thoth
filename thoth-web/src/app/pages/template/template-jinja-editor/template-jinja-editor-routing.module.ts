@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { TemplateListPage } from './template-list.page';
+import { TemplateJinjaEditorPage } from './template-jinja-editor.page';
 
 const routes: Routes = [
   {
-    path: '**',
-    component: TemplateListPage
+    path: '',
+    component: TemplateJinjaEditorPage
   }
 ];
 
@@ -14,4 +14,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class TemplateListPageRoutingModule {}
+export class TemplateJinjaEditorPageRoutingModule {}
