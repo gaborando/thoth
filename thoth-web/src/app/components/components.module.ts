@@ -13,6 +13,7 @@ import {PrintRequestModalComponent} from "./modals/print-request-modal/print-req
 import {SharingOptionsComponent} from "./sharing-options/sharing-options.component";
 import {ParametersFormComponent} from "./modals/parameters-form/parameters-form.component";
 import {TypeaheadSelectComponent} from "./typeahead-select/typeahead-select.component";
+import {CustomsModule} from "../common/customs.module";
 
 
 
@@ -37,7 +38,8 @@ import {TypeaheadSelectComponent} from "./typeahead-select/typeahead-select.comp
     CommonModule,
     IonicModule,
     FormsModule,
-    CodemirrorModule
+    CodemirrorModule,
+    CustomsModule
   ]
 })
 export class ComponentsModule { }

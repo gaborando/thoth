@@ -2,13 +2,7 @@ package com.thoth.server.service;
 
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.model.domain.Template;
-import com.thoth.server.model.domain.datasource.DatasourceProperties;
-import com.thoth.server.model.repository.RendererRepository;
 import com.thoth.server.model.repository.TemplateRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,26 +10,22 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TemplateService {
@@ -120,7 +110,7 @@ public class TemplateService {
 
     public Template create(String name) {
         var template = new Template();
-        template.setId("tpl_" + UUID.randomUUID().toString());
+        template.setId("tpl_" + UUID.randomUUID());
         template.setName(name);
         template.setCreatedAt(Instant.now());
         template.setFolder("/");

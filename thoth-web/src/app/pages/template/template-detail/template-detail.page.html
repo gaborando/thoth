@@ -33,7 +33,10 @@
         </ion-item>
         <ion-item>
           <ion-label>Folder</ion-label>
-          <ion-input pattern="^\/(.)*" name="folder" [(ngModel)]="template.folder"></ion-input>
+          <ion-input  pattern="^\/(.)*" name="folder" [(ngModel)]="template.folder"
+                      [debounce]="500"
+                      appAutocomplete [autocompleteProvider]="folderAutocomplete">
+          </ion-input>
         </ion-item>
       </ion-card-content>
     </ion-card>

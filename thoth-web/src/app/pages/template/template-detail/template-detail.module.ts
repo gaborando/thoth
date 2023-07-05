@@ -8,6 +8,7 @@ import { TemplateDetailPageRoutingModule } from './template-detail-routing.modul
 
 import { TemplateDetailPage } from './template-detail.page';
 import {ComponentsModule} from "../../../components/components.module";
+import {CustomsModule} from "../../../common/customs.module";
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import {ComponentsModule} from "../../../components/components.module";
     FormsModule,
     IonicModule,
     TemplateDetailPageRoutingModule,
-    ComponentsModule
+    ComponentsModule,
+    CustomsModule
   ],
   declarations: [TemplateDetailPage]
 })
