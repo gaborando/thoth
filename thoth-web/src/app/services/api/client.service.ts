@@ -15,8 +15,8 @@ export class ClientService extends AuthenticatedService {
   }
 
 
-  async findAll(): Promise<Page<Client>>{
-    return fetch((await environment()).apiUrl + '/client/', {
+  async findAll(page=0): Promise<Page<Client>>{
+    return fetch((await environment()).apiUrl + '/client/?page=' + page, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {

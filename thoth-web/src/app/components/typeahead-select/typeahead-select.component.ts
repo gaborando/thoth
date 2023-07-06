@@ -1,13 +1,14 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewContainerRef} from '@angular/core';
 import {IonInput, IonItem} from "@ionic/angular";
 import {DataFetcher} from "../../common/utils/service-patterns/data-fetcher";
+import {SearchComponent} from "../../common/utils/ui-patterns/search-component";
 
 @Component({
   selector: 'app-typeahead-select',
   templateUrl: './typeahead-select.component.html',
   styleUrls: ['./typeahead-select.component.scss'],
 })
-export class TypeaheadSelectComponent implements OnInit {
+export class TypeaheadSelectComponent extends SearchComponent implements OnInit {
   items: any[] = [];
   selectedItems: any[] = [];
   @Input() multiple = false;
@@ -23,12 +24,32 @@ export class TypeaheadSelectComponent implements OnInit {
 
 
   constructor(private parent: IonItem) {
+    super();
     parent.button = true;
   }
 
   ngOnInit() {
-    this.fetcher?.findAll(this.page).then(page => {
-      this.items = page.content;
+    return this.loadPageData();
+  }
+
+  async loadPageData() {
+    this.page = 0;
+    this.loading = true;
+    this.items = [];
+    this.fetch()
+  }
+
+
+  override composeSearchFilter(): string {
+    if (this.search) {
+      return 'name==*' + this.search + '*';
+    }
+    return ''
+  }
+
+  fetch() {
+    this.fetcher?.findAll(this.page, this.composeSearchFilter()).then(page => {
+      this.items = page.content.filter(i => !this.selectedItems.map(e => e.id).includes(i.id));
       if (this.multiple) {
         this.selectedItems = this.value || [];
         for (let selectedItem of this.selectedItems) {
@@ -41,10 +62,10 @@ export class TypeaheadSelectComponent implements OnInit {
 
   checkboxChange(ev: any) {
     const {checked, value} = ev.detail;
-    if(this.selectedMap[value.id]){
+    if (this.selectedMap[value.id]) {
       this.selectedItems = this.selectedItems.filter((item) => item.id !== value.id);
       this.selectedMap[value.id] = false;
-    }else{
+    } else {
       this.selectedItems = [...this.selectedItems, value];
       this.selectedMap[value.id] = true;
     }
@@ -53,8 +74,8 @@ export class TypeaheadSelectComponent implements OnInit {
 
   onIonInfinite($event: any) {
     this.page++;
-    this.fetcher?.findAll(this.page).then(page => {
-      this.items = this.items.concat(page.content);
+    this.fetcher?.findAll(this.page, this.composeSearchFilter()).then(page => {
+      this.items = this.items.concat(page.content.filter(i => !this.selectedItems.map(e => e.id).includes(i.id)));
       $event.target.complete();
     })
   }
@@ -65,5 +86,10 @@ export class TypeaheadSelectComponent implements OnInit {
     } else {
       this.confirm.emit(this.selectedItems[0]);
     }
+  }
+
+
+  removeItem(items:any[] , item: any) {
+    return items.filter(i => i !== item);
   }
 }

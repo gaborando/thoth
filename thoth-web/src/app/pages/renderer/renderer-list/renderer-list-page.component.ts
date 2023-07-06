@@ -18,6 +18,13 @@ export class RendererListPage extends ListPage<Renderer> implements OnInit {
   ngOnInit() {
   }
 
+  override composeSearchFilter(): string {
+    if(this.search) {
+      return 'name==*' + this.search + '*'
+    }else{
+      return '';
+    }
+  }
   delete(r: Renderer) {
     this.elements = this.elements?.filter(rn => rn.id !== r.id)
     return this.rendererService.delete(r.id);

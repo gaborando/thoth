@@ -11,20 +11,30 @@
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
-    <ion-breadcrumbs>
-      <ion-breadcrumb routerLink="/template-list">Root</ion-breadcrumb>
-      <ion-breadcrumb *ngFor="let folder of currentFolder" [routerLink]="'/template-list' + folder.path">{{folder.name}}</ion-breadcrumb>
-
-    </ion-breadcrumbs>
+    <ion-searchbar (ionInput)="doSearch($event)">
+    </ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
 
+
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <ion-grid>
+  <ion-grid *ngIf="!search">
+    <ion-row>
+      <ion-col>
+        <ion-card>
+          <ion-card-content>
+            <ion-breadcrumbs>
+              <ion-breadcrumb routerLink="/template-list">Root</ion-breadcrumb>
+              <ion-breadcrumb *ngFor="let folder of currentFolder" [routerLink]="'/template-list' + folder.path">{{folder.name}}</ion-breadcrumb>
+            </ion-breadcrumbs>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
     <ion-row>
       <ion-col *ngFor="let folder of folders" size="4">
         <ion-card [routerLink]="folder.path">

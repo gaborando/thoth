@@ -2,10 +2,12 @@ package com.thoth.server.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thoth.server.controller.dto.datasource.*;
+import com.thoth.server.model.domain.Template;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
 import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.service.DataSourceService;
+import io.github.perplexhub.rsql.RSQLJPASupport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -78,11 +80,19 @@ public class DataSourceController {
     }
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Secured({"ROLE_USER", "ROLE_API"})
     public ResponseEntity<Page<DatasourcePropertyListItem>> findAll(
-            @RequestParam(defaultValue = "0") int page
+            @RequestParam(value = "filter", defaultValue = "") String filter,
+            @RequestParam(value = "sort", defaultValue = "createdAt,desc") String sort,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "30") int size
+
     ) {
-        return ResponseEntity.ok(dataSourceService.search(Specification.where(null),
-                PageRequest.of(page, 30, Sort.by(Sort.Order.desc("createdAt")))).map(DatasourcePropertyListItem::new));
+
+        Specification<DatasourceProperties> f = RSQLJPASupport.toSpecification(filter);
+        f = f.and(RSQLJPASupport.toSort(sort));
+        return ResponseEntity.ok(dataSourceService.search(f,
+                PageRequest.of(page, size)).map(DatasourcePropertyListItem::new));
     }
 
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
