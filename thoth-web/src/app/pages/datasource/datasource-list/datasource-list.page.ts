@@ -13,6 +13,12 @@ export class DatasourceListPage extends ListPage<Datasource> implements OnInit {
     super(datasourceService)
   }
 
+  override composeSearchFilter(): string {
+    if (this.search)
+      return 'name==*' + this.search + '*'
+    else return ''
+  }
+
   async ngOnInit() {
 
   }

@@ -1,11 +1,13 @@
 import {DataFetcher} from "../service-patterns/data-fetcher";
+import {SearchComponent} from "./search-component";
 
-export abstract class ListPage<E> {
+export abstract class ListPage<E> extends SearchComponent {
 
   public elements: E[] | undefined
   protected page = 0;
 
   protected constructor(protected fetcher: DataFetcher<E>) {
+    super()
   }
 
   async ionViewWillEnter() {
@@ -25,8 +27,9 @@ export abstract class ListPage<E> {
   }
 
   findAll() {
-    return this.fetcher.findAll(this.page)
+    return this.fetcher.findAll(this.page, this.composeSearchFilter())
   }
+
 
   public async handleRefresh(event: any) {
     try {

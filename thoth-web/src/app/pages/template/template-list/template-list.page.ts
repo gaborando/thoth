@@ -33,8 +33,7 @@ export class TemplateListPage extends ListPage<Template> implements OnInit, OnDe
               private loadingController: LoadingController,
               private guiUtils: GuiUtilsService,
               private templateGuiUtils: TemplateGuiUtilsService,
-              private route: ActivatedRoute,
-              private navController: NavController) {
+              private route: ActivatedRoute) {
     super(templateService);
 
   }
@@ -80,9 +79,12 @@ export class TemplateListPage extends ListPage<Template> implements OnInit, OnDe
     })
   }
 
-
-  override findAll(): Promise<Page<Template>> {
-    return this.templateService.findAll(this.page, 'folder==/' + window.location.pathname.substring(15))
+  override composeSearchFilter(): string {
+    let filter = 'folder==/' + window.location.pathname.substring(15);
+    if(this.search){
+      filter = 'name==*'+this.search+'*'
+    }
+    return filter
   }
 
   async createTemplate() {
@@ -135,9 +137,7 @@ export class TemplateListPage extends ListPage<Template> implements OnInit, OnDe
     return this.templateGuiUtils.printTemplate(t);
   }
 
-  protected readonly navigate = navigate;
 
-  navigateTo(folder: string) {
-    // return this.navController.navigateForward();
-  }
+
+
 }

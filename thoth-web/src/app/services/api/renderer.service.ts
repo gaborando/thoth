@@ -35,8 +35,8 @@ export class RendererService extends AuthenticatedService implements DataFetcher
 
   }
 
-  async findAll(page = 0): Promise<Page<Renderer>> {
-    return fetch((await environment()).apiUrl + '/renderer/?page=' + page, {
+  async findAll(page = 0, filter = ''): Promise<Page<Renderer>> {
+    return fetch((await environment()).apiUrl + '/renderer/?page=' + page+'&filter='+filter, {
       method: 'GET',
       headers: this.getHeaders()
     }).then(async r => {

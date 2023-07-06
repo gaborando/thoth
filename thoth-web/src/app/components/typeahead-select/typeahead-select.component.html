@@ -1,17 +1,16 @@
-
 <div>
   <ion-grid>
-    <ion-row>
-      <ion-col size="10" *ngIf="multiple"><span *ngFor="let i of value">{{i.name}}, </span></ion-col>
-      <ion-col size="10" *ngIf="!multiple">{{value?.name}}</ion-col>
-      <ion-col size="2" class="ion-text-end">
+    <ion-row  style="white-space: nowrap" >
+      <ion-col size="11" style="text-overflow: ellipsis; overflow: hidden; text-align: end" *ngIf="multiple"><span *ngFor="let i of value">{{i.name}}, </span></ion-col>
+      <ion-col size="11" style="text-overflow: ellipsis; overflow: hidden; text-align: end" *ngIf="!multiple">{{value?.name}}</ion-col>
+      <ion-col size="1" class="ion-text-end">
 
         <ion-icon color="medium" name="caret-down-outline"></ion-icon>
       </ion-col>
     </ion-row>
   </ion-grid>
 </div>
-<div style="position: absolute; top: 0; bottom: 0; left: 0; right: 0" (click)="modal.present()"></div>
+<div style="position: absolute; top: 0; bottom: 0; left: 0; right: 0" (click)="loadPageData(); modal.present()"></div>
 <ion-modal #modal>
   <ng-template>
     <ion-header>
@@ -24,6 +23,9 @@
           <ion-button (click)="confirmChanges(); modal.dismiss();">Done</ion-button>
         </ion-buttons>
       </ion-toolbar>
+      <ion-toolbar>
+        <ion-searchbar (ionInput)="doSearch($event)"></ion-searchbar>
+      </ion-toolbar>
     </ion-header>
 
     <ion-content>
@@ -33,19 +35,25 @@
           <ion-spinner></ion-spinner>
         </ion-item>
         <ng-container *ngIf="multiple else radio">
+          <ion-item *ngFor="let item of selectedItems">
+            <ion-checkbox (ionChange)="items.unshift(item); selectedItems = removeItem(selectedItems, item)" checked="true" justify="space-between">{{item.name}}</ion-checkbox>
+          </ion-item>
           <ion-item *ngFor="let item of items;">
-            <ion-label>{{ item.name }}</ion-label>
-            <ion-checkbox [value]="item" [checked]="selectedMap[item.id]"
-                          (ionChange)="checkboxChange($event)"></ion-checkbox>
+            <ion-checkbox (ionChange)="selectedItems.unshift(item); items = removeItem(items, item)" justify="space-between">{{item.name}}</ion-checkbox>
           </ion-item>
         </ng-container>
         <ng-template #radio>
-          <ion-radio-group [(ngModel)]="selectedItems[0]">
-            <ion-item *ngFor="let item of items;">
-              <ion-label>{{ item.name }}</ion-label>
-              <ion-radio [value]="item"></ion-radio>
+
+          <ion-radio-group value="true">
+            <ion-item *ngIf="selectedItems[0]">
+              <ion-radio (click)="items.unshift(selectedItems[0]); selectedItems = []" value="true"
+                         justify="space-between">{{selectedItems[0].name}}</ion-radio>
             </ion-item>
           </ion-radio-group>
+          <ion-item *ngFor="let item of items;">
+            <ion-radio (click)="selectedItems[0]? items.unshift(selectedItems[0]) : null ;selectedItems = [item]; items = removeItem(items, item)"
+                       justify="space-between">{{item.name}}</ion-radio>
+          </ion-item>
         </ng-template>
 
       </ion-list>
