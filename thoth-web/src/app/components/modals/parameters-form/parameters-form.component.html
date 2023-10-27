@@ -13,7 +13,8 @@
       <ion-row>
         <ion-col [size]="parameters.length < 10 ? 12 : 6" *ngFor="let p of parameters">
           <ion-item>
-            <ion-input [name]="p" [(ngModel)]="data[p]" [placeholder]="p"></ion-input>
+            <ion-label position="floating">{{p}}</ion-label>
+            <ion-input [name]="p" [(ngModel)]="data[p]" ></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>

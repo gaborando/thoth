@@ -103,7 +103,7 @@ export class Editor {
           template.svg = decodeURIComponent(escape(atob(msg.data.replace('data:image/svg+xml;base64,', ''))));
           template.markers = [];
 
-          const regex = /{{ *([a-zA-Z0-9\._]+)[^{]*}}/g;
+          const regex = /{{ *([a-zA-Z0-9_]+)[^{]*}}/g;
 
           let m;
 

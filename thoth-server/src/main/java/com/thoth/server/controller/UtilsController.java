@@ -1,15 +1,20 @@
 package com.thoth.server.controller;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.Code128Reader;
 import com.google.zxing.oned.Code128Writer;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.nimbusds.jose.shaded.gson.Gson;
 import com.thoth.server.configuration.security.SecuredTimestampService;
 import com.thoth.server.service.SidService;
 import org.springdoc.core.service.SecurityService;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +25,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.font.GlyphVector;
+import java.awt.font.TextAttribute;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.AttributedString;
+import java.util.HashMap;
 import java.util.List;
+
+import static com.google.zxing.EncodeHintType.GS1_FORMAT;
+import static com.google.zxing.EncodeHintType.MARGIN;
 
 @RestController
 @RequestMapping("/utils")
@@ -37,39 +50,85 @@ public class UtilsController {
         this.securedTimestampService = securedTimestampService;
     }
 
-    @Secured({"ROLE_USER", "ROLE_TMP"})
+
     @GetMapping(value = "/barcode", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderBarcode(
             @RequestParam String code,
+            @RequestParam(name = "TMP_KEY", defaultValue = "") String key,
+            @RequestParam(defaultValue = "true") boolean gs1,
+            @RequestParam(defaultValue = "{}") String hints,
+            @RequestParam(defaultValue = "CODE_128") BarcodeFormat format,
             @RequestParam(defaultValue = "300") int width,
-            @RequestParam(defaultValue = "150") int height,
-            @RequestParam(defaultValue = "false") boolean gs1) throws IOException {
+            @RequestParam(defaultValue = "150") int height) throws IOException, WriterException {
 
-
-        Code128Writer barcodeWriter = new Code128Writer();
-        code = code.replace("{","").replace("}","");
-        if(gs1){
-            code = code.replace("(","\u00f1").replace(")","");
+        var safe = true;
+        try {
+            securedTimestampService.parse(key);
+        } catch (Exception e) {
+            safe = false;
+            code = "(01)01234567890128(10)000000AAA8";
         }
-        BitMatrix bitMatrix = barcodeWriter.encode(code,
-                BarcodeFormat.CODE_128, width, height);
 
-        var img =  MatrixToImageWriter.toBufferedImage(bitMatrix);
+        code = code.replace("{", "").replace("}", "");
 
-        var baos = new ByteArrayOutputStream();
-        ImageIO.write(img, "jpeg", baos);
-        return ResponseEntity.ok(baos.toByteArray());
-    }
 
-    @Secured({"ROLE_USER", "ROLE_TMP"})
-    @GetMapping(value = "/qrcode", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> renderQrcode(@RequestParam String code,
-            @RequestParam(defaultValue = "300") int size) throws WriterException, IOException {
+        var jHints = new Gson().fromJson(hints, HashMap.class);
+        var hi = new HashMap<EncodeHintType, Object>();
+        jHints.keySet().forEach(k -> {
+            hi.put(EncodeHintType.valueOf(k.toString()), jHints.get(k.toString()));
+        });
+        if (!hi.containsKey(MARGIN)) {
+            hi.put(MARGIN, 0);
+        }
+        if (gs1) {
+            if (format == BarcodeFormat.QR_CODE && code.startsWith("(")) {
+                code = code.substring(1);
+            }
+            code = code.replace('(', format == BarcodeFormat.QR_CODE ? 29 : '\u00F1').replace(")", "");
+            hi.put(GS1_FORMAT, true);
+        }
 
-        QRCodeWriter  barcodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = barcodeWriter.encode(code, BarcodeFormat.QR_CODE, size, size);
+        var matrix = new MultiFormatWriter().encode(code, format, width, height, hi);
+        var img = MatrixToImageWriter.toBufferedImage(matrix);
+        if (!safe){
+            var w = (int) (img.getWidth() * 0.6);
+            var h = (int) (img.getHeight() * 0.6);
+            var g = img.getGraphics();
+            g.fillRect((img.getWidth()-w) / 2,(img.getHeight() - h) / 2, w, h);
+            Font font = new Font("Arial", Font.BOLD, 48);
 
-        var img =  MatrixToImageWriter.toBufferedImage(bitMatrix);
+            var text = format.toString();
+            if(gs1){
+                text += " - GS1";
+            }
+            AttributedString attributedText = new AttributedString(text);
+            attributedText.addAttribute(TextAttribute.FOREGROUND, Color.BLACK);
+            FontMetrics metrics = g.getFontMetrics(font);
+
+            GlyphVector vector = font.createGlyphVector(metrics.getFontRenderContext(), text);
+            Shape outline = vector.getOutline(0, 0);
+            double expectedWidth = outline.getBounds().getWidth();
+            double expectedHeight = outline.getBounds().getHeight();
+
+
+            w = (int) (img.getWidth() * 0.5);
+            h = (int) (img.getHeight() * 0.5);
+            boolean textFits = w >= expectedWidth && h >= expectedHeight;
+
+
+            if(!textFits) {
+                double widthBasedFontSize = (font.getSize2D() * w) / expectedWidth;
+                double heightBasedFontSize = (font.getSize2D() * h) / expectedHeight;
+
+                double newFontSize = Math.min(widthBasedFontSize, heightBasedFontSize);
+                font = font.deriveFont(font.getStyle(), (float) newFontSize);
+            }
+            attributedText.addAttribute(TextAttribute.FONT, font);
+            metrics = g.getFontMetrics(font);
+            int positionX = (img.getWidth() - metrics.stringWidth(text)) / 2;
+            int positionY = (img.getHeight() - metrics.getHeight()) / 2 + metrics.getAscent();
+            g.drawString(attributedText.getIterator(),  positionX, positionY);
+        }
         var baos = new ByteArrayOutputStream();
         ImageIO.write(img, "jpeg", baos);
         return ResponseEntity.ok(baos.toByteArray());
@@ -83,13 +142,13 @@ public class UtilsController {
 
     @Secured("ROLE_USER")
     @GetMapping(value = "/user-autocomplete", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<String>> userAutocomplete(@RequestParam String value)  {
-        return ResponseEntity.ok(sidService.findAllUsers(value, PageRequest.of(0,5)));
+    public ResponseEntity<List<String>> userAutocomplete(@RequestParam String value) {
+        return ResponseEntity.ok(sidService.findAllUsers(value, PageRequest.of(0, 5)));
     }
 
     @Secured("ROLE_USER")
     @GetMapping(value = "/organization-autocomplete", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<String>> organizationAutocomplete(@RequestParam String value)  {
-        return ResponseEntity.ok(sidService.findAllOrganizations(value, PageRequest.of(0,5)));
+    public ResponseEntity<List<String>> organizationAutocomplete(@RequestParam String value) {
+        return ResponseEntity.ok(sidService.findAllOrganizations(value, PageRequest.of(0, 5)));
     }
 }
