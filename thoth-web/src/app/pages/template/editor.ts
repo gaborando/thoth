@@ -122,6 +122,22 @@ export class Editor {
           }
           template.markers = [...new Set(template.markers)];
           if (!template.markers.includes('block**')) {
+            const toFill = template.markers.filter(m => m.startsWith("_"))
+            if(toFill.length) {
+              for (let string of toFill) {
+                this.drawIoWindow?.postMessage(JSON.stringify(
+                  {
+                    action: 'prompt',
+                    title: 'Specify marker for ' + string,
+                    ok: 'Insert',
+                    defaultValue: '{{' + string.substring(1) + '}}',
+                    markerToFill: string
+                  }), '*');
+              }
+            }else {
+              this.save(template, templateService);
+            }
+            /*
             if (template.markers.includes('_barcode')) {
               this.drawIoWindow?.postMessage(JSON.stringify(
                 {
@@ -148,7 +164,7 @@ export class Editor {
                 }), '*');
             } else {
               this.save(template, templateService);
-            }
+            }*/
           } else {
             this.save(template, templateService);
           }
@@ -157,7 +173,14 @@ export class Editor {
           var xmlDoc = new DOMParser().parseFromString(template.xml || '', 'application/xml');
           var diagrams = xmlDoc.getElementsByTagName('diagram');
           const node: any = diagrams[0].children.item(0)?.outerHTML;
+          console.log(msg);
           // @ts-ignore
+          if(msg.message.markerToFill){
+            const n = node.replaceAll('{{'+msg.message.markerToFill+'}}', msg.value);
+            this.drawIoWindow?.postMessage(JSON.stringify(
+              {action: 'merge', xml: n}), '*');
+          }
+          /*
           if (msg.message.defaultValue === '{{barcode}}') {
             const n = node.replaceAll('{{_barcode}}', msg.value);
             this.drawIoWindow?.postMessage(JSON.stringify(
@@ -170,7 +193,7 @@ export class Editor {
             const n = node.replaceAll('{{_marker}}', msg.value);
             this.drawIoWindow?.postMessage(JSON.stringify(
               {action: 'merge', xml: n}), '*');
-          }
+          }*/
 
         }
 
