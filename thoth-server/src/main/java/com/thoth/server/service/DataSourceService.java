@@ -9,6 +9,7 @@ import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.dto.datasource.RestDatasourceParameters;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
+import com.thoth.server.model.domain.datasource.Property;
 import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,21 +50,31 @@ public class DataSourceService {
     }
 
 
-    public String[] checkJdbc(String url, String username, String password, String query, HashMap<String, Object> parameters) {
+    public Set<Property> checkJdbc(String url, String username, String password, String query, HashMap<String, Object> parameters) {
         var dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.url(url);
         dataSourceBuilder.username(username);
         dataSourceBuilder.password(password);
         var dataSource = dataSourceBuilder.build();
-
+        for (String k : parameters.keySet()) {
+            query = query.replace("{{" + k + "}}", ':' + k);
+        }
         NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         var rs = jdbcTemplate.queryForRowSet(query, parameters);
 
-        return rs.getMetaData().getColumnNames();
+        var map = new HashSet<Property>();
+        if (!rs.next()) {
+            throw new IllegalStateException("Query with 0 results");
+        }
+        for (String columnName : rs.getMetaData().getColumnNames()) {
+            map.add(new Property(columnName, String.valueOf(rs.getObject(columnName))));
+        }
+        return map;
     }
 
 
-    public JdbcDatasourceProperties createJdbc(String name, String url, String username, String password, String query, List<String> parameters, List<String> properties) {
+    public JdbcDatasourceProperties createJdbc(String name, String url, String username, String password, String query,
+                                               Set<String> parameters, Set<Property> properties) {
         var dsp = new JdbcDatasourceProperties();
         dsp.setId("dsp_jdbc_" + UUID.randomUUID());
         dsp.setUrl(url);
@@ -137,8 +149,12 @@ public class DataSourceService {
                 localParameters.put(e.getKey(), isNumeric(e.getValue()) ? toNumeric(e.getValue().toString()) : e.getValue());
             }
 
+            var query = j.getQuery();
+            for (String k : j.getParameters()) {
+                query = query.replace("{{" + k + "}}", ':' + k);
+            }
             NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-            var rs = jdbcTemplate.queryForRowSet(j.getQuery(), localParameters);
+            var rs = jdbcTemplate.queryForRowSet(query, localParameters);
 
             if (!rs.next()) {
                 return new HashMap<>();
@@ -196,7 +212,7 @@ public class DataSourceService {
         return fetchData(datasourcePropertiesRepository.findById(id).orElseThrow(), params);
     }
 
-    public ArrayList<String> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
+    public Set<Property> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
         var strBody = objectMapper.writeValueAsString(request);
         for (Map.Entry<String, String> e : parameters.entrySet()) {
             strBody = strBody.replace("{{" + e.getKey() + "}}", e.getValue());
@@ -221,13 +237,13 @@ public class DataSourceService {
         return getNodeFields(root, "");
     }
 
-    private ArrayList<String> getNodeFields(JsonNode root, String s) {
-        var fields = new ArrayList<String>();
+    private Set<Property> getNodeFields(JsonNode root, String s) {
+        var fields = new HashSet<Property>();
         root.fields().forEachRemaining(e -> {
             if (e.getValue().getNodeType() == JsonNodeType.OBJECT) {
                 fields.addAll(getNodeFields(e.getValue(), s + e.getKey() + '/'));
             } else {
-                fields.add(s + e.getKey());
+                fields.add(new Property(s + e.getKey(), e.getValue().textValue()));
             }
         });
         return fields;
@@ -248,8 +264,12 @@ public class DataSourceService {
     }
 
     public RestDatasourceProperties createRest(String name, String url, String
-            method, Map<String, String> queryParameters, Map<String, String> headers, String
-                                                       jsonQuery, Map<String, Object> body, List<String> parameters, List<String> properties) {
+            method, Map<String, String> queryParameters,
+                                               Map<String, String> headers,
+                                               String jsonQuery,
+                                               Map<String, Object> body,
+                                               Set<String> parameters,
+                                               Set<Property> properties) {
         var dsp = new RestDatasourceProperties();
         dsp.setId("dsp_rest_" + UUID.randomUUID());
         dsp.setUrl(url);

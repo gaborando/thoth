@@ -5,7 +5,7 @@ export interface Datasource extends SecuredResource{
   type: string;
   name: string;
 
-  properties: string[]
+  properties: { name: string, helper: string }[]
 
   parameters: string[]
 

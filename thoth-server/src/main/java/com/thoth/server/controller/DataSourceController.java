@@ -5,6 +5,7 @@ import com.thoth.server.controller.dto.datasource.*;
 import com.thoth.server.model.domain.Template;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.domain.datasource.JdbcDatasourceProperties;
+import com.thoth.server.model.domain.datasource.Property;
 import com.thoth.server.model.domain.datasource.RestDatasourceProperties;
 import com.thoth.server.service.DataSourceService;
 import io.github.perplexhub.rsql.RSQLJPASupport;
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/datasource")
@@ -32,7 +36,7 @@ public class DataSourceController {
     }
 
     @PostMapping(value = "/check/jdbc", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String[]> checkJdbcParameters(@RequestBody JdbcDatasourceParametersCheckRequest parameters) throws SQLException {
+    public ResponseEntity<Set<Property>> checkJdbcParameters(@RequestBody JdbcDatasourceParametersCheckRequest parameters) throws SQLException {
         return ResponseEntity.ok(dataSourceService.checkJdbc(
                 parameters.getUrl(),
                 parameters.getUsername(),
@@ -43,9 +47,9 @@ public class DataSourceController {
     }
 
     @PostMapping(value = "/check/rest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ArrayList<String>> checkRestParameters(@RequestBody RestDatasourceParametersCheckRequest parameters) throws SQLException, JsonProcessingException {
+    public ResponseEntity<Set<Property>> checkRestParameters(@RequestBody RestDatasourceParametersCheckRequest parameters) throws SQLException, JsonProcessingException {
         return ResponseEntity.ok(dataSourceService.checkRest(
-                parameters.getRequest(),
+                parameters,
                 parameters.getParameters()
         ));
     }

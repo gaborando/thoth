@@ -3,11 +3,14 @@ import {Renderer} from "../../../common/types/renderer";
 import {RendererService} from "../../../services/api/renderer.service";
 import {ActivatedRoute} from "@angular/router";
 import {ScreenMessageService} from "../../../services/screen-message.service";
-import {AlertController, LoadingController, NavController} from "@ionic/angular";
+import {AlertController, IonItem, IonPopover, LoadingController, NavController} from "@ionic/angular";
 import {environment} from "../../../../environments/environment";
 import {Template} from "../../../common/types/template";
 import {ClientService} from "../../../services/api/client.service";
 import {GuiUtilsService} from "../../../services/gui-utils.service";
+import {DataFetcher} from "../../../common/utils/service-patterns/data-fetcher";
+import {Page} from "../../../common/utils/fetchUtils";
+import {Datasource} from "../../../common/types/datasource";
 
 @Component({
   selector: 'app-renderer-detail',
@@ -17,9 +20,10 @@ import {GuiUtilsService} from "../../../services/gui-utils.service";
 export class RendererDetailPage implements OnInit {
   renderer: Renderer | null = null;
   datasourceList: string = '';
-  availableProperties: any[] = [];
-  oldAssoc: any = {};
+  availableProperties: {ds: Datasource, property: {name: string, helper: string}}[] = [];
   private drawIoWindow: any;
+
+  ref = this;
 
   constructor(private rendererService: RendererService,
               private screenMessageService: ScreenMessageService,
@@ -35,7 +39,7 @@ export class RendererDetailPage implements OnInit {
     const resp = await this.rendererService.findById(this.route.snapshot.paramMap.get('identifier'))
     this.datasourceList = resp.datasourceProperties.map(d => d.name).join(",");
     this.availableProperties = [];
-    const tmp = [];
+    const tmp: {ds: Datasource, property: {name: string, helper: string}}[] = [];
     for (const d of resp.datasourceProperties) {
       for (const p of d.properties) {
         tmp.push({
@@ -44,12 +48,12 @@ export class RendererDetailPage implements OnInit {
         })
       }
     }
-    this.availableProperties = tmp.sort((a, b) => (a.ds.name + a.property).localeCompare(b.ds.name + b.property));
+    this.availableProperties = tmp.sort((a, b) => (a.ds.name + a.property.name).localeCompare(b.ds.name + b.property.name));
     for (const a of Object.keys(resp.associationMap)) {
       if (resp.associationMap[a].type === 'datasource') {
-        this.oldAssoc[a] = this.availableProperties.find(ap => ap.ds.id === resp.associationMap[a].id && ap.property === resp.associationMap[a].property)
+        resp.associationMap[a].association = this.availableProperties.find(ap => ap.ds.id === resp.associationMap[a].id && ap.property.name === resp.associationMap[a].property)
       } else {
-        this.oldAssoc[a] = 'parameter'
+        resp.associationMap[a].association = 'parameter'
       }
     }
     this.renderer = resp;
@@ -68,13 +72,15 @@ export class RendererDetailPage implements OnInit {
       this.renderer.associationMap[p] = {
         type: 'parameter',
         id: null,
-        property: null
+        property: null,
+        association
       }
     } else {
       this.renderer.associationMap[p] = {
         type: 'datasource',
         id: association.ds.id,
-        property: association.property
+        property: association.property.name,
+        association
       }
     }
   }
@@ -225,5 +231,9 @@ export class RendererDetailPage implements OnInit {
 
   ku($event: KeyboardEvent) {
     console.log($event);
+  }
+
+  presentPopover(popover: IonPopover, $event: MouseEvent, i: any) {
+    popover.present({...$event, target: i.el});
   }
 }
