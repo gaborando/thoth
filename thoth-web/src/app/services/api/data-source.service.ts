@@ -14,8 +14,8 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
     super()
   }
 
-  async checkParameters(type: string, datasourceParameters: any, parameters: any) {
-    const request = {... datasourceParameters};
+  async checkParameters(type: string, definition: any, parameters: any) {
+    const request = {... definition};
     request.parameters = parameters;
     return fetch((await environment()).apiUrl + '/datasource/check/' + type, {
       method: 'POST',
@@ -29,11 +29,11 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
     });
   }
 
-  async saveParameters(type: string, jdbcDatasourceParameters: any) {
+  async saveParameters(type: string, definition: any) {
     return fetch((await environment()).apiUrl + '/datasource/' + type, {
       method: 'POST',
       headers: this.postHeaders(),
-      body: JSON.stringify(jdbcDatasourceParameters)
+      body: JSON.stringify(definition)
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()
@@ -62,7 +62,7 @@ export class DataSourceService extends AuthenticatedService implements DataFetch
       if (!r.ok) {
         throw await r.json()
       }
-      return await r.json()
+      return await r.json();
     });
   }
 

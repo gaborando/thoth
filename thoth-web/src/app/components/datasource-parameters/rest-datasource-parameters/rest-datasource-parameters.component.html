@@ -8,12 +8,13 @@
     <form #frm>
       <ion-item>
         <ion-label>Server URL</ion-label>
-        <ion-input name="url" [(ngModel)]="restDatasourceParameters.url" type="url" (ionChange)="this.detectParameters()"></ion-input>
+        <ion-input name="url" [(ngModel)]="definition.url" type="url" (ionChange)="this.detectParameters()"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Request Method</ion-label>
-        <ion-select name="method" [(ngModel)]="restDatasourceParameters.method" (ionChange)="this.detectParameters()">
-          <ion-select-option *ngFor="let m of ['GET','POST','PUT','DELETE']" [value]="m">{{m}}</ion-select-option>
+        <ion-select name="method" [(ngModel)]="definition.method" (ionChange)="this.detectParameters()">
+          <ion-select-option value="GET">GET</ion-select-option>
+          <ion-select-option value="POST">POST</ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item-divider>
@@ -27,9 +28,9 @@
           <ion-icon slot="icon-only" name="add"></ion-icon>
         </ion-button>
       </ion-item>
-      <ion-item lines="full" *ngFor="let q of obj.keys(restDatasourceParameters.queryParameters)">
+      <ion-item lines="full" *ngFor="let q of obj.keys(definition.queryParameters)">
         <ion-label>{{q}}</ion-label>
-        <ion-label>{{restDatasourceParameters.queryParameters[q]}}</ion-label>
+        <ion-label>{{definition.queryParameters[q]}}</ion-label>
         <ion-button color="warning" slot="end" (click)="removeQueryParam(q)">
           <ion-icon slot="icon-only" name="remove"></ion-icon>
         </ion-button>
@@ -45,14 +46,14 @@
           <ion-icon slot="icon-only" name="add"></ion-icon>
         </ion-button>
       </ion-item>
-      <ion-item lines="full" *ngFor="let h of obj.keys(restDatasourceParameters.headers)">
+      <ion-item lines="full" *ngFor="let h of obj.keys(definition.headers)">
         <ion-label>{{h}}</ion-label>
-        <ion-label>{{restDatasourceParameters.headers[h]}}</ion-label>
+        <ion-label>{{definition.headers[h]}}</ion-label>
         <ion-button color="warning" slot="end" (click)="removeHeader(h)">
           <ion-icon slot="icon-only" name="remove"></ion-icon>
         </ion-button>
       </ion-item>
-      <ng-container *ngIf="['POST','PUT'].includes(restDatasourceParameters.method)">
+      <ng-container *ngIf="['POST','PUT'].includes(definition.method)">
         <ion-item-divider>
           Body
         </ion-item-divider>
@@ -64,9 +65,9 @@
             <ion-icon slot="icon-only" name="add"></ion-icon>
           </ion-button>
         </ion-item>
-        <ion-item lines="full" *ngFor="let b of obj.keys(restDatasourceParameters.body)">
+        <ion-item lines="full" *ngFor="let b of obj.keys(definition.body)">
           <ion-label>{{b}}</ion-label>
-          <ion-label>{{restDatasourceParameters.body[b]}}</ion-label>
+          <ion-label>{{definition.body[b]}}</ion-label>
           <ion-button color="warning" slot="end" (click)="removeBodyItem(b)">
             <ion-icon slot="icon-only" name="remove"></ion-icon>
           </ion-button>
@@ -74,9 +75,9 @@
       </ng-container>
       <ion-item>
         <ion-label>
-          JSON Query on result
+          JSON Pointer Expression
         </ion-label>
-        <ion-textarea name="jsonQuery" [(ngModel)]="restDatasourceParameters.jsonQuery">
+        <ion-textarea name="jsonQuery" [(ngModel)]="definition.jsonQuery">
 
         </ion-textarea>
       </ion-item>
@@ -92,7 +93,7 @@
   </div>
 </ion-card>
 
-<ion-card *ngIf="detectedProperties?.length">
+<ion-card *ngIf="properties?.length">
   <ion-card-header>
     <ion-card-title>
       Detected Properties
@@ -101,7 +102,9 @@
   <ion-card-content>
     <ion-grid>
       <ion-row>
-        <ion-col size="4" *ngFor="let p of detectedProperties">{{p}}</ion-col>
+        <ion-col (click)="editProperty(p)" size="4" *ngFor="let p of properties"><h2>{{p.name}}</h2>
+          <small >{{p.helper}}</small>
+        </ion-col>
       </ion-row>
     </ion-grid>
   </ion-card-content>

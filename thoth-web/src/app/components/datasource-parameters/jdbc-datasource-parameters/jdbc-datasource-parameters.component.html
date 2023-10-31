@@ -8,15 +8,15 @@
     <form #frm>
       <ion-item>
         <ion-label>Datasource URL</ion-label>
-        <ion-input name="url" [(ngModel)]="jdbcDatasourceParameters.url" type="url"></ion-input>
+        <ion-input name="url" [(ngModel)]="definition.url" type="url"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Datasource Username</ion-label>
-        <ion-input name="username" [(ngModel)]="jdbcDatasourceParameters.username" #username type="text"></ion-input>
+        <ion-input name="username" [(ngModel)]="definition.username" #username type="text"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Datasource Password</ion-label>
-        <ion-input name="password" [(ngModel)]="jdbcDatasourceParameters.password" type="password"></ion-input>
+        <ion-input name="password" [(ngModel)]="definition.password" type="password"></ion-input>
       </ion-item>
 
       <div class="ion-margin">
@@ -25,8 +25,8 @@
       </div>
       <div class="ion-margin-horizontal">
         <ngx-codemirror (codeMirrorLoaded)="codeLoaded($event)" name="query"
-                        (keyup)="detectQueryParameters()"
-                        [(ngModel)]="jdbcDatasourceParameters.query"
+                        (keyup)="detectParameters()"
+                        [(ngModel)]="definition.query"
                         [options]="{
     theme: 'default',
     autoRefresh: true,
@@ -44,12 +44,12 @@
     </form>
   </ion-card-content>
   <div class="ion-margin">
-    <ion-note>Detected parameters:  {{!queryParams.length ? ' --- ' : queryParams.join(",")}}</ion-note>
+    <ion-note>Detected parameters:  {{!parameters.length ? ' --- ' : parameters.join(",")}}</ion-note>
   </div>
 </ion-card>
 
 
-<ion-card *ngIf="detectedProperties?.length">
+<ion-card *ngIf="properties?.length">
   <ion-card-header>
     <ion-card-title>
       Detected Properties
@@ -58,7 +58,9 @@
   <ion-card-content>
     <ion-grid>
       <ion-row>
-        <ion-col size="4" *ngFor="let p of detectedProperties">{{p}}</ion-col>
+        <ion-col (click)="editProperty(p)" size="4" *ngFor="let p of properties"><h2>{{p.name}}</h2>
+          <small >{{p.helper}}</small>
+        </ion-col>
       </ion-row>
     </ion-grid>
   </ion-card-content>

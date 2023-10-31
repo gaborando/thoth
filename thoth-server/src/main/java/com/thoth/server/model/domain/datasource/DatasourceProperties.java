@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -33,8 +32,21 @@ public abstract class DatasourceProperties extends SecuredResource {
     private Instant createdAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<@NotBlank @Size(min = 1, max = 256) String> parameters;
+    private Set<@NotBlank @Size(min = 1, max = 256) String> parameters;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<@NotBlank @Size(min = 1, max = 256) String> properties;
+    private Set<Property> properties;
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        DatasourceProperties that = (DatasourceProperties) object;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

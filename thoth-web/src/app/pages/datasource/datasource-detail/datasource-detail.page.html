@@ -39,16 +39,16 @@
   <ng-container [ngSwitch]="datasource.type">
     <ng-container *ngSwitchCase="'jdbc'">
       <app-jdbc-datasource-parameters #jdbc (onInit)="dsParameters = jdbc"
-                                      [jdbcDatasourceParameters]="datasource"
-                                      [queryParams]="datasource.parameters"
-                                      [detectedProperties]="datasource.properties"
+                                      [definition]="datasource"
+                                      [parameters]="datasource.parameters"
+                                      [properties]="datasource.properties"
                                       (isValid)="validParameters = $event"></app-jdbc-datasource-parameters>
     </ng-container>
     <ng-container *ngSwitchCase="'rest'">
       <app-rest-datasource-parameters #rest (onInit)="dsParameters = rest"
-                                      [restDatasourceParameters]="datasource"
+                                      [definition]="datasource"
                                       [parameters]="datasource.parameters"
-                                      [detectedProperties]="datasource.properties"
+                                      [properties]="datasource.properties"
                                       (isValid)="validParameters = $event"></app-rest-datasource-parameters>
     </ng-container>
   </ng-container>

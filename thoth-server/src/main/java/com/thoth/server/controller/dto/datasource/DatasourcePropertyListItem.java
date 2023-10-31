@@ -1,19 +1,18 @@
 package com.thoth.server.controller.dto.datasource;
 
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.FetchType;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.thoth.server.model.domain.datasource.Property;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DatasourcePropertyListItem {
     private String id;
     private String name;
     private String type;
-    private List<String> parameters;
-    private List<String> properties;
+    private Set<String> parameters;
+    private Set<Property> properties;
+
     public DatasourcePropertyListItem(DatasourceProperties item) {
         this.id = item.getId();
         this.name = item.getName();
@@ -46,19 +45,20 @@ public class DatasourcePropertyListItem {
         this.type = type;
     }
 
-    public List<String> getParameters() {
+    public Set<String> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<String> parameters) {
+    public void setParameters(Set<String> parameters) {
         this.parameters = parameters;
     }
 
-    public List<String> getProperties() {
+    public Set<Property> getProperties() {
         return properties;
     }
 
-    public void setProperties(List<String> properties) {
+    public DatasourcePropertyListItem setProperties(Set<Property> properties) {
         this.properties = properties;
+        return this;
     }
 }

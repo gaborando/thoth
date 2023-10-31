@@ -16,10 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RendererService {
@@ -43,7 +41,11 @@ public class RendererService {
         renderer.setId("rndr_" + UUID.randomUUID());
         renderer.setName(name);
         renderer.setTemplate(templateRepository.findById(template).orElseThrow());
-        renderer.setDatasourceProperties(datasourcePropertiesRepository.findAllById(datasource));
+        renderer.setDatasourceProperties(datasource.stream()
+                .map(datasourcePropertiesRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet()));
         renderer.setAssociationMap(associationMap);
         renderer.setCreatedAt(Instant.now());
         facade.fillSecuredResource(renderer);

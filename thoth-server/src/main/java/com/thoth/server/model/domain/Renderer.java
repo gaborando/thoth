@@ -13,6 +13,7 @@ import lombok.Setter;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -35,7 +36,7 @@ public class Renderer extends SecuredResource{
     @ManyToMany
     @NotEmpty
     @Column(insertable = false, updatable = false)
-    private List<DatasourceProperties> datasourceProperties;
+    private Set<DatasourceProperties> datasourceProperties;
 
     @Column(updatable = false)
     private Instant createdAt;
