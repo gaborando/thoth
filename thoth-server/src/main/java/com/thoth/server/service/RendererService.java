@@ -3,6 +3,7 @@ package com.thoth.server.service;
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.dto.renderer.Association;
 import com.thoth.server.model.domain.Renderer;
+import com.thoth.server.model.domain.ResourcePermission;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
 import com.thoth.server.model.repository.RendererRepository;
@@ -58,18 +59,6 @@ public class RendererService {
     }
 
 
-    public Renderer update(String identifier, Renderer properties) {
-        return update(findById(identifier).orElseThrow(), properties);
-    }
-    @PreAuthorize("@authenticationFacade.canWrite(#original)")
-    private Renderer update(Renderer original, Renderer update) {
-        original.setAssociationMap(update.getAssociationMap());
-        original.setName(update.getName());
-        original.setAllowedOrganizationList(update.getAllowedOrganizationList());
-        original.setAllowedUserList(update.getAllowedUserList());
-        return rendererRepository.save(original);
-    }
-
     @PreAuthorize("@authenticationFacade.canWrite(#renderer)")
     public void delete(Renderer renderer) {
         rendererRepository.delete(renderer);
@@ -78,5 +67,18 @@ public class RendererService {
     @PostAuthorize("@authenticationFacade.canRead(returnObject) || hasRole('ROLE_TMP')")
     public Optional<Renderer> findById(String identifier) {
         return rendererRepository.findById(identifier);
+    }
+
+    @PreAuthorize("@authenticationFacade.canWrite(#original)")
+    public Renderer update(String s, String name, List<String> datasource, Map<String, Association> associationMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {
+        var original = rendererRepository.findById(s).orElseThrow();
+        original.setAssociationMap(associationMap);
+        original.setDatasourceProperties(
+                new HashSet<>(datasourcePropertiesRepository
+                        .findAllById(datasource)));
+        original.setName(name);
+        original.setAllowedOrganizationList(allowedOrganizationList);
+        original.setAllowedUserList(allowedUserList);
+        return rendererRepository.save(original);
     }
 }

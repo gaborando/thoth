@@ -4,6 +4,7 @@ import com.thoth.server.controller.dto.datasource.DatasourcePropertyListItem;
 import com.thoth.server.controller.dto.renderer.RendererCreateRequest;
 import com.thoth.server.controller.dto.PrintRequest;
 import com.thoth.server.controller.dto.renderer.RendererListItem;
+import com.thoth.server.controller.dto.renderer.RendererUpdateRequest;
 import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.service.render.RenderService;
@@ -73,8 +74,13 @@ public class RendererController {
 
     @Secured("ROLE_USER")
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Renderer> update(@RequestBody Renderer renderer, @PathVariable String identifier) {
-        return ResponseEntity.ok(rendererService.update(identifier, renderer));
+    public ResponseEntity<Renderer> update(@RequestBody RendererUpdateRequest renderer, @PathVariable String identifier) {
+        return ResponseEntity.ok(rendererService.update(identifier,
+                renderer.getName(),
+                renderer.getDatasource(),
+                renderer.getAssociationMap(),
+                renderer.getAllowedUserList(),
+                renderer.getAllowedOrganizationList()));
     }
 
 

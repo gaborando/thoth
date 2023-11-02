@@ -1,8 +1,7 @@
 <div>
   <ion-grid>
     <ion-row  style="white-space: nowrap" >
-      <ion-col size="11" style="text-overflow: ellipsis; overflow: hidden; text-align: end" *ngIf="multiple"><span *ngFor="let i of value">{{i.name}}, </span></ion-col>
-      <ion-col size="11" style="text-overflow: ellipsis; overflow: hidden; text-align: end" *ngIf="!multiple">{{value?.name}}</ion-col>
+      <ion-col size="11" style="text-overflow: ellipsis; overflow: hidden; text-align: end">{{valueText}}</ion-col>
       <ion-col size="1" class="ion-text-end">
 
         <ion-icon color="medium" name="caret-down-outline"></ion-icon>
@@ -36,10 +35,10 @@
         </ion-item>
         <ng-container *ngIf="multiple else radio">
           <ion-item *ngFor="let item of selectedItems">
-            <ion-checkbox (ionChange)="items.unshift(item); selectedItems = removeItem(selectedItems, item)" checked="true" justify="space-between">{{item.name}}</ion-checkbox>
+            <ion-checkbox (ionChange)="items.unshift(item); selectedItems = removeItem(selectedItems, item); updateText()" checked="true" justify="space-between">{{item.name}}</ion-checkbox>
           </ion-item>
           <ion-item *ngFor="let item of items;">
-            <ion-checkbox (ionChange)="selectedItems.unshift(item); items = removeItem(items, item)" justify="space-between">{{item.name}}</ion-checkbox>
+            <ion-checkbox (ionChange)="selectedItems.unshift(item); items = removeItem(items, item); updateText();" justify="space-between">{{item.name}}</ion-checkbox>
           </ion-item>
         </ng-container>
         <ng-template #radio>
@@ -51,7 +50,7 @@
             </ion-item>
           </ion-radio-group>
           <ion-item *ngFor="let item of items;">
-            <ion-radio (click)="selectedItems[0]? items.unshift(selectedItems[0]) : null ;selectedItems = [item]; items = removeItem(items, item)"
+            <ion-radio (click)="selectedItems[0]? items.unshift(selectedItems[0]) : null ;selectedItems = [item]; items = removeItem(items, item); updateText();"
                        justify="space-between">{{item.name}}</ion-radio>
           </ion-item>
         </ng-template>

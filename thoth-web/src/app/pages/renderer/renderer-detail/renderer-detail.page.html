@@ -30,7 +30,8 @@
     </ion-item>
     <ion-item>
       <ion-label>Datasource</ion-label>
-      <ion-input name="datasource" [(ngModel)]="datasourceList" readonly="true"></ion-input>
+      <app-typeahead-select slot="end" [multiple]="true" [fetcher]="datasourceService" [value]="selectedDatasource"
+                            (confirm)="selectedDatasource = $event; updateAvailableAssociations($event)"></app-typeahead-select>
     </ion-item>
     <ion-grid>
       <ion-row>
@@ -65,7 +66,7 @@
                       <ion-item  (click)="updateAssociationMap(p, null); popover.dismiss()" tappable="true">Empty</ion-item>
                       <ion-item  (click)="updateAssociationMap(p, 'parameter'); popover.dismiss()">Parameter</ion-item>
                       <ng-container  *ngFor="let ap of availableProperties">
-                        <ion-item *ngIf="ap.ds.name.toLowerCase().includes(sb.value + '') || ap.property.name.toLowerCase().includes(sb.value + '')" tappable="true" (click)="updateAssociationMap(p, ap); popover.dismiss()">
+                        <ion-item *ngIf="ap.ds.name.toLowerCase().includes(sb.value?.toLowerCase() + '') || ap.property.name.toLowerCase().includes(sb.value?.toLowerCase() + '')" tappable="true" (click)="updateAssociationMap(p, ap); popover.dismiss()">
                           {{ap.ds.name}}
                           - {{ap.property.name}} ({{ap.property.helper}})
                         </ion-item>

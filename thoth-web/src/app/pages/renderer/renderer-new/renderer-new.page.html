@@ -16,14 +16,8 @@
     </ion-item>
     <ion-item>
       <ion-label>Template</ion-label>
-      <app-typeahead-select slot="end" [fetcher]="templateService" [value]="selectedTemplate" (confirm)="selectedTemplate = $event"></app-typeahead-select>
-      <!--
-      <ion-select name="template" [(ngModel)]="selectedTemplate">
-        <ion-select-option *ngFor="let t of templates" [value]="t">
-          {{t.name}}
-        </ion-select-option>
-      </ion-select>
-      -->
+      <app-typeahead-select slot="end" [fetcher]="templateService" [value]="selectedTemplate"
+                            (confirm)="selectedTemplate = $event"></app-typeahead-select>
     </ion-item>
     <ion-item>
       <ion-label>Datasource</ion-label>
@@ -39,19 +33,45 @@
               <ion-card-title>Association Map</ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              <ion-item *ngFor="let p of selectedTemplate.markers">
-                <ion-label>{{p}}</ion-label>
-                <ion-select #s interface="popover" [disabled]="!selectedDatasource?.length" (ionChange)="updateAssociationMap(p, s.value)"
-                            placeholder="Datasource">
-                  <ion-select-option [value]="null"><ion-text color="light">Empty</ion-text></ion-select-option>
-                  <ion-select-option value="parameter">Parameter</ion-select-option>
-                  <ion-select-option *ngFor="let p of availableProperties" [value]="p">{{p.ds.name}}
-                    - {{p.property}}</ion-select-option>
-                </ion-select>
+
+              <ion-item *ngFor="let p of selectedTemplate.markers.sort()" #i (click)="presentPopover(popover, $event, i)">
+                <ion-grid class="ion-no-padding" (click)="$event.preventDefault()">
+                  <ion-row>
+                    <ion-col size="4">{{p}}</ion-col>
+                    <ion-col *ngIf="associationMap[p]?.association">
+                      <ng-container *ngIf="associationMap[p]?.association?.ds else parameter">
+                        {{associationMap[p].association.ds.name}} - {{associationMap[p].association.property.name}}
+                      </ng-container>
+                      <ng-template #parameter>
+                        Parameter
+                      </ng-template>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+                <ion-popover #popover>
+                  <ng-template>
+                    <ion-content style="max-height: 350px">
+                      <ion-item>
+                        <ion-searchbar #sb></ion-searchbar>
+                      </ion-item>
+                      <ion-item  (click)="updateAssociationMap(p, null); popover.dismiss()" tappable="true">Empty</ion-item>
+                      <ion-item  (click)="updateAssociationMap(p, 'parameter'); popover.dismiss()">Parameter</ion-item>
+                      <ng-container  *ngFor="let ap of availableProperties">
+                        <ion-item *ngIf="ap.ds.name.toLowerCase().includes(sb.value?.toLowerCase() + '') || ap.property.name.toLowerCase().includes(sb.value?.toLowerCase() + '')" tappable="true" (click)="updateAssociationMap(p, ap); popover.dismiss()">
+                          {{ap.ds.name}}
+                          - {{ap.property.name}} ({{ap.property.helper}})
+                        </ion-item>
+                      </ng-container>
+
+                    </ion-content>
+
+                  </ng-template>
+                </ion-popover>
 
               </ion-item>
             </ion-card-content>
           </ion-card>
+
         </ion-col>
         <ion-col size="4">
           <ion-card *ngIf="selectedTemplate">

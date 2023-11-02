@@ -15,10 +15,11 @@ export class TemplateService extends AuthenticatedService implements DataFetcher
     super()
   }
 
-  async findAll(page = 0, filter=''): Promise<Page<Template>>{
+  async findAll(page = 0, filter='', signal: AbortSignal): Promise<Page<Template>>{
     return fetch((await environment()).apiUrl + '/template/?page='+page+'&filter='+filter, {
       method: 'GET',
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
+      signal
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()

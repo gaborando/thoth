@@ -9,11 +9,16 @@ import {SearchComponent} from "../../common/utils/ui-patterns/search-component";
   styleUrls: ['./typeahead-select.component.scss'],
 })
 export class TypeaheadSelectComponent extends SearchComponent implements OnInit {
-  items: any[] = [];
+  items: {name: string}[] = [];
   selectedItems: any[] = [];
   @Input() multiple = false;
   title = 'Select Items';
-  @Input() value: any = null;
+  _value: {name: string}[] = [];
+  valueText = '...'
+  @Input() set value(v: { name: string }[] | {name: string} | undefined | null){
+    this._value = v ? ( Array.isArray(v) ? v  : [v]) : [];
+    this.valueText = this._value.length ?  this._value.map(i => i.name).join(",")  : '...'
+  };
   @Input() fetcher: DataFetcher<any> | undefined;
 
   @Output() confirm = new EventEmitter<any | undefined>();
@@ -26,6 +31,11 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
   constructor(private parent: IonItem) {
     super();
     parent.button = true;
+  }
+
+  updateText(){
+
+    this.valueText = this.selectedItems.length ?  this.selectedItems.map(i => i.name).join(",")  : '...'
   }
 
   ngOnInit() {
@@ -51,13 +61,15 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
     this.fetcher?.findAll(this.page, this.composeSearchFilter()).then(page => {
       this.items = page.content.filter(i => !this.selectedItems.map(e => e.id).includes(i.id));
       if (this.multiple) {
-        this.selectedItems = this.value || [];
+        this.selectedItems = this._value || [];
         for (let selectedItem of this.selectedItems) {
           this.selectedMap[selectedItem.id] = true;
         }
       }
+      this.updateText();
       this.loading = false;
     })
+
   }
 
   checkboxChange(ev: any) {
@@ -86,6 +98,7 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
     } else {
       this.confirm.emit(this.selectedItems[0]);
     }
+    this.updateText();
   }
 
 

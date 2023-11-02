@@ -5,6 +5,7 @@ export abstract class ListPage<E> extends SearchComponent {
 
   public elements: E[] | undefined
   protected page = 0;
+  private controller?: AbortController;
 
   protected constructor(protected fetcher: DataFetcher<E>) {
     super()
@@ -16,6 +17,8 @@ export abstract class ListPage<E> extends SearchComponent {
 
 
   async loadPageData() {
+    if(this.controller)
+      this.controller.abort('Page Refresh');
     this.page = 0;
     this.elements = undefined;
     this.elements = (await this.findAll()).content;
@@ -27,7 +30,8 @@ export abstract class ListPage<E> extends SearchComponent {
   }
 
   findAll() {
-    return this.fetcher.findAll(this.page, this.composeSearchFilter())
+    this.controller = new AbortController();
+    return this.fetcher.findAll(this.page, this.composeSearchFilter(), this.controller.signal)
   }
 
 
