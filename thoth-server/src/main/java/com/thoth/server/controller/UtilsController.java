@@ -5,16 +5,9 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.oned.Code128Reader;
-import com.google.zxing.oned.Code128Writer;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.thoth.server.configuration.security.SecuredTimestampService;
 import com.thoth.server.service.SidService;
-import org.springdoc.core.service.SecurityService;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +44,7 @@ public class UtilsController {
     }
 
 
+    @SuppressWarnings("unchecked")
     @GetMapping(value = "/barcode", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderBarcode(
             @RequestParam String code,

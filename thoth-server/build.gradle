@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.thoth.server'
 version = '1.0.0'
-sourceCompatibility = '19'
+sourceCompatibility = '17'
 
 configurations {
 	compileOnly {

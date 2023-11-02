@@ -1,10 +1,13 @@
 package com.thoth.server.controller.dto.datasource;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.HashMap;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RestDatasourceParametersCheckRequest extends RestDatasourceParameters {
     private HashMap<String, String> parameters;
 }
