@@ -20,8 +20,8 @@ import {DataSourceService} from "../../../services/api/data-source.service";
 })
 export class RendererDetailPage implements OnInit {
   renderer: Renderer | null = null;
-  selectedDatasource: Datasource[] | undefined;
   availableProperties: {ds: Datasource, property: {name: string, helper: string}}[] = [];
+  parameters = new Set<string>();
   private drawIoWindow: any;
 
   ref = this;
@@ -39,8 +39,8 @@ export class RendererDetailPage implements OnInit {
 
   async ionViewWillEnter() {
     const resp = await this.rendererService.findById(this.route.snapshot.paramMap.get('identifier'))
-    this.selectedDatasource = resp.datasourceProperties;
     this.availableProperties = [];
+    this.parameters = new Set<string>();
     const tmp: {ds: Datasource, property: {name: string, helper: string}}[] = [];
     for (const d of resp.datasourceProperties) {
       for (const p of d.properties) {
@@ -48,6 +48,17 @@ export class RendererDetailPage implements OnInit {
           ds: d,
           property: p
         })
+      }
+      for (const p of d.parameters) {
+        this.parameters.add(p);
+        if(!resp.parametersMap[p]){
+          resp.parametersMap[p] = {
+            type: 'parameter',
+            id: null,
+            property: null,
+            association: null
+          }
+        }
       }
     }
     this.availableProperties = tmp.sort((a, b) => (a.ds.name + a.property.name).localeCompare(b.ds.name + b.property.name));
@@ -58,6 +69,13 @@ export class RendererDetailPage implements OnInit {
         resp.associationMap[a].association = 'parameter'
       }
     }
+    for (const a of Object.keys(resp.parametersMap)) {
+      if (resp.parametersMap[a].type === 'datasource') {
+        resp.parametersMap[a].association = this.availableProperties.find(ap => ap.ds.id === resp.parametersMap[a].id && ap.property.name === resp.parametersMap[a].property)
+      } else {
+        resp.parametersMap[a].association = 'parameter'
+      }
+    }
     this.renderer = resp;
   }
 
@@ -66,6 +84,7 @@ export class RendererDetailPage implements OnInit {
 
   updateAvailableAssociations(event: any) {
     const tmp = [];
+    this.parameters = new Set<string>();
     for (const d of event || []) {
       for (const p of d.properties) {
         tmp.push({
@@ -73,7 +92,19 @@ export class RendererDetailPage implements OnInit {
           property: p
         })
       }
+      for (const p of d.parameters) {
+        this.parameters.add(p);
+        if(!this.renderer?.parametersMap[p] && this.renderer){
+          this.renderer.parametersMap[p] = {
+            type: 'parameter',
+            id: null,
+            property: null,
+            association: null
+          }
+        }
+      }
     }
+
     this.availableProperties = tmp.sort((a, b) => (a.ds.name + a.property).localeCompare(b.ds.name + b.property));
   }
 
@@ -250,5 +281,28 @@ export class RendererDetailPage implements OnInit {
 
   presentPopover(popover: IonPopover, $event: MouseEvent, i: any) {
     popover.present({...$event, target: i.el});
+  }
+
+  updateParameterMap(p: string, association: any) {
+    if (!this.renderer) {
+      return
+    }
+    if (!association) {
+      delete this.renderer.parametersMap[p];
+    } else if (association === 'parameter') {
+      this.renderer.parametersMap[p] = {
+        type: 'parameter',
+        id: null,
+        property: null,
+        association
+      }
+    } else {
+      this.renderer.parametersMap[p] = {
+        type: 'datasource',
+        id: association.ds.id,
+        property: association.property.name,
+        association
+      }
+    }
   }
 }

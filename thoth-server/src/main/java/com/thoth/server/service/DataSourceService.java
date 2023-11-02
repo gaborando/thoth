@@ -177,6 +177,9 @@ public class DataSourceService {
             for (Map.Entry<String, Object> e : parameters.entrySet()) {
                 strBody = strBody.replace("{{" + e.getKey() + "}}", e.getValue().toString());
             }
+            if(strBody.contains("{{") && strBody.contains("}}")){
+                throw new IllegalStateException("Missing parameter for datasource");
+            }
             request = objectMapper.readValue(strBody, RestDatasourceParameters.class);
             var restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();

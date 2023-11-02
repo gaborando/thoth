@@ -5,10 +5,43 @@
     </ion-buttons>
     <ion-title>Renders</ion-title>
     <ion-buttons slot="end">
-      <ion-button color="primary" routerLink="/renderer-new">
+      <ion-button color="primary" (click)="newModal.present()">
         <ion-icon slot="icon-only" name="add"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-modal #newModal>
+      <ng-template>
+        <ion-header>
+            <ion-toolbar>
+              <ion-buttons slot="end">
+                <ion-button (click)="newModal.dismiss()">
+                  <ion-icon name="close" slot="icon-only"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+              <ion-title>New Renderer</ion-title>
+            </ion-toolbar>
+          </ion-header>
+        <ion-content>
+          <ion-item>
+            <ion-label>Name</ion-label>
+            <ion-input name="name" [(ngModel)]="rendererName"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label>Template</ion-label>
+            <app-typeahead-select slot="end" [fetcher]="templateService" [value]="selectedTemplate"
+                                  (confirm)="selectedTemplate = $event"></app-typeahead-select>
+          </ion-item>
+        </ion-content>
+        <ion-footer class="ion-text-end">
+          <ion-toolbar>
+            <ion-button fill="clear" (click)="createRenderer(newModal)" class="ion-margin-horizontal"
+                        [disabled]="!rendererName || !selectedTemplate">Save
+            </ion-button>
+          </ion-toolbar>
+        </ion-footer>
+
+      </ng-template>
+    </ion-modal>
   </ion-toolbar>
   <ion-toolbar>
     <ion-searchbar (ionInput)="doSearch($event)"></ion-searchbar>

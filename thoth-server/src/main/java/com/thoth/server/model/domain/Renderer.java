@@ -34,7 +34,6 @@ public class Renderer extends SecuredResource{
     private Template template;
 
     @ManyToMany
-    @NotEmpty
     @Column(insertable = false, updatable = false)
     private Set<DatasourceProperties> datasourceProperties;
 
@@ -43,6 +42,9 @@ public class Renderer extends SecuredResource{
 
     @ElementCollection
     private Map<@NotBlank @Size(min = 1, max = 256) String, @NotNull Association> associationMap;
+
+    @ElementCollection
+    private Map<@NotBlank @Size(min = 1, max = 256) String, @NotNull Association> parametersMap;
 
 
 }

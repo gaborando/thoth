@@ -80,6 +80,7 @@ export class RendererService extends AuthenticatedService implements DataFetcher
         {
           name: renderer?.name,
           associationMap: renderer?.associationMap,
+          parametersMap: renderer?.parametersMap,
           allowedOrganizationList: renderer?.allowedOrganizationList,
           allowedUserList: renderer?.allowedUserList,
           datasource: renderer?.datasourceProperties.map(ds => ds.id)

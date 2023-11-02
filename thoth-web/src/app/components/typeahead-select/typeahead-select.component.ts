@@ -15,6 +15,7 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
   title = 'Select Items';
   _value: {name: string}[] = [];
   valueText = '...'
+  private controller?: AbortController;
   @Input() set value(v: { name: string }[] | {name: string} | undefined | null){
     this._value = v ? ( Array.isArray(v) ? v  : [v]) : [];
     this.valueText = this._value.length ?  this._value.map(i => i.name).join(",")  : '...'
@@ -39,7 +40,6 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
   }
 
   ngOnInit() {
-    return this.loadPageData();
   }
 
   async loadPageData() {
@@ -58,7 +58,11 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
   }
 
   fetch() {
-    this.fetcher?.findAll(this.page, this.composeSearchFilter()).then(page => {
+    if(this.controller){
+      this.controller.abort();
+    }
+    this.controller = new AbortController();
+    this.fetcher?.findAll(this.page, this.composeSearchFilter(), this.controller.signal).then(page => {
       this.items = page.content.filter(i => !this.selectedItems.map(e => e.id).includes(i.id));
       if (this.multiple) {
         this.selectedItems = this._value || [];
@@ -86,7 +90,8 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
 
   onIonInfinite($event: any) {
     this.page++;
-    this.fetcher?.findAll(this.page, this.composeSearchFilter()).then(page => {
+    this.controller = new AbortController();
+    this.fetcher?.findAll(this.page, this.composeSearchFilter(), this.controller.signal).then(page => {
       this.items = this.items.concat(page.content.filter(i => !this.selectedItems.map(e => e.id).includes(i.id)));
       $event.target.complete();
     })
