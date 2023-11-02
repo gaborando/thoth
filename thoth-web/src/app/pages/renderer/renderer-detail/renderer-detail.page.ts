@@ -11,6 +11,7 @@ import {GuiUtilsService} from "../../../services/gui-utils.service";
 import {DataFetcher} from "../../../common/utils/service-patterns/data-fetcher";
 import {Page} from "../../../common/utils/fetchUtils";
 import {Datasource} from "../../../common/types/datasource";
+import {DataSourceService} from "../../../services/api/data-source.service";
 
 @Component({
   selector: 'app-renderer-detail',
@@ -19,7 +20,7 @@ import {Datasource} from "../../../common/types/datasource";
 })
 export class RendererDetailPage implements OnInit {
   renderer: Renderer | null = null;
-  datasourceList: string = '';
+  selectedDatasource: Datasource[] | undefined;
   availableProperties: {ds: Datasource, property: {name: string, helper: string}}[] = [];
   private drawIoWindow: any;
 
@@ -31,13 +32,14 @@ export class RendererDetailPage implements OnInit {
               private alertController: AlertController,
               private route: ActivatedRoute,
               private clientService: ClientService,
+              public datasourceService: DataSourceService,
               private loadingController: LoadingController,
               private guiUtils: GuiUtilsService) {
   }
 
   async ionViewWillEnter() {
     const resp = await this.rendererService.findById(this.route.snapshot.paramMap.get('identifier'))
-    this.datasourceList = resp.datasourceProperties.map(d => d.name).join(",");
+    this.selectedDatasource = resp.datasourceProperties;
     this.availableProperties = [];
     const tmp: {ds: Datasource, property: {name: string, helper: string}}[] = [];
     for (const d of resp.datasourceProperties) {
@@ -60,6 +62,19 @@ export class RendererDetailPage implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  updateAvailableAssociations(event: any) {
+    const tmp = [];
+    for (const d of event || []) {
+      for (const p of d.properties) {
+        tmp.push({
+          ds: d,
+          property: p
+        })
+      }
+    }
+    this.availableProperties = tmp.sort((a, b) => (a.ds.name + a.property).localeCompare(b.ds.name + b.property));
   }
 
   updateAssociationMap(p: string, association: any) {

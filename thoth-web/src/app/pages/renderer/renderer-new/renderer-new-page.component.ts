@@ -5,7 +5,7 @@ import {DataSourceService} from "../../../services/api/data-source.service";
 import {Datasource} from "../../../common/types/datasource";
 import {RendererService} from "../../../services/api/renderer.service";
 import {ScreenMessageService} from "../../../services/screen-message.service";
-import {NavController} from "@ionic/angular";
+import {IonPopover, NavController} from "@ionic/angular";
 
 @Component({
   selector: 'app-renderer-new',
@@ -33,6 +33,10 @@ export class RendererNewPage implements OnInit {
   async ngOnInit() {
   }
 
+  presentPopover(popover: IonPopover, $event: MouseEvent, i: any) {
+    popover.present({...$event, target: i.el});
+  }
+
 
   updateAssociationMap(p: string, association: any) {
     if (!association) {
@@ -41,13 +45,15 @@ export class RendererNewPage implements OnInit {
       this.associationMap[p] = {
         type: 'parameter',
         id: null,
-        property: null
+        property: null,
+        association
       }
     } else {
       this.associationMap[p] = {
         type: 'datasource',
         id: association.ds.id,
-        property: association.property
+        property: association.property.name,
+        association
       }
     }
   }

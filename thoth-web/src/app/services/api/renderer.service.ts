@@ -35,10 +35,11 @@ export class RendererService extends AuthenticatedService implements DataFetcher
 
   }
 
-  async findAll(page = 0, filter = ''): Promise<Page<Renderer>> {
+  async findAll(page = 0, filter = '', signal: AbortSignal): Promise<Page<Renderer>> {
     return fetch((await environment()).apiUrl + '/renderer/?page=' + page+'&filter='+filter, {
       method: 'GET',
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
+      signal
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()
@@ -80,7 +81,8 @@ export class RendererService extends AuthenticatedService implements DataFetcher
           name: renderer?.name,
           associationMap: renderer?.associationMap,
           allowedOrganizationList: renderer?.allowedOrganizationList,
-          allowedUserList: renderer?.allowedUserList
+          allowedUserList: renderer?.allowedUserList,
+          datasource: renderer?.datasourceProperties.map(ds => ds.id)
         }
       )
     }).then(async r => {

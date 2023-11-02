@@ -1,5 +1,5 @@
 import {Page} from "../fetchUtils";
 
 export interface DataFetcher<T>{
-  findAll(page: number, filter: string): Promise<Page<T>>
+  findAll(page: number, filter: string, abortSignal?: AbortSignal): Promise<Page<T>>
 }

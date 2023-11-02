@@ -42,7 +42,7 @@ public class Renderer extends SecuredResource{
     private Instant createdAt;
 
     @ElementCollection
-    private Map<@NotBlank @Size(min = 3, max = 256) String, @NotNull Association> associationMap;
+    private Map<@NotBlank @Size(min = 1, max = 256) String, @NotNull Association> associationMap;
 
 
 }
