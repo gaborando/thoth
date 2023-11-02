@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { RenderListPageRoutingModule } from './renderer-list-routing.module';
 
 import { RendererListPage } from './renderer-list-page.component';
+import {ComponentsModule} from "../../../components/components.module";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    RenderListPageRoutingModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        RenderListPageRoutingModule,
+        ComponentsModule
+    ],
   declarations: [RendererListPage]
 })
 export class RenderListPageModule {}

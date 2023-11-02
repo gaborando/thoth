@@ -11,4 +11,5 @@ public class RendererCreateRequest {
     private String template;
     private List<String> datasource;
     private Map<String, Association> associationMap;
+    private Map<String, Association> parametersMap;
 }

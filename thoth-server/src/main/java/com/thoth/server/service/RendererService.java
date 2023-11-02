@@ -37,17 +37,15 @@ public class RendererService {
         this.facade = facade;
     }
 
-    public Renderer create(String name, String template, List<String> datasource, Map<String, Association> associationMap) {
+    public Renderer create(String name, String template, List<String> datasource, Map<String, Association> associationMap
+            , Map<String, Association> parametersMap) {
         var renderer = new Renderer();
         renderer.setId("rndr_" + UUID.randomUUID());
         renderer.setName(name);
         renderer.setTemplate(templateRepository.findById(template).orElseThrow());
-        renderer.setDatasourceProperties(datasource.stream()
-                .map(datasourcePropertiesRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toSet()));
+        renderer.setDatasourceProperties(new HashSet<>(datasourcePropertiesRepository.findAllById(datasource)));
         renderer.setAssociationMap(associationMap);
+        renderer.setParametersMap(parametersMap);
         renderer.setCreatedAt(Instant.now());
         facade.fillSecuredResource(renderer);
         return rendererRepository.save(renderer);
@@ -69,10 +67,17 @@ public class RendererService {
         return rendererRepository.findById(identifier);
     }
 
-    @PreAuthorize("@authenticationFacade.canWrite(#original)")
-    public Renderer update(String s, String name, List<String> datasource, Map<String, Association> associationMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {
+
+    public Renderer update(String s, String name, List<String> datasource, Map<String, Association> associationMap
+            , Map<String, Association> parametersMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {
         var original = rendererRepository.findById(s).orElseThrow();
+       return update(original, name, datasource, associationMap, parametersMap, allowedUserList, allowedOrganizationList);
+    }
+    @PreAuthorize("@authenticationFacade.canWrite(#original)")
+    public Renderer update(Renderer original, String name, List<String> datasource, Map<String, Association> associationMap
+            , Map<String, Association> parametersMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {
         original.setAssociationMap(associationMap);
+        original.setParametersMap(parametersMap);
         original.setDatasourceProperties(
                 new HashSet<>(datasourcePropertiesRepository
                         .findAllById(datasource)));

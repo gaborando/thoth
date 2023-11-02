@@ -42,7 +42,8 @@ public class RendererController {
                 request.getName(),
                 request.getTemplate(),
                 request.getDatasource(),
-                request.getAssociationMap()
+                request.getAssociationMap(),
+                request.getParametersMap()
         ));
     }
 
@@ -79,6 +80,7 @@ public class RendererController {
                 renderer.getName(),
                 renderer.getDatasource(),
                 renderer.getAssociationMap(),
+                renderer.getParametersMap(),
                 renderer.getAllowedUserList(),
                 renderer.getAllowedOrganizationList()));
     }

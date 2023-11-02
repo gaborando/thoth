@@ -11,4 +11,5 @@ export interface Renderer extends SecuredResource {
   datasourceProperties: Datasource[]
 
   associationMap: any
+  parametersMap: any
 }

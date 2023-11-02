@@ -29,11 +29,6 @@ const routes: Routes = [
     canActivate: [AuthenticationGuard]
   },
   {
-    path: 'renderer-new',
-    loadChildren: () => import('./pages/renderer/renderer-new/renderer-new.module').then(m => m.RenderNewPageModule),
-    canActivate: [AuthenticationGuard]
-  },
-  {
     path: 'datasource-list',
     loadChildren: () => import('./pages/datasource/datasource-list/datasource-list.module').then(m => m.DatasourceListPageModule),
     canActivate: [AuthenticationGuard]

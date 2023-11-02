@@ -25,10 +25,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -121,12 +118,36 @@ public class RenderService {
     }
 
     public String renderRendererSvg(Renderer renderer, HashMap<String, Object> params) throws Exception {
+        return renderTemplateSvg(renderer.getTemplate(), generateParams(renderer, params));
+    }
+
+    private HashMap<String, Object> generateParams(Renderer renderer, HashMap<String, Object> params) throws Exception {
         var allParams = new HashMap<String, Object>();
         for (String marker : renderer.getTemplate().getMarkers()) {
             allParams.put(marker, "");
         }
-
         var dsDataMap = new HashMap<String, HashMap<String, Object>>();
+        var q = new LinkedList<>(renderer.getParametersMap().entrySet().stream().sorted(Map.Entry.comparingByKey()).toList());
+        var err = 0;
+        while (!q.isEmpty()){
+            var e = q.remove();
+            try {
+                if (e.getValue().getType().equals("datasource")) {
+                    if (!dsDataMap.containsKey(e.getValue().getId())) {
+                        dsDataMap.put(e.getValue().getId(), dataSourceService.fetchData(e.getValue().getId(), params));
+                    }
+                    var dsData = dsDataMap.get(e.getValue().getId());
+                    params.put(e.getKey(), dsData.getOrDefault(e.getValue().getProperty(), ""));
+                }
+                err = 0;
+            }catch (Exception ex){
+                q.add(e);
+                err++;
+                if(err == q.size()){
+                    throw ex;
+                }
+            }
+        }
         for (Map.Entry<String, Association> e : renderer.getAssociationMap().entrySet()) {
 
             if (e.getValue().getType().equals("datasource")) {
@@ -141,7 +162,7 @@ public class RenderService {
             }
 
         }
-        return renderTemplateSvg(renderer.getTemplate(), allParams);
+        return allParams;
     }
 
     public byte[] renderRendererJpeg(String identifier, HashMap<String, Object> params) throws Exception {
@@ -150,30 +171,7 @@ public class RenderService {
     }
 
     private byte[] renderRendererJpeg(Renderer renderer, HashMap<String, Object> params) throws Exception {
-
-
-        var allParams = new HashMap<String, Object>();
-        for (String marker : renderer.getTemplate().getMarkers()) {
-            allParams.put(marker, "");
-        }
-
-        var dsDataMap = new HashMap<String, HashMap<String, Object>>();
-        for (Map.Entry<String, Association> e : renderer.getAssociationMap().entrySet()) {
-
-            if (e.getValue().getType().equals("datasource")) {
-                if (!dsDataMap.containsKey(e.getValue().getId())) {
-                    dsDataMap.put(e.getValue().getId(), dataSourceService.fetchData(e.getValue().getId(), params));
-                }
-                var dsData = dsDataMap.get(e.getValue().getId());
-
-                allParams.put(e.getKey(), dsData.getOrDefault(e.getValue().getProperty(), ""));
-            } else {
-                allParams.put(e.getKey(), params.getOrDefault(e.getKey(), ""));
-            }
-
-        }
-
-        return renderTemplateJpeg(renderer.getTemplate(), allParams);
+        return renderTemplateJpeg(renderer.getTemplate(), generateParams(renderer, params));
     }
 
     public void printRenderer(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService, Integer copies) throws Exception {
