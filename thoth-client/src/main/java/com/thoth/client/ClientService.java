@@ -92,7 +92,7 @@ public class ClientService {
             logger.info("Document Printed");
             return true;
         }catch (Exception e){
-            logger.error(e);
+            logger.error("Error on document printing", e);
             return false;
         }
     }
