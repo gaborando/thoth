@@ -9,7 +9,7 @@ import {GuiUtilsService} from "../../../services/gui-utils.service";
 import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.service";
 import {Editor} from "../editor";
 import {Page} from "../../../common/utils/fetchUtils";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs";
 import {navigate} from "ionicons/icons";
 
@@ -22,7 +22,7 @@ import {navigate} from "ionicons/icons";
 export class TemplateListPage extends ListPage<Template> implements OnInit, OnDestroy {
 
   public currentFolder: { name: string, path: string }[] = [];
-  private editor = new Editor();
+  private editor = new Editor(this.router);
   public folders: { name: string, path: string }[] = [];
   private sub: Subscription | undefined;
 
@@ -31,7 +31,7 @@ export class TemplateListPage extends ListPage<Template> implements OnInit, OnDe
               private clientService: ClientService,
               private screenMessageService: ScreenMessageService,
               private loadingController: LoadingController,
-              private guiUtils: GuiUtilsService,
+              private router: Router,
               private templateGuiUtils: TemplateGuiUtilsService,
               private route: ActivatedRoute) {
     super(templateService);

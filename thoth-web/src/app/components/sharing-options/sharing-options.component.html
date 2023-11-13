@@ -62,6 +62,9 @@
           <ion-buttons slot="start">
             <ion-button (click)="modal.dismiss()">Cancel</ion-button>
           </ion-buttons>
+          <ion-title>
+            Sharing Options
+          </ion-title>
           <ion-buttons slot="end">
             <ion-button [disabled]="!sid.value || !type.value" (click)="addPermission(modal, type.value, sid.value, permission.value)"
                         [strong]="true">Confirm
@@ -72,7 +75,7 @@
       <ion-content class="ion-padding">
         <ion-item>
           <ion-label>Type</ion-label>
-          <ion-select #type (ionChange)="sid.value = null; autocompleteData = []">
+          <ion-select #type (ionChange)="sid.value = null; autocompleteData = []" value="user">
             <ion-select-option value="user">User</ion-select-option>
             <ion-select-option value="organization">Organization</ion-select-option>
           </ion-select>
@@ -86,14 +89,15 @@
         </ion-item>
         <ion-item>
           <ion-label>Identifier</ion-label>
-          <ion-input [disabled]="!type.value" debounce="500" (ionChange)="fetchAutocomplete($event, type.value)" #sid
+          <ion-input [disabled]="!type.value" debounce="500" (ionInput)="fetchAutocomplete($event, type.value)" #sid
                      type="text"></ion-input>
           <ion-spinner *ngIf="autocompleteLoading" name="dots"></ion-spinner>
         </ion-item>
         <ng-container *ngIf="autocompleteData.length > 0 && autocompleteData[0] !== sid.value">
-          <p *ngFor="let value of autocompleteData" (click)="sid.value = value">
-            {{value}}
-          </p>
+          <ion-item tappable="true" *ngFor="let value of autocompleteData" (click)="sid.value = value">
+            <ion-label>{{value}}</ion-label>
+          </ion-item>
+
         </ng-container>
 
       </ion-content>

@@ -6,7 +6,7 @@ import {ClientService} from "../../../services/api/client.service";
 import {ScreenMessageService} from "../../../services/screen-message.service";
 import {GuiUtilsService} from "../../../services/gui-utils.service";
 import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Editor} from "../editor";
 import {AutocompleteProvider} from "../../../common/directives/autocomplete.directive";
 
@@ -17,7 +17,7 @@ import {AutocompleteProvider} from "../../../common/directives/autocomplete.dire
 })
 export class TemplateDetailPage implements OnInit {
   template: Template | undefined;
-  private editor = new Editor();
+  private editor = new Editor(this.router);
   public folderAutocomplete: AutocompleteProvider
 
   constructor(private templateService: TemplateService,
@@ -25,7 +25,7 @@ export class TemplateDetailPage implements OnInit {
               private clientService: ClientService,
               private screenMessageService: ScreenMessageService,
               private loadingController: LoadingController,
-              private guiUtils: GuiUtilsService,
+              private router: Router,
               private navController: NavController,
               private templateGuiUtils: TemplateGuiUtilsService,
               private route: ActivatedRoute) {
