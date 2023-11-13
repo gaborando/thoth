@@ -15,9 +15,9 @@ public class JwtAuthenticationToken extends ThothAuthenticationToken {
      */
     public JwtAuthenticationToken(
             JWTClaimsSet claims,
-            String userSid,
-            String organizationSid) {
-        super(userSid, organizationSid);
+            String userSidClaim,
+            String organizationSidClaim) {
+        super(claims.getClaim(userSidClaim).toString(), extractOrg(claims, organizationSidClaim));
         this.claims = claims;
 
     }

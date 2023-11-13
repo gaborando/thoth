@@ -11,8 +11,8 @@ export class AuthHookPage implements OnInit {
 
   ngOnInit() {
     const params = new URL(window.location.toString().replace("#","?"));
-    if(params.searchParams.get("id_token")){
-      window.opener.login(params.searchParams.get("id_token"));
+    if(params.searchParams.get("access_token")){
+      window.opener.login(params.searchParams.get("access_token"));
     }
     window.close();
   }
