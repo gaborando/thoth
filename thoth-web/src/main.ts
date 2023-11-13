@@ -56,7 +56,7 @@ window.fetch = new Proxy(window.fetch, {
     return temp.then((res) => {
       // After completion of request
       if (res.status === 401) {
-        return environment().then(e => {
+        return environment().then((e: any) => {
           return new Promise((resolve, reject) => {
             const w = window.open(e.oauth?.loginUrl, 'popup', strWindowsFeatures);
             if(w) {
