@@ -1,5 +1,6 @@
 import {Template} from "../../common/types/template";
 import {TemplateService} from "../../services/api/template.service";
+import {Router} from "@angular/router";
 
 export const library = [
   {
@@ -46,8 +47,25 @@ export class Editor {
   private currentTemplate: string | null = null;
   private currentListener: any | null = null;
 
+
+  constructor(private router: Router) {
+    window.addEventListener('beforeunload', ()=> {
+      if (this.drawIoWindow != null) {
+        this.drawIoWindow?.close();
+      }
+    });
+  }
+
   openEditor(template: Template,
              templateService: TemplateService) {
+    var sub = this.router.events.subscribe(change => {
+      if (this.drawIoWindow != null) {
+        this.drawIoWindow?.close();
+      }
+      if(sub) {
+        sub.unsubscribe();
+      }
+    })
     var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1&configure=1&template=' + template.id;
     if (this.drawIoWindow != null) {
       this.drawIoWindow?.close();

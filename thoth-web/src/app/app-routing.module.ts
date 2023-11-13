@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
-import {AuthenticationGuard} from "./guards/authentication.guard";
 
 const routes: Routes = [
   {
@@ -10,7 +9,7 @@ const routes: Routes = [
   },
   {
     path: 'token-redirect',
-    redirectTo: 'template-list',
+    redirectTo: 'auth-hook',
     pathMatch: 'full',
   },
   {
@@ -21,52 +20,48 @@ const routes: Routes = [
   {
     path: 'template-list',
     loadChildren: () => import('./pages/template/template-list/template-list.module').then(m => m.TemplateListPageModule),
-    canActivate: [AuthenticationGuard]
   },
   {
     path: 'renderer-list',
     loadChildren: () => import('./pages/renderer/renderer-list/renderer-list.module').then(m => m.RenderListPageModule),
-    canActivate: [AuthenticationGuard]
   },
   {
     path: 'datasource-list',
     loadChildren: () => import('./pages/datasource/datasource-list/datasource-list.module').then(m => m.DatasourceListPageModule),
-    canActivate: [AuthenticationGuard]
   },
   {
     path: 'datasource-new',
     loadChildren: () => import('./pages/datasource/datasource-new/datasource-new.module').then(m => m.DatasourceNewPageModule),
-    canActivate: [AuthenticationGuard]
   },
   {
     path: 'datasource-detail/:identifier',
     loadChildren: () => import('./pages/datasource/datasource-detail/datasource-detail.module').then(m => m.DatasourceDetailPageModule),
-    canActivate: [AuthenticationGuard]
   },
   {
     path: 'renderer-detail/:identifier',
     loadChildren: () => import('./pages/renderer/renderer-detail/renderer-detail.module').then(m => m.RendererDetailPageModule),
-    canActivate: [AuthenticationGuard]
   },
   {
     path: 'client-list',
     loadChildren: () => import('./pages/client/client-list/client-list.module').then(m => m.ClientListPageModule),
-    canActivate: [AuthenticationGuard]
   },
   {
     path: 'template-detail/:identifier',
     loadChildren: () => import('./pages/template/template-detail/template-detail.module').then(m => m.TemplateDetailPageModule),
-    canActivate: [AuthenticationGuard]
   },
   {
     path: 'api-key-list',
     loadChildren: () => import('./pages/api-key/api-key-list/api-key-list.module').then(m => m.ApiKeyListPageModule),
-    canActivate: [AuthenticationGuard]
   },
   {
     path: 'template-jinja-editor/:identifier',
     loadChildren: () => import('./pages/template/template-jinja-editor/template-jinja-editor.module').then(m => m.TemplateJinjaEditorPageModule)
+  },
+  {
+    path: 'auth-hook',
+    loadChildren: () => import('./pages/auth-hook/auth-hook.module').then( m => m.AuthHookPageModule)
   }
+
 ];
 
 @NgModule({

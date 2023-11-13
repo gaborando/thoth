@@ -28,22 +28,18 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     private final SecuredTimestampService securedTimestampService;
     private final boolean oAuthEnabled;
 
-    private final String userSidClaim;
-
-    private final String organizationSidClaim;
+    private final String userEmailClaim;
 
 
     public AuthenticationFilter(
             @Value("${thoth.oauth.enabled}") boolean oAuthEnabled,
             JwtService jwtService, ApiKeyService apiKeyService, SecuredTimestampService securedTimestampService,
-            @Value("${thoth.oauth.claim.sid.user}") String userSidClaim,
-            @Value("${thoth.oauth.claim.sid.organization}") String organizationSidClaim) {
+            @Value("${thoth.oauth.claim.email}") String userEmailClaim) {
         this.jwtService = jwtService;
         this.oAuthEnabled = oAuthEnabled;
         this.apiKeyService = apiKeyService;
         this.securedTimestampService = securedTimestampService;
-        this.userSidClaim = userSidClaim;
-        this.organizationSidClaim = organizationSidClaim;
+        this.userEmailClaim = userEmailClaim;
     }
 
     @Override
@@ -59,7 +55,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
             String apiKey = getApiKeyFromRequest(request);
             if (StringUtils.hasText(apiKey)) {
-                var key =  apiKeyService.checkKey(apiKey);
+                var key = apiKeyService.checkKey(apiKey);
                 var authentication = new ApiKetAuthenticationToken(key);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -69,7 +65,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
             String tmpKey = getTmpKetFromRequest(request);
             if (StringUtils.hasText(tmpKey)) {
-                var key =  securedTimestampService.parse(tmpKey);
+                var key = securedTimestampService.parse(tmpKey);
                 var authentication = new TempAuthenticationToken(key);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -81,8 +77,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(request);
             if (StringUtils.hasText(jwt)) {
                 var claims = jwtService.verifyAndGetClaims(jwt);
+                var email = claims.getClaim(userEmailClaim).toString();
                 var authentication = new JwtAuthenticationToken(
-                        claims,userSidClaim,organizationSidClaim);
+                        claims, email, email.split("@")[1]);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
@@ -92,12 +89,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception ex) {
             logger.error("Could not set user authentication in security context", ex);
         }
-        filterChain.doFilter(request, response);
+        response.sendError(401, "Unauthorized");
     }
 
     private String getTmpKetFromRequest(HttpServletRequest request) {
         String tmpKey = request.getParameter("TMP_KEY");
-        if(StringUtils.hasText(tmpKey)){
+        if (StringUtils.hasText(tmpKey)) {
             return tmpKey;
         }
         return null;
@@ -105,7 +102,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     private String getApiKeyFromRequest(HttpServletRequest request) {
         String apiKey = request.getParameter("API_KEY");
-        if(StringUtils.hasText(apiKey)){
+        if (StringUtils.hasText(apiKey)) {
             return apiKey;
         }
         return null;
@@ -117,7 +114,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7, bearerToken.length());
         }
         String token = request.getParameter("access_token");
-        if(StringUtils.hasText(token)){
+        if (StringUtils.hasText(token)) {
             return token;
         }
         return null;
