@@ -11,6 +11,7 @@ With Thoth you can:
 
 ## Examples
 You can find theese documents in the [/doc/examples](doc/examples) folder, to use them just import the file in a new Thoth Template from *Thoth Web*
+
 ![marker.png](doc%2Fexamples%2Fmarker.png)
 ![barcodes.png](doc%2Fexamples%2Fbarcodes.png)
 ![pipes.png](doc%2Fexamples%2Fpipes.png)
