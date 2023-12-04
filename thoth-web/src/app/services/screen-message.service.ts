@@ -31,12 +31,12 @@ export class ScreenMessageService {
     return toast.present()
   }
 
-  async loadingWrapper(fun: () => Promise<any>){
+  async loadingWrapper(fun: () => Promise<any>) {
     const loading = await this.loadingController.create();
     await loading.present();
-    try{
+    try {
       return await fun();
-    }finally {
+    } finally {
       await loading.dismiss();
     }
   }
@@ -54,10 +54,11 @@ export class ScreenMessageService {
           text: 'OK',
           role: 'confirm',
           handler: async () => {
+            await alert.dismiss();
             try {
               await deleteFun();
               await this.showDone();
-            }catch (e){
+            } catch (e) {
               return this.showError(e);
             }
           },

@@ -53,6 +53,8 @@
     </ng-container>
   </ng-container>
   <app-sharing-options [securedResource]="datasource"></app-sharing-options>
+  <app-backup-manager *ngIf="datasource" resourceType="DATASOURCE" [resourceId]="datasource.id"
+                      (restoreEmitter)="datasource = $event"></app-backup-manager>
 
 </ion-content>
 <ion-footer>

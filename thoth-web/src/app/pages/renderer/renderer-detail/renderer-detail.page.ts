@@ -39,6 +39,11 @@ export class RendererDetailPage implements OnInit {
 
   async ionViewWillEnter() {
     const resp = await this.rendererService.findById(this.route.snapshot.paramMap.get('identifier'))
+    this.init(resp);
+
+  }
+
+  init(resp: Renderer){
     this.availableProperties = [];
     this.parameters = new Set<string>();
     const tmp: {ds: Datasource, property: {name: string, helper: string}}[] = [];
