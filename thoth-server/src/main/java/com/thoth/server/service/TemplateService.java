@@ -114,6 +114,18 @@ public class TemplateService {
         template.setName(name);
         template.setCreatedAt(Instant.now());
         template.setFolder("/");
+        template.setSvg("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" height=\"1px\" version=\"1.1\" viewBox=\"-0.5 -0.5 1 1\" width=\"1px\"><defs/><g/></svg>");
+        template.setXml("<mxfile host=\"embed.diagrams.net\" modified=\"2023-12-04T10:02:26.125Z\" agent=\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0\" etag=\"ICBrTCvB0ec7XxhN_fFi\" version=\"22.1.5\" type=\"embed\">\n" +
+                "  <diagram id=\"FsnQ3hMx6PmaIt3tymRr\" name=\"Page-1\">\n" +
+                "    <mxGraphModel dx=\"1426\" dy=\"782\" grid=\"1\" gridSize=\"10\" guides=\"1\" tooltips=\"1\" connect=\"1\" arrows=\"1\" fold=\"1\" page=\"1\" pageScale=\"1\" pageWidth=\"827\" pageHeight=\"1169\" math=\"0\" shadow=\"0\">\n" +
+                "      <root>\n" +
+                "        <mxCell id=\"0\" />\n" +
+                "        <mxCell id=\"1\" parent=\"0\" />\n" +
+                "      </root>\n" +
+                "    </mxGraphModel>\n" +
+                "  </diagram>\n" +
+                "</mxfile>\n");
+        template.setImg("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIxcHgiIGhlaWdodD0iMXB4IiB2aWV3Qm94PSItMC41IC0wLjUgMSAxIj48ZGVmcy8+PGcvPjwvc3ZnPg==");
         authenticationFacade.fillSecuredResource(template);
         return templateRepository.save(template);
     }
