@@ -14,6 +14,7 @@ import {CustomsModule} from "../common/customs.module";
 import {
   RestDatasourceParametersComponent
 } from "./datasource-parameters/rest-datasource-parameters/rest-datasource-parameters.component";
+import {BackupManagerComponent} from "./backup-manager/backup-manager.component";
 
 
 
@@ -24,7 +25,8 @@ import {
     PrintRequestModalComponent,
     SharingOptionsComponent,
     ParametersFormComponent,
-    TypeaheadSelectComponent
+    TypeaheadSelectComponent,
+    BackupManagerComponent
   ],
   exports: [
     JdbcDatasourceParametersComponent,
@@ -32,7 +34,8 @@ import {
     PrintRequestModalComponent,
     SharingOptionsComponent,
     ParametersFormComponent,
-    TypeaheadSelectComponent
+    TypeaheadSelectComponent,
+    BackupManagerComponent
   ],
   imports: [
     CommonModule,

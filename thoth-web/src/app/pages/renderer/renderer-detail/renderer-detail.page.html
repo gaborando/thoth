@@ -169,6 +169,12 @@
           <app-sharing-options [securedResource]="renderer"></app-sharing-options>
         </ion-col>
       </ion-row>
+      <ion-row>
+        <ion-col>
+          <app-backup-manager *ngIf="renderer" resourceType="RENDERER" [resourceId]="renderer.id"
+                              (restoreEmitter)="init($event)"></app-backup-manager>
+        </ion-col>
+      </ion-row>
     </ion-grid>
 
   </form>

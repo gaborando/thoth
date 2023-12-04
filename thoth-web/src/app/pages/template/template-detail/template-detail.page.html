@@ -19,8 +19,9 @@
 
 <ion-content *ngIf="template">
 
-  <form>
-    <ion-grid class="ion-no-padding">
+
+  <ion-grid class="ion-no-padding">
+    <form>
       <ion-row>
         <ion-col>
           <ion-card>
@@ -36,9 +37,9 @@
               </ion-item>
               <ion-item>
                 <ion-label>Folder</ion-label>
-                <ion-input  pattern="^\/(.)*" name="folder" [(ngModel)]="template.folder"
-                            [debounce]="500"
-                            appAutocomplete [autocompleteProvider]="folderAutocomplete">
+                <ion-input pattern="^\/(.)*" name="folder" [(ngModel)]="template.folder"
+                           [debounce]="500"
+                           appAutocomplete [autocompleteProvider]="folderAutocomplete">
                 </ion-input>
               </ion-item>
             </ion-card-content>
@@ -71,7 +72,7 @@
             </ion-card-header>
             <ion-card-content style="height: 556px;">
               <li *ngFor="let m of template.markers">
-                 {{m}}
+                {{m}}
               </li>
             </ion-card-content>
           </ion-card>
@@ -84,14 +85,15 @@
           <app-sharing-options [securedResource]="template"></app-sharing-options>
         </ion-col>
       </ion-row>
-    </ion-grid>
 
-
-
-
-
-
-  </form>
+    </form>
+    <ion-row *ngIf="template">
+      <ion-col>
+        <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"
+        (restoreEmitter)="template = $event"></app-backup-manager>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
 
 </ion-content>
