@@ -75,24 +75,25 @@ public class UtilsController {
             hi.put(MARGIN, 0);
         }
         if (gs1) {
-            if (format == BarcodeFormat.QR_CODE && code.startsWith("(")) {
+            if ((format == BarcodeFormat.QR_CODE || format == BarcodeFormat.DATA_MATRIX) && code.startsWith("(")) {
                 code = code.substring(1);
             }
-            code = code.replace('(', format == BarcodeFormat.QR_CODE ? 29 : '\u00F1').replace(")", "");
+            code = code.replace('(', (format == BarcodeFormat.QR_CODE || format == BarcodeFormat.DATA_MATRIX)
+                    ? 29 : '\u00F1').replace(")", "");
             hi.put(GS1_FORMAT, true);
         }
 
         var matrix = new MultiFormatWriter().encode(code, format, width, height, hi);
         var img = MatrixToImageWriter.toBufferedImage(matrix);
-        if (!safe){
+        if (!safe) {
             var w = (int) (img.getWidth() * 0.6);
             var h = (int) (img.getHeight() * 0.6);
             var g = img.getGraphics();
-            g.fillRect((img.getWidth()-w) / 2,(img.getHeight() - h) / 2, w, h);
+            g.fillRect((img.getWidth() - w) / 2, (img.getHeight() - h) / 2, w, h);
             Font font = new Font("Arial", Font.BOLD, 48);
 
             var text = format.toString();
-            if(gs1){
+            if (gs1) {
                 text += " - GS1";
             }
             AttributedString attributedText = new AttributedString(text);
@@ -110,7 +111,7 @@ public class UtilsController {
             boolean textFits = w >= expectedWidth && h >= expectedHeight;
 
 
-            if(!textFits) {
+            if (!textFits) {
                 double widthBasedFontSize = (font.getSize2D() * w) / expectedWidth;
                 double heightBasedFontSize = (font.getSize2D() * h) / expectedHeight;
 
@@ -121,7 +122,7 @@ public class UtilsController {
             metrics = g.getFontMetrics(font);
             int positionX = (img.getWidth() - metrics.stringWidth(text)) / 2;
             int positionY = (img.getHeight() - metrics.getHeight()) / 2 + metrics.getAscent();
-            g.drawString(attributedText.getIterator(),  positionX, positionY);
+            g.drawString(attributedText.getIterator(), positionX, positionY);
         }
         var baos = new ByteArrayOutputStream();
         ImageIO.write(img, "jpeg", baos);
