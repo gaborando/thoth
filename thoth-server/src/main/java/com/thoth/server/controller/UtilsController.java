@@ -75,11 +75,11 @@ public class UtilsController {
             hi.put(MARGIN, 0);
         }
         if (gs1) {
-            if ((format == BarcodeFormat.QR_CODE) && code.startsWith("(")) {
+            if ((format == BarcodeFormat.QR_CODE || format == BarcodeFormat.DATA_MATRIX) && code.startsWith("(")) {
                 code = code.substring(1);
             }
             code = code.replace('(', (format == BarcodeFormat.QR_CODE || format == BarcodeFormat.DATA_MATRIX)
-                    ? 29 : '\u00F1').replace(")", "");
+                    ? (char)29 : '\u00F1').replace(")", "");
             hi.put(GS1_FORMAT, true);
         }
 
