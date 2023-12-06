@@ -37,6 +37,18 @@ export const library = [
     "h": 174,
     "aspect": "fixed",
     "title": "Code 128 - GS1"
+  },
+  {
+    "xml": "jVNRb4IwEP41fZzBsukz4DRLZmY2H/ZmTjihWaHYHk7363cFEbfMZElJr9/3XXsfvYowKY8LC3WxNBlqET6KMLHGUBeVxwS1FjJQmQhnQsqAPyHnN9hxywY1WKzoPwmySziAbrBDxDTmsdnblOsR05kfrcbRSZ81roDah6qEnOf4gJZUCvoZtqhXxilSpmJ+a4hMyQLtiRjSj9yapsoSo41lPsMdNJqudoi0yn0mmZpRcDWm3sdOHZErjtsDox4NeoTjgqh2Ioy8VTmnwlAxvtviCGo1yhvQkGrjGotulHJFct6Q0o7nLXRGw3k3zf70P4HS1/OpMipYcx8EF6xAlRf0C9wZW4IHZ9E62iyj9evT+4XM3dhbAu1w2EVV5M6ny8m+8fcfXyVvkpflKkrWA9l67RdkG7yiuGRfQ0Vv6st7khOPdjfNPxqPN7ulhc6tskBTItkTS3rjXvHQdVRwMX4NguuA/JI7NB8H5/7rl0Oft9yPZ/AN",
+    "w": 150,
+    "h": 150,
+    "aspect": "fixed"
+  },
+  {
+    "xml": "jVNRT4MwEP41fdxCW2W+AnOLiYtG9+Db0kEHjYVie+jmr/dKgU2TJSYlvX7f3fXu+Ep4Vh/XVrTVxhRSE35PeGaNgWDVx0xqTVikCsKXhLEIP8JWV1jas1ErrGzgPwEsBHwK3cmAkEWKa/dhc6xn/UrJYulX7+bgpAc3V4nWm6oWJe7pp7SgcqEfxV7qZ+MUKNMgvzcApkYH7YlU5O+lNV1TZEYbi3whD6LTcJEh0ar0kWBaRIVrZe5bOaijxKLT/sJkRKMRQbsCaB3hie+WraAyUNHZXs5Fq+ZlJ7TItXGdlW6eY0Vs1YHSDve96HslfBW25bURxKL2JX2pAip0u4miCaukKiv4Ax6MrYUHl8k22W2S7cvD20SWjvomLc59SqIacMP9LP7ovAjSi9hd9rR5TrLtmey7HQ9DrpHCin0JDbyqb98Viz0afjeOWh6vSqaHBr2spakl2BO6nAI7o3PK47v4ji8WjMY0jricUR7SjLPxWW6D9KJpNpegcAEop/xnlaIxCHU8nh9Ez/16Lz8=",
+    "w": 150,
+    "h": 150,
+    "aspect": "fixed"
   }
 ];
 
