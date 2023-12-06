@@ -1,0 +1,42 @@
+<input type="file" id="input">
+<pre id="out"></pre>
+
+<script src="https://jgraph.github.io/drawio-tools/tools/deflate/pako.min.js"></script>
+<script>
+
+    const fileInput = document.getElementById('input');
+    fileInput.onchange = () => {
+        const selectedFile = fileInput.files[0];
+        if (selectedFile) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const content = e.target.result;
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(content, 'text/xml')
+                var images = JSON.parse(doc.documentElement.textContent);
+                for(const i of images){
+                    var data = i.xml;
+                    console.log(data);
+                    data = encodeURIComponent(data);
+                    data = String.fromCharCode.apply(null, new Uint8Array(pako.deflateRaw(data)));
+                    data = btoa(data);
+                    i.xml = data
+                }
+                document.getElementById("out").innerText = JSON.stringify(images, null, 4);
+
+            };
+
+            reader.readAsText(selectedFile);
+        }
+    }
+    /*
+    var parser = new DOMParser();
+
+    return parser.parseFromString(xml, 'text/xml');
+    XmlDocument document = new XmlDocument();
+
+    document.XmlResolver = null;
+    XmlDocument doc = CreateDocument();
+    doc.LoadXml(xml);*/
+</script>
