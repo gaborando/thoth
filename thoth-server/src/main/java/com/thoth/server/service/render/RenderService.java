@@ -37,7 +37,6 @@ public class RenderService {
     private final RendererService rendererService;
 
     private final DataSourceService dataSourceService;
-    private final Svg2Jpeg svg2Jpeg;
 
     private final ClientService clientService;
 
@@ -54,7 +53,6 @@ public class RenderService {
         this.dataSourceService = dataSourceService;
         this.clientService = clientService;
         this.securedTimestampService = securedTimestampService;
-        svg2Jpeg = new Svg2Jpeg();
         jinjava = new Jinjava();
         jinjava.getGlobalContext().registerFilter(new PaddingPipe());
         jinjava.getGlobalContext().registerFilter(new NumberPipe());
@@ -86,7 +84,7 @@ public class RenderService {
     }
 
     private byte[] renderTemplateJpeg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
-        return svg2Jpeg.convert(renderTemplateSvg(template, params));
+        return Svg2Jpeg.convert(renderTemplateSvg(template, params));
     }
 
     public byte[] renderTemplateJpeg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {

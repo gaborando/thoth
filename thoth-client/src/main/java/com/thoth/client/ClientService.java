@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 @Service
 public class ClientService {
     private static final Logger logger = LogManager.getLogger(ClientService.class);
-    private final Svg2Jpeg svg2Jpeg;
 
     private final RabbitTemplate rabbitTemplate;
 
@@ -49,7 +48,6 @@ public class ClientService {
         this.rabbitTemplate = rabbitTemplate;
         this.clientName = clientName;
         this.clientIdentifier = clientIdentifier;
-        this.svg2Jpeg = new Svg2Jpeg();
         this.ownerSID = ownerSID;
         this.serverExchange = new DirectExchange(serverExchange);
 
@@ -70,7 +68,7 @@ public class ClientService {
                     .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
 
             logger.info("Starting PDF Generation");
-            var img = svg2Jpeg.convert(printRequest.getSvg());
+            var img = Svg2Jpeg.convert(printRequest.getSvg());
             var pdf = Jpeg2Pdf.convert(img);
             logger.info("PDF Generated");
             PDDocument document = Loader.loadPDF(pdf);
