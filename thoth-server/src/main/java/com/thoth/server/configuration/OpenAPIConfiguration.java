@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
         bearerFormat = "JWT",
         scheme = "bearer"
 )
-public class OpenAPISecurityConfiguration {
+public class OpenAPIConfiguration {
 
 
 }
