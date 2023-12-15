@@ -2,6 +2,7 @@ package com.thoth.server.controller;
 
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.thoth.server.controller.dto.PrintRequest;
+import com.thoth.server.controller.dto.RenderRequest;
 import com.thoth.server.controller.dto.template.CreateTemplateRequest;
 import com.thoth.server.controller.dto.template.TemplateListItem;
 import com.thoth.server.model.domain.Template;
@@ -99,7 +100,7 @@ public class TemplateController {
 
     @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
     @CrossOrigin(allowedHeaders = "*", origins = "*")
-    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS, RequestMethod.HEAD}, value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderPdf(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,
                                             @PathVariable String identifier) throws IOException, InterruptedException {
@@ -107,6 +108,13 @@ public class TemplateController {
         var data = renderService.renderTemplatePdf(identifier, parseParams(p1, p2));
         return ResponseEntity.ok(data);
 
+    }
+
+    @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
+    @PostMapping(value = "/render/pdf-multi", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> renderMultiPdf(@RequestBody List<RenderRequest> requests) throws Exception {
+        var data = renderService.renderMultiTemplatePdf(requests);
+        return ResponseEntity.ok(data);
     }
 
     @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})

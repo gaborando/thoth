@@ -2,6 +2,7 @@ package com.thoth.server.service.render;
 
 import com.hubspot.jinjava.Jinjava;
 import com.thoth.server.configuration.security.SecuredTimestampService;
+import com.thoth.server.controller.dto.RenderRequest;
 import com.thoth.server.controller.dto.renderer.Association;
 import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.model.domain.Template;
@@ -15,6 +16,7 @@ import com.thoth.server.service.render.pipes.PaddingPipe;
 import com.thoth.server.service.render.pipes.TrimPipe;
 import org.springframework.stereotype.Service;
 import org.thoth.common.Jpeg2Pdf;
+import org.thoth.common.PdfMerger;
 import org.thoth.common.Svg2Jpeg;
 
 import java.io.IOException;
@@ -104,9 +106,31 @@ public class RenderService {
         return Jpeg2Pdf.convert(img);
     }
 
+    public byte[] renderMultiTemplatePdf(List<RenderRequest> requests) throws Exception {
+        return PdfMerger.merge(requests.stream().map(r -> {
+            try {
+                return renderTemplateJpeg(r.getIdentifier(), r.getParameters());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).filter(Objects::nonNull));
+    }
+
     public byte[] renderRendererPdf(String identifier, HashMap<String, Object> params) throws Exception {
         var img = renderRendererJpeg(identifier, params);
         return Jpeg2Pdf.convert(img);
+    }
+
+    public byte[] renderMultiRendererPdf(List<RenderRequest> requests) throws Exception {
+        return PdfMerger.merge(requests.stream().map(r -> {
+            try {
+                return renderRendererJpeg(r.getIdentifier(), r.getParameters());
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).filter(Objects::nonNull));
     }
 
 

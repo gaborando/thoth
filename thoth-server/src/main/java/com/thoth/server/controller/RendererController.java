@@ -1,5 +1,6 @@
 package com.thoth.server.controller;
 
+import com.thoth.server.controller.dto.RenderRequest;
 import com.thoth.server.controller.dto.datasource.DatasourcePropertyListItem;
 import com.thoth.server.controller.dto.renderer.RendererCreateRequest;
 import com.thoth.server.controller.dto.PrintRequest;
@@ -20,6 +21,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/renderer")
@@ -104,6 +106,13 @@ public class RendererController {
         var data = renderService.renderRendererPdf(identifier, params);
         return ResponseEntity.ok(data);
 
+    }
+
+    @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
+    @PostMapping(value = "/render/pdf-multi", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> renderMultiPdf(@RequestBody List<RenderRequest> requests) throws Exception {
+        var data = renderService.renderMultiRendererPdf(requests);
+        return ResponseEntity.ok(data);
     }
 
     @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
