@@ -40,6 +40,11 @@ public class ClientService {
 
     private long printCount = 0;
 
+
+    @Value("${thoth.render.delay}")
+    private long renderDelay;
+
+
     public ClientService(RabbitTemplate rabbitTemplate,
                          @Value("${thoth.client.name}") String clientName,
                          @Value("${thoth.client.identifier}") String clientIdentifier,
@@ -68,7 +73,7 @@ public class ClientService {
                     .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
 
             logger.info("Starting PDF Generation");
-            var img = Svg2Jpeg.convert(printRequest.getSvg());
+            var img = Svg2Jpeg.convert(printRequest.getSvg(), renderDelay);
             var pdf = Jpeg2Pdf.convert(img);
             logger.info("PDF Generated");
             PDDocument document = Loader.loadPDF(pdf);

@@ -14,6 +14,7 @@ import com.thoth.server.service.render.pipes.DatePipe;
 import com.thoth.server.service.render.pipes.NumberPipe;
 import com.thoth.server.service.render.pipes.PaddingPipe;
 import com.thoth.server.service.render.pipes.TrimPipe;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thoth.common.Jpeg2Pdf;
 import org.thoth.common.PdfMerger;
@@ -44,6 +45,9 @@ public class RenderService {
 
     private final SecuredTimestampService securedTimestampService;
     private final Jinjava jinjava;
+
+    @Value("${thoth.render.delay}")
+    private long renderDelay;
 
     public RenderService(
             TemplateService templateService,
@@ -86,7 +90,7 @@ public class RenderService {
     }
 
     private byte[] renderTemplateJpeg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
-        return Svg2Jpeg.convert(renderTemplateSvg(template, params));
+        return Svg2Jpeg.convert(renderTemplateSvg(template, params), renderDelay);
     }
 
     public byte[] renderTemplateJpeg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
