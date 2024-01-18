@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 public class Svg2Jpeg {
 
-    public static byte[] convert(String svg) {
+    public static byte[] convert(String svg, long delay) {
         for(int i = 0; i<3; i++) {
             try {
                 try (Playwright playwright = Playwright.create()) {
@@ -43,6 +43,7 @@ public class Svg2Jpeg {
                                         svg.style.setProperty('height', (iHeight * scale) + 'px',  'important');
                                     }
                                     """);
+                            Thread.sleep(delay);
                             return page.locator("svg").screenshot(new Locator.ScreenshotOptions()
                                     .setType(ScreenshotType.JPEG)
                                     .setQuality(100));
