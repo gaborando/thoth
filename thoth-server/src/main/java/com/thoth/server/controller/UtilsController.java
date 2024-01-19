@@ -21,6 +21,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.font.GlyphVector;
 import java.awt.font.TextAttribute;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.AttributedString;
@@ -65,6 +66,12 @@ public class UtilsController {
 
         code = code.replace("{", "").replace("}", "");
 
+        if(code.isEmpty()){
+            BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+            var baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpeg", baos);
+            return ResponseEntity.ok(baos.toByteArray());
+        }
 
         var jHints = new Gson().fromJson(hints, HashMap.class);
         var hi = new HashMap<EncodeHintType, Object>();
