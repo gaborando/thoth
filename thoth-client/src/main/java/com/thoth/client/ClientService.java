@@ -59,23 +59,23 @@ public class ClientService {
     }
 
     @RabbitListener(queues = "thoth.${thoth.client.identifier}.rpc.requests")
-    public boolean printSvg(PrintRequest printRequest) throws IOException, InterruptedException, PrinterException {
+    public boolean printSvg(PrintRequest printRequest) {
         printCount++;
         printCount = printCount % 1000000;
-        logger.info("Print Request Received ({})", printCount);
-        logger.info("Requested Printer: " + printRequest.getPrintService());
+        logger.debug("Print Request Received ({})", printCount);
+        logger.debug("Requested Printer: " + printRequest.getPrintService());
         if("NONE".equalsIgnoreCase(printRequest.getPrintService())){
-            logger.info("Document Skipped");
+            logger.debug("Document Skipped");
             return true;
         }
         try {
             PrintService printService = Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
                     .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
 
-            logger.info("Starting PDF Generation");
+            logger.debug("Starting PDF Generation");
             var img = Svg2Jpeg.convert(printRequest.getSvg(), renderDelay);
             var pdf = Jpeg2Pdf.convert(img);
-            logger.info("PDF Generated");
+            logger.debug("PDF Generated");
             PDDocument document = Loader.loadPDF(pdf);
             PrinterJob job = PrinterJob.getPrinterJob();
             job.setPrintService(printService);
@@ -90,9 +90,9 @@ public class ClientService {
             }
             job.setPrintable(new PDFPrintable(document), pf);
             job.setCopies(printRequest.getCopies());
-            logger.info("Sending Printing Request...");
+            logger.debug("Sending Printing Request...");
             job.print(attr);
-            logger.info("Document Printed");
+            logger.debug("Document Printed");
             return true;
         }catch (Exception e){
             logger.error("Error on document printing", e);
