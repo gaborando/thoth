@@ -17,8 +17,11 @@ public class SecuredTimestampService {
 
     private final String secret;
 
-    public SecuredTimestampService(@Value("${thoth.security.secret}") String secret) throws NoSuchAlgorithmException {
+    private final int defaultTokenDuration;
+
+    public SecuredTimestampService(@Value("${thoth.security.secret}") String secret, @Value("${thoth.security.timestamp.token.duration:180}") int defaultTokenDuration) throws NoSuchAlgorithmException {
         this.secret = secret;
+        this.defaultTokenDuration = defaultTokenDuration;
     }
 
     private static String byteToHex(final byte[] hash) {
@@ -32,7 +35,7 @@ public class SecuredTimestampService {
     }
 
     public String generate() {
-        return generate(60);
+        return generate(defaultTokenDuration);
     }
 
     public String generate(int duration) {
