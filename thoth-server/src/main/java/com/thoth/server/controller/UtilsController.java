@@ -35,13 +35,20 @@ import static com.google.zxing.EncodeHintType.MARGIN;
 @RequestMapping("/utils")
 public class UtilsController {
 
+    private final byte[] empty;
+
     private final SidService sidService;
 
     private final SecuredTimestampService securedTimestampService;
 
-    public UtilsController(SidService sidService, SecuredTimestampService securedTimestampService) {
+    public UtilsController(SidService sidService, SecuredTimestampService securedTimestampService) throws IOException {
         this.sidService = sidService;
         this.securedTimestampService = securedTimestampService;
+
+        BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+        var baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpeg", baos);
+        empty = baos.toByteArray();
     }
 
 
@@ -67,10 +74,7 @@ public class UtilsController {
         code = code.replace("{", "").replace("}", "");
 
         if(code.isEmpty()){
-            BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
-            var baos = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpeg", baos);
-            return ResponseEntity.ok(baos.toByteArray());
+            return ResponseEntity.ok(empty);
         }
 
         var jHints = new Gson().fromJson(hints, HashMap.class);
