@@ -5,6 +5,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.datamatrix.encoder.SymbolShapeHint;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.thoth.server.configuration.security.SecuredTimestampService;
 import com.thoth.server.service.SidService;
@@ -28,8 +29,7 @@ import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.google.zxing.EncodeHintType.GS1_FORMAT;
-import static com.google.zxing.EncodeHintType.MARGIN;
+import static com.google.zxing.EncodeHintType.*;
 
 @RestController
 @RequestMapping("/utils")
@@ -80,7 +80,12 @@ public class UtilsController {
         var jHints = new Gson().fromJson(hints, HashMap.class);
         var hi = new HashMap<EncodeHintType, Object>();
         jHints.keySet().forEach(k -> {
-            hi.put(EncodeHintType.valueOf(k.toString()), jHints.get(k.toString()));
+            var h = EncodeHintType.valueOf(k.toString());
+            if( h == DATA_MATRIX_SHAPE){
+                hi.put(h, SymbolShapeHint.valueOf(jHints.get(k.toString()).toString()));
+            }else{
+                hi.put(h, jHints.get(k.toString()));
+            }
         });
         if (!hi.containsKey(MARGIN)) {
             hi.put(MARGIN, 0);
