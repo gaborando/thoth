@@ -20,10 +20,7 @@ import javax.print.PrintServiceLookup;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.standard.MediaPrintableArea;
 import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -44,17 +41,21 @@ public class ClientService {
     @Value("${thoth.render.delay}")
     private long renderDelay;
 
+    private final String[] exclude;
+
 
     public ClientService(RabbitTemplate rabbitTemplate,
                          @Value("${thoth.client.name}") String clientName,
                          @Value("${thoth.client.identifier}") String clientIdentifier,
                          @Value("${thoth.client.owner.sid}") String ownerSID,
-                         @Value("${thoth.server.exchange}") String serverExchange) {
+                         @Value("${thoth.server.exchange}") String serverExchange,
+                         @Value("${thoth.client.exclude:;}") String exclude) {
         this.rabbitTemplate = rabbitTemplate;
         this.clientName = clientName;
         this.clientIdentifier = clientIdentifier;
         this.ownerSID = ownerSID;
         this.serverExchange = new DirectExchange(serverExchange);
+        this.exclude = exclude.split(";");
 
     }
 
@@ -64,14 +65,13 @@ public class ClientService {
         printCount = printCount % 1000000;
         logger.debug("Print Request Received ({})", printCount);
         logger.debug("Requested Printer: " + printRequest.getPrintService());
-        if("NONE".equalsIgnoreCase(printRequest.getPrintService())){
+        if ("NONE".equalsIgnoreCase(printRequest.getPrintService())) {
             logger.debug("Document Skipped");
             return true;
         }
         try {
             PrintService printService = Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
                     .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
-
             logger.debug("Starting PDF Generation");
             var img = Svg2Jpeg.convert(printRequest.getSvg(), renderDelay);
             var pdf = Jpeg2Pdf.convert(img);
@@ -94,7 +94,7 @@ public class ClientService {
             job.print(attr);
             logger.debug("Document Printed");
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("Error on document printing", e);
             return false;
         }
@@ -106,9 +106,11 @@ public class ClientService {
         request.setName(clientName);
         request.setOwnerSID(ownerSID);
         request.setPrintServices(Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
-                .map(PrintService::getName).collect(Collectors.toList()));
+                .map(PrintService::getName)
+                .filter(n -> Arrays.stream(exclude).noneMatch(e -> e.equals(n)))
+                .collect(Collectors.toList()));
         request.getPrintServices().add("NONE");
-        logger.info("Registering client " + request.getName() + " ["+request.getIdentifier()+"]");
+        logger.info("Registering client " + request.getName() + " [" + request.getIdentifier() + "]");
         logger.info("Detected PrintServices:");
         for (String printService : request.getPrintServices()) {
             logger.info(" -   " + printService);
