@@ -1,5 +1,6 @@
 package com.thoth.server.controller.dto.renderer;
 
+import com.thoth.server.controller.view.AssociationView;
 import lombok.Data;
 
 import java.util.List;
@@ -10,6 +11,6 @@ public class RendererCreateRequest {
     private String name;
     private String template;
     private List<String> datasource;
-    private Map<String, Association> associationMap;
-    private Map<String, Association> parametersMap;
+    private Map<String, AssociationView> associationMap;
+    private Map<String, AssociationView> parametersMap;
 }

@@ -3,7 +3,7 @@ package com.thoth.server.service.render;
 import com.hubspot.jinjava.Jinjava;
 import com.thoth.server.configuration.security.SecuredTimestampService;
 import com.thoth.server.controller.dto.RenderRequest;
-import com.thoth.server.controller.dto.renderer.Association;
+import com.thoth.server.controller.view.AssociationView;
 import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.model.domain.Template;
 import com.thoth.server.service.ClientService;
@@ -21,16 +21,7 @@ import org.thoth.common.PdfMerger;
 import org.thoth.common.Svg2Jpeg;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class RenderService {
@@ -174,7 +165,7 @@ public class RenderService {
                 }
             }
         }
-        for (Map.Entry<String, Association> e : renderer.getAssociationMap().entrySet()) {
+        for (Map.Entry<String, AssociationView> e : renderer.getAssociationMap().entrySet()) {
 
             if (e.getValue().getType().equals("datasource")) {
                 if (!dsDataMap.containsKey(e.getValue().getId())) {

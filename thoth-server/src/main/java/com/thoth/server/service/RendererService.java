@@ -1,24 +1,21 @@
 package com.thoth.server.service;
 
 import com.thoth.server.beans.IAuthenticationFacade;
-import com.thoth.server.controller.dto.renderer.Association;
+import com.thoth.server.controller.view.AssociationView;
 import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.model.domain.ResourcePermission;
-import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
 import com.thoth.server.model.repository.RendererRepository;
 import com.thoth.server.model.repository.TemplateRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RendererService {
@@ -37,8 +34,8 @@ public class RendererService {
         this.facade = facade;
     }
 
-    public Renderer create(String name, String template, List<String> datasource, Map<String, Association> associationMap
-            , Map<String, Association> parametersMap) {
+    public Renderer create(String name, String template, List<String> datasource, Map<String, AssociationView> associationMap
+            , Map<String, AssociationView> parametersMap) {
         var renderer = new Renderer();
         renderer.setId("rndr_" + UUID.randomUUID());
         renderer.setName(name);
@@ -68,14 +65,14 @@ public class RendererService {
     }
 
 
-    public Renderer update(String s, String name, List<String> datasource, Map<String, Association> associationMap
-            , Map<String, Association> parametersMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {
+    public Renderer update(String s, String name, List<String> datasource, Map<String, AssociationView> associationMap
+            , Map<String, AssociationView> parametersMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {
         var original = rendererRepository.findById(s).orElseThrow();
        return update(original, name, datasource, associationMap, parametersMap, allowedUserList, allowedOrganizationList);
     }
     @PreAuthorize("@authenticationFacade.canWrite(#original)")
-    public Renderer update(Renderer original, String name, List<String> datasource, Map<String, Association> associationMap
-            , Map<String, Association> parametersMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {
+    public Renderer update(Renderer original, String name, List<String> datasource, Map<String, AssociationView> associationMap
+            , Map<String, AssociationView> parametersMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {
         original.setAssociationMap(associationMap);
         original.setParametersMap(parametersMap);
         original.setDatasourceProperties(

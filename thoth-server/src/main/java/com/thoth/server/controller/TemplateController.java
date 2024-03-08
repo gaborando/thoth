@@ -1,18 +1,18 @@
 package com.thoth.server.controller;
 
 import com.nimbusds.jose.shaded.gson.Gson;
+import com.thoth.server.beans.AuthenticationFacade;
 import com.thoth.server.controller.dto.PrintRequest;
 import com.thoth.server.controller.dto.RenderRequest;
 import com.thoth.server.controller.dto.template.CreateTemplateRequest;
-import com.thoth.server.controller.dto.template.TemplateListItem;
+import com.thoth.server.controller.view.TemplateListItemView;
+import com.thoth.server.controller.view.TemplateView;
 import com.thoth.server.model.domain.Template;
-import com.thoth.server.service.render.RenderService;
 import com.thoth.server.service.TemplateService;
+import com.thoth.server.service.render.RenderService;
 import io.github.perplexhub.rsql.RSQLJPASupport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +20,10 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Predicate;
 
 @RestController
 @RequestMapping("/template")
@@ -41,18 +40,20 @@ public class TemplateController {
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER", "ROLE_API"})
-    public ResponseEntity<Page<Template>> findAll(
+    public ResponseEntity<Page<TemplateListItemView>> findAll(
             @RequestParam(value = "filter", defaultValue = "") String filter,
             @RequestParam(value = "sort", defaultValue = "createdAt,desc") String sort,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "15") int size
+            @RequestParam(value = "size", defaultValue = "15") int size,
+            AuthenticationFacade facade
 
     ) {
 
         Specification<Template> f = RSQLJPASupport.toSpecification(filter);
         f = f.and(RSQLJPASupport.toSort(sort));
         return ResponseEntity.ok(templateService.search(f
-                , PageRequest.of(page, size)));
+                , PageRequest.of(page, size))
+                .map(e -> e.toListItemView(facade.getUserSID(), facade.getOrganizationSID())));
     }
     @GetMapping(value = "/folders", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER"})
@@ -62,22 +63,27 @@ public class TemplateController {
 
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER", "ROLE_API"})
-    public ResponseEntity<Template> findById(
-            @PathVariable String identifier) {
-        return ResponseEntity.ok(templateService.getById(identifier).orElseThrow());
+    public ResponseEntity<TemplateView> findById(
+            @PathVariable String identifier,
+            AuthenticationFacade facade) {
+        return ResponseEntity.ok(templateService.getById(identifier)
+                .map(e -> e.toView(facade.getUserSID(), facade.getOrganizationSID())).orElseThrow());
     }
 
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER"})
-    public ResponseEntity<Template> create(@RequestBody CreateTemplateRequest request) {
-        return ResponseEntity.ok(templateService.create(request.getName()));
+    public ResponseEntity<TemplateView> create(@RequestBody CreateTemplateRequest request,
+                                               AuthenticationFacade facade) {
+        return ResponseEntity.ok(templateService.create(request.getName()).toView(facade.getUserSID(),
+                facade.getOrganizationSID()));
     }
 
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER"})
-    public ResponseEntity<Template> update(@RequestBody Template template,
-                                           @PathVariable String identifier) throws ParserConfigurationException {
-        return ResponseEntity.ok(templateService.update(identifier, template));
+    public ResponseEntity<TemplateView> update(@RequestBody Template template,
+                                           @PathVariable String identifier,
+                                           AuthenticationFacade facade) throws ParserConfigurationException {
+        return ResponseEntity.ok(templateService.update(identifier, template).toView(facade.getUserSID(), facade.getOrganizationSID()));
     }
 
     @DeleteMapping("/{identifier}")

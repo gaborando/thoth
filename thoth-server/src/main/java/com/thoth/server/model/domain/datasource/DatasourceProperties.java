@@ -1,5 +1,8 @@
 package com.thoth.server.model.domain.datasource;
 
+import com.thoth.server.controller.view.datasource.DatasourcePropertiesListItemView;
+import com.thoth.server.controller.view.datasource.DatasourcePropertiesView;
+import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.model.domain.SecuredResource;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -37,6 +40,9 @@ public abstract class DatasourceProperties extends SecuredResource {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Property> properties;
 
+    @ManyToMany(mappedBy = "datasourceProperties")
+    private List<Renderer> usages;
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -49,4 +55,18 @@ public abstract class DatasourceProperties extends SecuredResource {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+
+    public DatasourcePropertiesListItemView toListItemView(String uSid, String oSid){
+        DatasourcePropertiesListItemView listItem = new DatasourcePropertiesListItemView();
+        listItem.setId(this.id);
+        listItem.setName(this.name);
+        listItem.setType(this.type);
+        listItem.setParameters(this.parameters);
+        listItem.setProperties(this.properties);
+        listItem.setPermission(checkPermission(uSid, oSid));
+        return listItem;
+    }
+
+    public abstract DatasourcePropertiesView toView(String uSid, String oSid);
 }
