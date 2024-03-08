@@ -79,11 +79,9 @@
               <ion-img class="ion-padding" style="height: 500px" [src]="t.img"></ion-img>
             </ion-card-content>
             <div class="ion-text-end">
-              <ion-button fill="clear" color="primary" routerLink="/template-detail/{{t.id}}">Edit</ion-button>
-              <ion-button fill="clear" color="primary" (click)="openEditor(t)">Draw</ion-button>
+              <ion-button fill="clear" color="primary" (click)="openTemplate(t)">Open</ion-button>
               <ion-button fill="clear" color="secondary" (click)="renderTemplate(t)">Render</ion-button>
               <ion-button fill="clear" color="secondary" (click)="printTemplate(t)">Print</ion-button>
-              <ion-button fill="clear" color="danger" (click)="removeTemplate(t)">Delete</ion-button>
             </div>
           </ion-card>
         </ion-col>

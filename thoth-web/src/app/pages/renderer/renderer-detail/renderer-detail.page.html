@@ -8,7 +8,7 @@
       <ion-button (click)="clone()" [disabled]="!renderer?.name">
         <ion-icon slot="icon-only" name="copy" color="secondary"></ion-icon>
       </ion-button>
-      <ion-button color="primary" routerLink="/render-new">
+      <ion-button color="primary">
         <ion-button *ngIf="renderer" (click)="delete(renderer)">
           <ion-icon color="danger" name="trash" slot="end" tappable="true"></ion-icon>
         </ion-button>

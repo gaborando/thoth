@@ -33,7 +33,8 @@ export class TemplateListPage extends ListPage<Template> implements OnInit, OnDe
               private loadingController: LoadingController,
               private router: Router,
               private templateGuiUtils: TemplateGuiUtilsService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private navController: NavController) {
     super(templateService);
 
   }
@@ -81,8 +82,8 @@ export class TemplateListPage extends ListPage<Template> implements OnInit, OnDe
 
   override composeSearchFilter(): string {
     let filter = 'folder==/' + window.location.pathname.substring(15);
-    if(this.search){
-      filter = 'name==*'+this.search+'*'
+    if (this.search) {
+      filter = 'name==*' + this.search + '*'
     }
     return filter
   }
@@ -113,14 +114,10 @@ export class TemplateListPage extends ListPage<Template> implements OnInit, OnDe
     if (!resp.role) {
       const t = await this.templateService.create(resp.data.values.name);
       this.elements?.unshift(t);
-      return this.openEditor(t);
+      this.navController.navigateForward('/template-detail/' + t.id)
     }
   }
 
-  public openEditor(template: Template) {
-    this.editor.openEditor(template, this.templateService);
-
-  }
 
   removeTemplate(template: Template) {
     return this.screenMessageService.showDeleteAlert(async () => {
@@ -138,6 +135,11 @@ export class TemplateListPage extends ListPage<Template> implements OnInit, OnDe
   }
 
 
+  openViewer(t: Template) {
+    return this.templateGuiUtils.openViewer(t);
+  }
 
-
+  openTemplate(t: Template) {
+    return this.navController.navigateForward('/template-detail/' + t.id)
+  }
 }
