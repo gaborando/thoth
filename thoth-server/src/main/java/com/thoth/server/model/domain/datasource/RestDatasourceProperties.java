@@ -1,5 +1,8 @@
 package com.thoth.server.model.domain.datasource;
 
+import com.thoth.server.controller.view.datasource.DatasourcePropertiesView;
+import com.thoth.server.controller.view.datasource.JdbcDatasourcePropertiesView;
+import com.thoth.server.controller.view.datasource.RestDatasourcePropertiesView;
 import com.thoth.server.model.converters.JpaConverterJson;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -42,4 +45,23 @@ public class RestDatasourceProperties extends DatasourceProperties {
     @Size(max = 256)
     private String jsonQuery;
 
+    @Override
+    public RestDatasourcePropertiesView toView(String uSid, String oSid) {
+        RestDatasourcePropertiesView view = new RestDatasourcePropertiesView();
+        view.setId(this.getId());
+        view.setName(this.getName());
+        view.setType(this.getType());
+        view.setParameters(this.getParameters());
+        view.setProperties(this.getProperties());
+        view.setCreatedAt(getCreatedAt());
+        view.setUsages(getUsages().stream().map(u -> u.toListItemView(uSid, oSid)).toList());
+        setView(view, uSid, oSid);
+        view.setUrl(url);
+        view.setMethod(method);
+        view.setQueryParameters(queryParameters);
+        view.setHeaders(headers);
+        view.setBody(body);
+        view.setJsonQuery(jsonQuery);
+        return view;
+    }
 }

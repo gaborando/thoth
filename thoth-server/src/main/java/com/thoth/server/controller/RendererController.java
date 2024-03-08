@@ -1,19 +1,18 @@
 package com.thoth.server.controller;
 
+import com.thoth.server.beans.AuthenticationFacade;
 import com.thoth.server.controller.dto.RenderRequest;
-import com.thoth.server.controller.dto.datasource.DatasourcePropertyListItem;
 import com.thoth.server.controller.dto.renderer.RendererCreateRequest;
 import com.thoth.server.controller.dto.PrintRequest;
-import com.thoth.server.controller.dto.renderer.RendererListItem;
 import com.thoth.server.controller.dto.renderer.RendererUpdateRequest;
+import com.thoth.server.controller.view.RendererListItemView;
+import com.thoth.server.controller.view.RendererView;
 import com.thoth.server.model.domain.Renderer;
-import com.thoth.server.model.domain.datasource.DatasourceProperties;
 import com.thoth.server.service.render.RenderService;
 import com.thoth.server.service.RendererService;
 import io.github.perplexhub.rsql.RSQLJPASupport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,52 +38,58 @@ public class RendererController {
 
     @Secured({"ROLE_USER", "ROLE_API"})
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Renderer> create(@RequestBody RendererCreateRequest request) {
+    public ResponseEntity<RendererView> create(@RequestBody RendererCreateRequest request,
+                                               AuthenticationFacade facade) {
         return ResponseEntity.ok(rendererService.create(
                 request.getName(),
                 request.getTemplate(),
                 request.getDatasource(),
                 request.getAssociationMap(),
                 request.getParametersMap()
-        ));
+        ).toView(facade.getUserSID(), facade.getOrganizationSID()));
     }
 
 
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER", "ROLE_API"})
-    public ResponseEntity<Page<RendererListItem>> findAll(
+    public ResponseEntity<Page<RendererListItemView>> findAll(
             @RequestParam(value = "filter", defaultValue = "") String filter,
             @RequestParam(value = "sort", defaultValue = "createdAt,desc") String sort,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "30") int size
+            @RequestParam(value = "size", defaultValue = "30") int size,
+            AuthenticationFacade facade
 
     ) {
 
         Specification<Renderer> f = RSQLJPASupport.toSpecification(filter);
         f = f.and(RSQLJPASupport.toSort(sort));
         return ResponseEntity.ok(rendererService.search(f,
-                PageRequest.of(page, size)).map(RendererListItem::new));
+                PageRequest.of(page, size)).map(e -> e.toListItemView(facade.getUserSID(),
+                facade.getOrganizationSID())));
     }
 
 
     @Secured("ROLE_USER")
     @GetMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Renderer> findById(
-            @PathVariable String identifier) {
-        return ResponseEntity.ok(rendererService.findById(identifier).orElseThrow());
+    public ResponseEntity<RendererView> findById(
+            @PathVariable String identifier,
+            AuthenticationFacade facade) {
+        return ResponseEntity.ok(rendererService.findById(identifier).map(e -> e.toView(facade.getUserSID(), facade.getOrganizationSID())).orElseThrow());
     }
 
 
     @Secured("ROLE_USER")
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Renderer> update(@RequestBody RendererUpdateRequest renderer, @PathVariable String identifier) {
+    public ResponseEntity<RendererView> update(@RequestBody RendererUpdateRequest renderer,
+                                               @PathVariable String identifier,
+                                               AuthenticationFacade facade) {
         return ResponseEntity.ok(rendererService.update(identifier,
                 renderer.getName(),
                 renderer.getDatasource(),
                 renderer.getAssociationMap(),
                 renderer.getParametersMap(),
                 renderer.getAllowedUserList(),
-                renderer.getAllowedOrganizationList()));
+                renderer.getAllowedOrganizationList()).toView(facade.getUserSID(), facade.getOrganizationSID()));
     }
 
 

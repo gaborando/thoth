@@ -1,9 +1,8 @@
 package com.thoth.server.model.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.thoth.server.controller.view.TemplateListItemView;
+import com.thoth.server.controller.view.TemplateView;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -12,6 +11,7 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,4 +46,30 @@ public class Template extends SecuredResource {
     @Size(min = 1, max = 256)
     private String folder;
 
+    @OneToMany(mappedBy = "template")
+    private List<Renderer> usages;
+
+    public TemplateView toView(String uSid, String oSid){
+        TemplateView view = new TemplateView();
+        view.setId(id);
+        view.setName(name);
+        view.setImg(img);
+        view.setMarkers(markers);
+        view.setFolder(folder);
+        view.setSvg(svg);
+        view.setXml(xml);
+        view.setCreatedAt(createdAt);
+        setView(view, uSid, oSid);
+        view.setUsages(usages.stream().map(u -> u.toListItemView(uSid, oSid)).toList());
+        return view;
+    }
+
+    public TemplateListItemView toListItemView(String uSid, String oSid){
+        TemplateListItemView view = new TemplateListItemView();
+        view.setId(id);
+        view.setName(name);
+        view.setImg(img);
+        view.setPermission(checkPermission(uSid, oSid));
+        return view;
+    }
 }

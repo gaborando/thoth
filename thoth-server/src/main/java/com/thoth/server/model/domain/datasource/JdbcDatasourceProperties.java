@@ -1,5 +1,7 @@
 package com.thoth.server.model.domain.datasource;
 
+import com.thoth.server.controller.view.datasource.DatasourcePropertiesView;
+import com.thoth.server.controller.view.datasource.JdbcDatasourcePropertiesView;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotBlank;
@@ -23,4 +25,22 @@ public class JdbcDatasourceProperties extends DatasourceProperties{
 
     @Column(columnDefinition = "TEXT")
     private String query;
+
+    @Override
+    public JdbcDatasourcePropertiesView toView(String uSid, String oSid) {
+        JdbcDatasourcePropertiesView view = new JdbcDatasourcePropertiesView();
+        view.setId(this.getId());
+        view.setName(this.getName());
+        view.setType(this.getType());
+        view.setParameters(this.getParameters());
+        view.setProperties(this.getProperties());
+        view.setCreatedAt(getCreatedAt());
+        view.setUsages(getUsages().stream().map(u -> u.toListItemView(uSid, oSid)).toList());
+        setView(view, uSid, oSid);
+        view.setUrl(url);
+        view.setUsername(username);
+        view.setPassword(password);
+        view.setQuery(query);
+        return view;
+    }
 }

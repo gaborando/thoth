@@ -1,14 +1,13 @@
-package com.thoth.server.controller.dto.renderer;
+package com.thoth.server.controller.view;
 
 import jakarta.persistence.Embeddable;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 @Embeddable
-public class Association {
+public class AssociationView {
     @NotEmpty
     @Size(min = 3, max = 256)
     private String type;
