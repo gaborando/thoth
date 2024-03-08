@@ -117,4 +117,8 @@ export class TemplateDetailPage implements OnInit {
   openViewer() {
     this.templateGuiUtils.openViewer(this.template!);
   }
+
+  back() {
+    window.history.back();
+  }
 }

@@ -1,14 +1,16 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-button (click)="back()" >
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>Template</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="clone()" [disabled]="!template?.name">
         <ion-icon slot="icon-only" name="copy" color="secondary"></ion-icon>
       </ion-button>
-      <ion-button color="primary" routerLink="/render-new">
+      <ion-button color="primary">
         <ion-button *ngIf="template && template.permission === 'W'" (click)="delete(template)">
           <ion-icon color="danger" name="trash" slot="end" tappable="true"></ion-icon>
         </ion-button>
@@ -17,8 +19,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="template">
-
+<ion-content >
+<ng-container *ngIf="template else loading">
 
   <ion-grid class="ion-no-padding">
     <form>
@@ -33,11 +35,11 @@
             <ion-card-content>
               <ion-item>
                 <ion-label>Name</ion-label>
-                <ion-input name="name" [(ngModel)]="template.name"></ion-input>
+                <ion-input [readonly]="template.permission !== 'W'" name="name" [(ngModel)]="template.name"></ion-input>
               </ion-item>
               <ion-item>
                 <ion-label>Folder</ion-label>
-                <ion-input pattern="^\/(.)*" name="folder" [(ngModel)]="template.folder"
+                <ion-input [readonly]="template.permission !== 'W'" pattern="^\/(.)*" name="folder" [(ngModel)]="template.folder"
                            [debounce]="500"
                            appAutocomplete [autocompleteProvider]="folderAutocomplete">
                 </ion-input>
@@ -119,6 +121,97 @@
     </ion-row>
   </ion-grid>
 
+</ng-container>
+  <ng-template #loading>
+    <ion-grid class="ion-no-padding">
+      <form>
+        <ion-row>
+          <ion-col>
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>
+                  Basic Template Properties
+                </ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-item>
+                  <ion-label>Name</ion-label>
+                  <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-label>Folder</ion-label>
+                  <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+                </ion-item>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>
+                  Template
+                </ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-img class="ion-padding" style="height: 500px">
+                  <ion-skeleton-text animated="true" style="width: 100%"></ion-skeleton-text>
+                </ion-img>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="3">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>
+                  Markers
+                </ion-card-title>
+              </ion-card-header>
+              <ion-card-content style="height: 556px;">
+                <li *ngFor="let m of [1,2,3,4]">
+                  <ion-skeleton-text animated="true" style="width: 50%"></ion-skeleton-text>
+                </li>
+              </ion-card-content>
+            </ion-card>
+
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+
+            <app-sharing-options [securedResource]="template"></app-sharing-options>
+          </ion-col>
+        </ion-row>
+
+      </form>
+      <ion-row *ngIf="template">
+        <ion-col>
+          <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"  [canWrite]="template?.permission === 'W'"
+                              (restoreEmitter)="template = $event"></app-backup-manager>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>
+                Usages
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list>
+                <ion-item lines="full" *ngFor="let r of [1,2,3]">
+                  <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+                </ion-item>
+              </ion-list>
+
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-template>
 
 </ion-content>
 
