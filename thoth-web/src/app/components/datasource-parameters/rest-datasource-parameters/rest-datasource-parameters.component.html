@@ -48,7 +48,7 @@
       </ion-item>
       <ion-item lines="full" *ngFor="let h of obj.keys(definition.headers)">
         <ion-label>{{h}}</ion-label>
-        <ion-label>{{definition.headers[h]}}</ion-label>
+        <ion-label>{{definition.headers?.[h]}}</ion-label>
         <ion-button color="warning" slot="end" (click)="removeHeader(h)">
           <ion-icon slot="icon-only" name="remove"></ion-icon>
         </ion-button>

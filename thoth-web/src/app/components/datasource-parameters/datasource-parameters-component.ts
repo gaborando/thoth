@@ -4,6 +4,7 @@ import {AlertController} from "@ionic/angular";
 import {ScreenMessageService} from "../../services/screen-message.service";
 import {Component, EventEmitter, Injectable, Input, Output} from "@angular/core";
 import {text} from "ionicons/icons";
+import {Data} from "@angular/router";
 
 @Component({
   template: '',
@@ -20,7 +21,7 @@ export abstract class DatasourceParametersComponent{
   public isValid: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   @Input()
-  public definition: any = {}
+  public definition: (Datasource & any) = {}
 
   @Input()
   public parameters: string[] = [];
@@ -136,6 +137,9 @@ export abstract class DatasourceParametersComponent{
   }
 
   async editProperty(p: { name: string; helper: string }) {
+    if(this.definition.permission !== 'W'){
+      return;
+    }
     const alert = await this.alertController.create({
       header: "Edit " + p.name,
       message: "Edit the helper text",
