@@ -1,4 +1,5 @@
 import {SecuredResource} from "./secured-resource";
+import {Renderer} from "./renderer";
 
 export interface Template extends SecuredResource {
   id: string;
@@ -8,5 +9,6 @@ export interface Template extends SecuredResource {
   xml: string | undefined;
   markers: string[];
   folder: string;
+  usages: Renderer[]
 
 }

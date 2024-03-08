@@ -52,9 +52,29 @@
                                       (isValid)="validParameters = $event"></app-rest-datasource-parameters>
     </ng-container>
   </ng-container>
+
+
   <app-sharing-options [securedResource]="datasource"></app-sharing-options>
   <app-backup-manager *ngIf="datasource" resourceType="DATASOURCE" [resourceId]="datasource.id"
                       (restoreEmitter)="datasource = $event"></app-backup-manager>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        Usages
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngIf="datasource.usages.length else empty">
+        <ion-item lines="full" *ngFor="let r of datasource.usages" routerLink="/renderer-detail/{{r.id}}" [disabled]="r.permission === null">
+          <ion-label>{{r.name}}</ion-label>
+        </ion-item>
+      </ion-list>
+      <ng-template #empty>
+        No usages...
+      </ng-template>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>
 <ion-footer>

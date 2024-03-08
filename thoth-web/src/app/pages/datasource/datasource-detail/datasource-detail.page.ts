@@ -17,7 +17,7 @@ import {NavController} from "@ionic/angular";
   styleUrls: ['./datasource-detail.page.scss'],
 })
 export class DatasourceDetailPage implements OnInit {
-  datasource: any;
+  datasource?: Datasource;
   dsParameters: DatasourceParametersComponent | null = null;
   validParameters = true;
 
@@ -41,7 +41,7 @@ export class DatasourceDetailPage implements OnInit {
 
   delete() {
     return this.screenMessageService.showDeleteAlert(async () => {
-      await this.datasourceService.deleteById(this.datasource.id);
+      await this.datasourceService.deleteById(this.datasource!.id);
       return this.navController.navigateBack('/datasource-list');
     })
   }
@@ -51,7 +51,7 @@ export class DatasourceDetailPage implements OnInit {
       return;
     }
     return this.screenMessageService.loadingWrapper(async () => {
-      const params = await this.dsParameters?.cloneParameters(this.datasource.name);
+      const params = await this.dsParameters?.cloneParameters(this.datasource!.name);
       await this.screenMessageService.showDone();
       return this.navController.navigateForward('/datasource-detail/' + params?.id);
     })
