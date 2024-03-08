@@ -1,5 +1,7 @@
 package com.thoth.server.controller;
 
+import com.thoth.server.beans.AuthenticationFacade;
+import com.thoth.server.controller.view.ClientView;
 import com.thoth.server.model.domain.Client;
 import com.thoth.server.service.ClientService;
 import org.springframework.data.domain.Page;
@@ -24,18 +26,24 @@ public class ClientController {
 
     @Secured({"ROLE_USER", "ROLE_API"})
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<Client>> findAll(
-            @RequestParam(defaultValue = "0") int page
+    public ResponseEntity<Page<ClientView>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            AuthenticationFacade facade
     ) {
         return ResponseEntity.ok(clientService.search(Specification.where(null),
-                PageRequest.of(page, 30, Sort.by(Sort.Order.desc("createdAt")))));
+                PageRequest.of(page, 30, Sort.by(Sort.Order.desc("createdAt")))).map(u -> u.toView(
+                        facade.getUserSID(),
+                facade.getOrganizationSID()
+        )));
     }
 
     @PutMapping("/{identifier}")
-    public ResponseEntity<Client> update(
-            @PathVariable String identifier, @RequestBody Client client) {
+    public ResponseEntity<ClientView> update(
+            @PathVariable String identifier, @RequestBody Client client,
+            AuthenticationFacade facade) {
        return ResponseEntity.ok(clientService.update(
-               clientService.findById(identifier).orElseThrow(), client));
+               clientService.findById(identifier).orElseThrow(), client)
+               .toView(facade.getUserSID(), facade.getOrganizationSID()));
     }
 
     @DeleteMapping("/{identifier}")
