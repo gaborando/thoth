@@ -34,7 +34,8 @@ public class ClientController {
     @PutMapping("/{identifier}")
     public ResponseEntity<Client> update(
             @PathVariable String identifier, @RequestBody Client client) {
-       return ResponseEntity.ok(clientService.update(identifier, client));
+       return ResponseEntity.ok(clientService.update(
+               clientService.findById(identifier).orElseThrow(), client));
     }
 
     @DeleteMapping("/{identifier}")

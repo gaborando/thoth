@@ -65,11 +65,7 @@ public class RendererService {
     }
 
 
-    public Renderer update(String s, String name, List<String> datasource, Map<String, AssociationView> associationMap
-            , Map<String, AssociationView> parametersMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {
-        var original = rendererRepository.findById(s).orElseThrow();
-       return update(original, name, datasource, associationMap, parametersMap, allowedUserList, allowedOrganizationList);
-    }
+
     @PreAuthorize("@authenticationFacade.canWrite(#original)")
     public Renderer update(Renderer original, String name, List<String> datasource, Map<String, AssociationView> associationMap
             , Map<String, AssociationView> parametersMap, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList) {

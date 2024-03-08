@@ -52,9 +52,10 @@ public class TemplateController {
         Specification<Template> f = RSQLJPASupport.toSpecification(filter);
         f = f.and(RSQLJPASupport.toSort(sort));
         return ResponseEntity.ok(templateService.search(f
-                , PageRequest.of(page, size))
+                        , PageRequest.of(page, size))
                 .map(e -> e.toListItemView(facade.getUserSID(), facade.getOrganizationSID())));
     }
+
     @GetMapping(value = "/folders", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER"})
     public ResponseEntity<List<String>> findAllFolders() {
@@ -81,9 +82,11 @@ public class TemplateController {
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER"})
     public ResponseEntity<TemplateView> update(@RequestBody Template template,
-                                           @PathVariable String identifier,
-                                           AuthenticationFacade facade) throws ParserConfigurationException {
-        return ResponseEntity.ok(templateService.update(identifier, template).toView(facade.getUserSID(), facade.getOrganizationSID()));
+                                               @PathVariable String identifier,
+                                               AuthenticationFacade facade) throws ParserConfigurationException {
+        return ResponseEntity.ok(templateService.update(
+                templateService.getById(identifier).orElseThrow(), template)
+                .toView(facade.getUserSID(), facade.getOrganizationSID()));
     }
 
     @DeleteMapping("/{identifier}")

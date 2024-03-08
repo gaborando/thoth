@@ -41,20 +41,12 @@ public class AuthenticationFacade implements IAuthenticationFacade {
 
     @Override
     public boolean canRead(SecuredResource securedResource) throws HttpClientErrorException.Unauthorized {
-        return securedResource.getCreatedBy().equals(getUserSID()) ||
-                securedResource.getAllowedUserList().stream().anyMatch(p -> p.getSid().equals(getUserSID())) ||
-                securedResource.getAllowedOrganizationList().stream().anyMatch(p -> p.getSid().equals(getOrganizationSID()));
+        return securedResource.checkPermission(getUserSID(), getOrganizationSID()) == Permission.R;
     }
 
     @Override
     public boolean canWrite(SecuredResource securedResource) throws HttpClientErrorException.Unauthorized {
-        return securedResource.getCreatedBy().equals(getUserSID()) ||
-                securedResource.getAllowedUserList().stream()
-                        .filter(p -> p.getPermission() == Permission.W)
-                        .anyMatch(p -> p.getSid().equals(getUserSID())) ||
-                securedResource.getAllowedOrganizationList().stream()
-                        .filter(p -> p.getPermission() == Permission.W)
-                        .anyMatch(p -> p.getSid().equals(getOrganizationSID()));
+        return securedResource.checkPermission(getUserSID(), getOrganizationSID()) == Permission.W;
     }
 
     @Override

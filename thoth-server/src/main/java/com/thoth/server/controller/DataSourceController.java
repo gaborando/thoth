@@ -116,7 +116,8 @@ public class DataSourceController {
     public ResponseEntity<DatasourcePropertiesView> updateJdbcParameters(
             @RequestBody JdbcDatasourceProperties properties, @PathVariable String identifier,
             AuthenticationFacade facade) throws SQLException {
-        return ResponseEntity.ok(dataSourceService.update(identifier, properties)
+        return ResponseEntity.ok(dataSourceService.update(
+                dataSourceService.findById(identifier).orElseThrow(), properties)
                 .toView(facade.getUserSID(),
                         facade.getOrganizationSID()));
     }
@@ -126,7 +127,8 @@ public class DataSourceController {
             @RequestBody RestDatasourceProperties properties,
             @PathVariable String identifier,
             AuthenticationFacade facade) {
-        return ResponseEntity.ok(dataSourceService.update(identifier, properties)
+        return ResponseEntity.ok(dataSourceService.update(
+                dataSourceService.findById(identifier).orElseThrow(), properties)
                 .toView(facade.getUserSID(), facade.getOrganizationSID()));
     }
 

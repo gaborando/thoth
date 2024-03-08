@@ -101,12 +101,10 @@ public class DataSourceService {
     }
 
 
-    public DatasourceProperties update(String identifier, DatasourceProperties properties) {
-        return update(findById(identifier).orElseThrow(), properties);
-    }
+
 
     @PreAuthorize("@authenticationFacade.canWrite(#original)")
-    private DatasourceProperties update(DatasourceProperties original, DatasourceProperties update) {
+    public DatasourceProperties update(DatasourceProperties original, DatasourceProperties update) {
         update.setId(original.getId());
         datasourceCache.remove(original.getId());
         return datasourcePropertiesRepository.save(update);
@@ -211,9 +209,7 @@ public class DataSourceService {
     }
 
 
-    public HashMap<String, Object> fetchData(String id, HashMap<String, Object> params) throws Exception {
-        return fetchData(datasourcePropertiesRepository.findById(id).orElseThrow(), params);
-    }
+
 
     public Set<Property> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
         var strBody = objectMapper.writeValueAsString(request);

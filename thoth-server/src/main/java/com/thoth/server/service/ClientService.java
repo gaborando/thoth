@@ -64,13 +64,9 @@ public class ClientService {
         return repository.findById(identifier);
     }
 
-    public Client update(String identifier, Client update) {
-        var c = findById(identifier).orElseThrow();
-        return update(c, update);
-    }
 
     @PreAuthorize("@authenticationFacade.canWrite(#original)")
-    private Client update(Client original, Client update) {
+    public Client update(Client original, Client update) {
         original.setAllowedUserList(update.getAllowedUserList());
         original.setAllowedOrganizationList(update.getAllowedOrganizationList());
         return repository.save(original);
