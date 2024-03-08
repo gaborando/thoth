@@ -46,7 +46,7 @@
               </li>
             </ul>
           </ion-card-content>
-          <div class="ion-text-end">
+          <div class="ion-text-end" *ngIf="c.permission === 'W'">
             <ion-button fill="clear" color="secondary" (click)="selectedClient = c; modal.present()">Sharing Options</ion-button>
             <ion-button fill="clear" color="danger" (click)="unregister(c)">Unregister</ion-button>
           </div>

@@ -1,5 +1,6 @@
 package com.thoth.server.model.domain;
 
+import com.thoth.server.controller.view.ClientView;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -35,5 +36,15 @@ public class Client extends SecuredResource {
     @ElementCollection
     @NotEmpty
     private List<@NotBlank @Size(min = 3, max = 256)String> printServices;
+
+    public ClientView toView(String uSid, String oSid){
+        ClientView view = new ClientView();
+        view.setIdentifier(identifier);
+        view.setName(name);
+        view.setCreatedAt(createdAt);
+        view.setPrintServices(printServices);
+        setView(view, uSid, oSid);
+        return view;
+    }
 
 }
