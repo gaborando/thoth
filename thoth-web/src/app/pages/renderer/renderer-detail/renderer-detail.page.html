@@ -108,7 +108,10 @@
             <ion-card-content>
               <ion-img class="ion-padding" style="height: 300px" [src]="renderer.template.img"></ion-img>
             </ion-card-content>
-            <ion-button fill="clear" color="secondary" (click)="openViewer(renderer.template)">View</ion-button>
+            <ion-button *ngIf="renderer.template.permission === null else edit" fill="clear" color="secondary" (click)="openViewer(renderer.template)">View</ion-button>
+            <ng-template #edit>
+              <ion-button  fill="clear" color="secondary" routerLink="/template-detail/{{renderer.template.id}}">Edit</ion-button>
+            </ng-template>
           </ion-card>
         </ion-col>
       </ion-row>

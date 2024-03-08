@@ -93,6 +93,27 @@
         (restoreEmitter)="template = $event"></app-backup-manager>
       </ion-col>
     </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>
+              Usages
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list *ngIf="template.usages.length else empty">
+              <ion-item lines="full" *ngFor="let r of template.usages" routerLink="/renderer-detail/{{r.id}}" [disabled]="r.permission === null">
+                <ion-label>{{r.name}}</ion-label>
+              </ion-item>
+            </ion-list>
+            <ng-template #empty>
+              No usages...
+            </ng-template>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
   </ion-grid>
 
 
