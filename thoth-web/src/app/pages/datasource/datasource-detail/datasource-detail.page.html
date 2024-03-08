@@ -17,7 +17,7 @@
 </ion-header>
 
 <ion-content *ngIf="datasource">
-  <ion-card>
+  <ion-card >
     <ion-card-header>
       <ion-card-title>
         Datasource Baisc Properties
@@ -26,7 +26,7 @@
     <ion-card-content>
       <ion-item>
         <ion-label>Datasource Name</ion-label>
-        <ion-input name="name" [(ngModel)]="datasource.name"></ion-input>
+        <ion-input [readonly]="datasource.permission !== 'W'" name="name" [(ngModel)]="datasource.name"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Datasource Type</ion-label>
@@ -66,7 +66,7 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-list *ngIf="datasource.usages.length else empty">
+      <ion-list *ngIf="datasource?.usages?.length else empty">
         <ion-item lines="full" *ngFor="let r of datasource.usages" routerLink="/renderer-detail/{{r.id}}" [disabled]="r.permission === null">
           <ion-label>{{r.name}}</ion-label>
         </ion-item>
@@ -83,7 +83,7 @@
     <ion-button fill="clear" color="secondary" (click)="dsParameters?.checkQuery()">
       Validate Parameters
     </ion-button>
-    <ion-button fill="clear" [disabled]="!validParameters" (click)="saveParameters()">
+    <ion-button *ngIf="datasource?.permission === 'W'" fill="clear" [disabled]="!validParameters" (click)="saveParameters()">
       Save
     </ion-button>
   </ion-toolbar>
