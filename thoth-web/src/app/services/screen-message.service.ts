@@ -31,11 +31,16 @@ export class ScreenMessageService {
     return toast.present()
   }
 
-  async loadingWrapper(fun: () => Promise<any>) {
+  async loadingWrapper(fun: () => Promise<any>, showError = false) {
     const loading = await this.loadingController.create();
     await loading.present();
     try {
       return await fun();
+    } catch (e) {
+      if (showError) {
+        await loading.dismiss();
+        await this.showError(e);
+      }
     } finally {
       await loading.dismiss();
     }

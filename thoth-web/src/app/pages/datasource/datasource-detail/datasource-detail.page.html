@@ -56,6 +56,7 @@
 
   <app-sharing-options [securedResource]="datasource"></app-sharing-options>
   <app-backup-manager *ngIf="datasource" resourceType="DATASOURCE" [resourceId]="datasource.id"
+                      [canWrite]="datasource.permission === 'W'"
                       (restoreEmitter)="datasource = $event"></app-backup-manager>
 
   <ion-card>

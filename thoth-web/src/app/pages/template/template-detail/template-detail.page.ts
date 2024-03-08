@@ -71,9 +71,9 @@ export class TemplateDetailPage implements OnInit {
     }
     const t = this.template;
     return this.screenMessageService.loadingWrapper(async () => {
-      this.templateService.update(t).finally();
+      await this.templateService.update(t);
       await this.screenMessageService.showDone();
-    })
+    }, true)
 
   }
 
@@ -112,5 +112,9 @@ export class TemplateDetailPage implements OnInit {
 
   showAutocomplete($event: any) {
     console.log($event);
+  }
+
+  openViewer() {
+    this.templateGuiUtils.openViewer(this.template!);
   }
 }
