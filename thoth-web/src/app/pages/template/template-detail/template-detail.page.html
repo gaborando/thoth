@@ -9,7 +9,7 @@
         <ion-icon slot="icon-only" name="copy" color="secondary"></ion-icon>
       </ion-button>
       <ion-button color="primary" routerLink="/render-new">
-        <ion-button *ngIf="template" (click)="delete(template)">
+        <ion-button *ngIf="template && template.permission === 'W'" (click)="delete(template)">
           <ion-icon color="danger" name="trash" slot="end" tappable="true"></ion-icon>
         </ion-button>
       </ion-button>
