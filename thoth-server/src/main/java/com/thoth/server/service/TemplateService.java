@@ -6,6 +6,7 @@ import com.thoth.server.model.repository.TemplateRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -37,11 +38,8 @@ public class TemplateService {
         this.templateRepository = templateRepository;
         this.authenticationFacade = authenticationFacade;
     }
-    public Template update(String identifier, Template properties) {
-        return update(getById(identifier).orElseThrow(), properties);
-    }
-    @PreAuthorize("@authenticationFacade.canWrite(#original)")
-    private Template update(Template original, Template update)  {
+    @PreAuthorize("@authenticationFacade.canWrite(#o)")
+    public Template update(@Param("o") Template original, Template update)  {
         update.setId(original.getId());
         update.setSvg(cleanSVG(update.getSvg()));
         if(update.getFolder() == null){

@@ -151,7 +151,9 @@ public class RenderService {
             try {
                 if (e.getValue().getType().equals("datasource")) {
                     if (!dsDataMap.containsKey(e.getValue().getId())) {
-                        dsDataMap.put(e.getValue().getId(), dataSourceService.fetchData(e.getValue().getId(), params));
+                        dsDataMap.put(e.getValue().getId(), dataSourceService.fetchData(
+                                dataSourceService.findById(e.getValue().getId()).orElseThrow()
+                                , params));
                     }
                     var dsData = dsDataMap.get(e.getValue().getId());
                     params.put(e.getKey(), dsData.getOrDefault(e.getValue().getProperty(), ""));
@@ -169,7 +171,9 @@ public class RenderService {
 
             if (e.getValue().getType().equals("datasource")) {
                 if (!dsDataMap.containsKey(e.getValue().getId())) {
-                    dsDataMap.put(e.getValue().getId(), dataSourceService.fetchData(e.getValue().getId(), params));
+                    dsDataMap.put(e.getValue().getId(), dataSourceService.fetchData(
+                            dataSourceService.findById(e.getValue().getId()).orElseThrow(),
+                            params));
                 }
                 var dsData = dsDataMap.get(e.getValue().getId());
 

@@ -83,7 +83,8 @@ public class RendererController {
     public ResponseEntity<RendererView> update(@RequestBody RendererUpdateRequest renderer,
                                                @PathVariable String identifier,
                                                AuthenticationFacade facade) {
-        return ResponseEntity.ok(rendererService.update(identifier,
+        return ResponseEntity.ok(rendererService.update(
+                rendererService.findById(identifier).orElseThrow(),
                 renderer.getName(),
                 renderer.getDatasource(),
                 renderer.getAssociationMap(),
