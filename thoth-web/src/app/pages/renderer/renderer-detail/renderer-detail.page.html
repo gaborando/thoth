@@ -9,7 +9,7 @@
         <ion-icon slot="icon-only" name="copy" color="secondary"></ion-icon>
       </ion-button>
       <ion-button color="primary">
-        <ion-button *ngIf="renderer" (click)="delete(renderer)">
+        <ion-button *ngIf="renderer && renderer.permission === 'W'" (click)="delete(renderer)">
           <ion-icon color="danger" name="trash" slot="end" tappable="true"></ion-icon>
         </ion-button>
       </ion-button>
@@ -22,15 +22,15 @@
   <form>
     <ion-item>
       <ion-label>Name</ion-label>
-      <ion-input name="name" [(ngModel)]="renderer.name"></ion-input>
+      <ion-input [readonly]="renderer.permission !== 'W'" name="name" [(ngModel)]="renderer.name"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>Template</ion-label>
-      <ion-input name="template" [(ngModel)]="renderer.template.name" readonly="true"></ion-input>
+      <ion-input [readonly]="renderer.permission !== 'W'"  name="template" [(ngModel)]="renderer.template.name" readonly="true"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>Datasource</ion-label>
-      <app-typeahead-select slot="end" [multiple]="true" [fetcher]="datasourceService"
+      <app-typeahead-select [readonly]="renderer.permission !== 'W'"  slot="end" [multiple]="true" [fetcher]="datasourceService"
                             [value]="renderer.datasourceProperties"
                             (confirm)="renderer.datasourceProperties = $event; updateAvailableAssociations($event)"></app-typeahead-select>
     </ion-item>
@@ -108,7 +108,7 @@
             <ion-card-content>
               <ion-img class="ion-padding" style="height: 300px" [src]="renderer.template.img"></ion-img>
             </ion-card-content>
-            <ion-button *ngIf="renderer.template.permission === null else edit" fill="clear" color="secondary" (click)="openViewer(renderer.template)">View</ion-button>
+            <ion-button *ngIf="renderer.template.permission !== 'W' else edit" fill="clear" color="secondary" (click)="openViewer(renderer.template)">View</ion-button>
             <ng-template #edit>
               <ion-button  fill="clear" color="secondary" routerLink="/template-detail/{{renderer.template.id}}">Edit</ion-button>
             </ng-template>
@@ -195,7 +195,7 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <ion-button fill="clear" color="primary" (click)="updateRenderer()" class="ion-margin-horizontal"
+      <ion-button *ngIf="renderer?.permission === 'W'" fill="clear" color="primary" (click)="updateRenderer()" class="ion-margin-horizontal"
                   [disabled]="!renderer?.name">Save
       </ion-button>
     </ion-buttons>
