@@ -60,7 +60,7 @@ public class Template extends SecuredResource {
         view.setXml(xml);
         view.setCreatedAt(createdAt);
         setView(view, uSid, oSid);
-        view.setUsages(usages.stream().map(u -> u.toListItemView(uSid, oSid)).toList());
+        view.setUsages(usages == null ? List.of() : usages.stream().map(u -> u.toListItemView(uSid, oSid)).toList());
         return view;
     }
 

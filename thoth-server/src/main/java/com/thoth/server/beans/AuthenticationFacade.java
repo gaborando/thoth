@@ -41,7 +41,7 @@ public class AuthenticationFacade implements IAuthenticationFacade {
 
     @Override
     public boolean canRead(SecuredResource securedResource) throws HttpClientErrorException.Unauthorized {
-        return securedResource.checkPermission(getUserSID(), getOrganizationSID()) == Permission.R;
+        return securedResource.checkPermission(getUserSID(), getOrganizationSID()) != null;
     }
 
     @Override

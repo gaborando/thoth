@@ -21,46 +21,49 @@ public abstract class SecuredResource {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<ResourcePermission> allowedOrganizationList;
 
-    public Permission checkPermission(String uSid, String oSid){
-        if(Objects.equals(uSid, createdBy)) return Permission.W;
+    public Permission checkPermission(String uSid, String oSid) {
+        if (Objects.equals(uSid, createdBy)) return Permission.W;
         var canRead = false;
         for (var p : allowedUserList) {
-            if(Objects.equals(uSid,p.getSid())){
-                if(p.getPermission() == Permission.W){
+            if (Objects.equals(uSid, p.getSid())) {
+                if (p.getPermission() == Permission.W) {
                     return Permission.W;
                 }
-                if(p.getPermission() == Permission.R){
+                if (p.getPermission() == Permission.R) {
                     canRead = true;
                     break;
                 }
             }
         }
         for (var p : allowedOrganizationList) {
-            if(Objects.equals(oSid, p.getSid())){
-                if(p.getPermission() == Permission.W){
+            if (Objects.equals(oSid, p.getSid())) {
+                if (p.getPermission() == Permission.W) {
                     return Permission.W;
                 }
-                if(p.getPermission() == Permission.R){
+                if (p.getPermission() == Permission.R) {
                     canRead = true;
                     break;
                 }
             }
         }
-       return canRead ? Permission.R : null;
+        return canRead ? Permission.R : null;
 
     }
 
-    public void setView(SecuredResourceView view , String uSid, String oSid){
+    public void setView(SecuredResourceView view, String uSid, String oSid) {
         view.setCreatedBy(this.createdBy);
         List<ResourcePermissionView> allowedUserListView = new ArrayList<>();
-        for (ResourcePermission permission : this.allowedUserList) {
-            allowedUserListView.add(permission.toView());
-        }
+        if (this.allowedUserList != null)
+            for (ResourcePermission permission : this.allowedUserList) {
+                allowedUserListView.add(permission.toView());
+            }
         view.setAllowedUserList(allowedUserListView);
         List<ResourcePermissionView> allowedOrganizationListView = new ArrayList<>();
-        for (ResourcePermission permission : this.allowedOrganizationList) {
-            allowedOrganizationListView.add(permission.toView());
-        }
+
+        if (this.allowedOrganizationList != null)
+            for (ResourcePermission permission : this.allowedOrganizationList) {
+                allowedOrganizationListView.add(permission.toView());
+            }
         view.setAllowedOrganizationList(allowedOrganizationListView);
         view.setPermission(checkPermission(uSid, oSid));
     }
