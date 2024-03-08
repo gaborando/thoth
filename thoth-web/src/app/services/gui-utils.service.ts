@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import {ModalController} from "@ionic/angular";
 import {PrintRequestModalComponent} from "../components/modals/print-request-modal/print-request-modal.component";
 import {ParametersFormComponent} from "../components/modals/parameters-form/parameters-form.component";
+import {Template} from "../common/types/template";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GuiUtilsService {
+
 
   constructor(private modalController: ModalController) { }
 
@@ -30,4 +32,5 @@ export class GuiUtilsService {
     await m.present();
     return await m.onDidDismiss();
   }
+
 }
