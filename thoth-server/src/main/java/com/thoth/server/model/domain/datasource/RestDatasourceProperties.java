@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -54,7 +55,7 @@ public class RestDatasourceProperties extends DatasourceProperties {
         view.setParameters(this.getParameters());
         view.setProperties(this.getProperties());
         view.setCreatedAt(getCreatedAt());
-        view.setUsages(getUsages().stream().map(u -> u.toListItemView(uSid, oSid)).toList());
+        view.setUsages(getUsages() == null ? List.of() : getUsages().stream().map(u -> u.toListItemView(uSid, oSid)).toList());
         setView(view, uSid, oSid);
         view.setUrl(url);
         view.setMethod(method);

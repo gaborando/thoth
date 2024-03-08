@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -35,7 +37,7 @@ public class JdbcDatasourceProperties extends DatasourceProperties{
         view.setParameters(this.getParameters());
         view.setProperties(this.getProperties());
         view.setCreatedAt(getCreatedAt());
-        view.setUsages(getUsages().stream().map(u -> u.toListItemView(uSid, oSid)).toList());
+        view.setUsages(getUsages() == null ? List.of() : getUsages().stream().map(u -> u.toListItemView(uSid, oSid)).toList());
         setView(view, uSid, oSid);
         view.setUrl(url);
         view.setUsername(username);

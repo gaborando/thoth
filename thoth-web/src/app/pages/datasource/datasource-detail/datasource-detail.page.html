@@ -9,7 +9,7 @@
       <ion-button (click)="clone()" [disabled]="!validParameters">
         <ion-icon slot="icon-only" name="copy" color="secondary"></ion-icon>
       </ion-button>
-      <ion-button (click)="delete()">
+      <ion-button *ngIf="datasource?.permission === 'W'" (click)="delete()">
         <ion-icon slot="icon-only" name="trash" color="danger"></ion-icon>
       </ion-button>
     </ion-buttons>
