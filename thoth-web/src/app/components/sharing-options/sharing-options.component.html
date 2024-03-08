@@ -19,7 +19,9 @@
                 {{p.sid}}&nbsp;({{p.permission}})
               </ion-col>
               <ion-col size="1">
-                <ion-icon color="danger" name="trash" tappable="true" (click)="removeAllowedUser(p.sid)"></ion-icon>
+                <ion-icon color="danger" name="trash" tappable="true"
+                          *ngIf="securedResource?.permission === 'W'"
+                          (click)="removeAllowedUser(p.sid)"></ion-icon>
               </ion-col>
             </ion-row>
             <ion-row *ngIf="!securedResource?.allowedUserList?.length">
@@ -37,7 +39,7 @@
                 {{p.sid}}&nbsp;({{p.permission}})
               </ion-col>
               <ion-col size="1">
-                <ion-icon color="danger" name="trash" tappable="true"
+                <ion-icon color="danger" name="trash" tappable="true"  *ngIf="securedResource?.permission === 'W'"
                           (click)="removeAllowedOrganization(p.sid)"></ion-icon>
               </ion-col>
             </ion-row>
@@ -49,7 +51,7 @@
       </ion-grid>
 
     </ion-card-content>
-    <div class="ion-text-end">
+    <div class="ion-text-end" *ngIf="securedResource?.permission === 'W'">
       <ion-button fill="clear" id="open-modal">
         Add
       </ion-button>

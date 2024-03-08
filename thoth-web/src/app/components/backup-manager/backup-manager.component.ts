@@ -13,6 +13,7 @@ export class BackupManagerComponent implements OnInit {
 
   @Input({required: true}) resourceType!: 'TEMPLATE' | 'DATASOURCE' | 'RENDERER';
   @Input({required: true}) resourceId!: string;
+  @Input({required: true}) canWrite!: boolean;
   @Output() restoreEmitter = new EventEmitter<any>();
 
   backups: Backup[] = [];

@@ -8,15 +8,15 @@
     <ion-list *ngIf="backups.length else empty">
       <ion-item lines="full" *ngFor="let b of backups">
         {{(b.timestamp * 1000) | date:'YYYY-MM-dd HH:mm:ss'}}
-        <ion-button slot="end" fill="clear" (click)="restore(b)">Restore</ion-button>
-        <ion-button slot="end" color="danger" fill="clear" (click)="delete(b)">Delete</ion-button>
+        <ion-button *ngIf="canWrite" slot="end" fill="clear" (click)="restore(b)">Restore</ion-button>
+        <ion-button *ngIf="canWrite" slot="end" color="danger" fill="clear" (click)="delete(b)">Delete</ion-button>
       </ion-item>
     </ion-list>
     <ng-template #empty>
       No backups registered....
     </ng-template>
   </ion-card-content>
-  <div class="ion-text-end">
+  <div class="ion-text-end" *ngIf="canWrite">
     <ion-button  fill="clear" (click)="doBackup()">
       Add
     </ion-button>

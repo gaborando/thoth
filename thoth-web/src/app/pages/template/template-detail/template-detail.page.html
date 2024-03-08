@@ -58,7 +58,10 @@
               <ion-img class="ion-padding" style="height: 500px" [src]="template.img"></ion-img>
             </ion-card-content>
             <div class="ion-text-end">
-              <ion-button fill="clear" color="primary" (click)="openEditor()">Draw</ion-button>
+              <ion-button  *ngIf="template?.permission === 'W' else view" fill="clear" color="primary" (click)="openEditor()">Draw</ion-button>
+              <ng-template #view>
+                <ion-button fill="clear" color="primary" (click)="openViewer()">View</ion-button>
+              </ng-template>
               <!--<ion-button fill="clear" color="primary" (click)="openJinjaEditor()">Edit Jinja Blocks</ion-button>-->
             </div>
           </ion-card>
@@ -89,7 +92,7 @@
     </form>
     <ion-row *ngIf="template">
       <ion-col>
-        <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"
+        <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"  [canWrite]="template?.permission === 'W'"
         (restoreEmitter)="template = $event"></app-backup-manager>
       </ion-col>
     </ion-row>
@@ -129,7 +132,7 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <ion-button fill="clear" color="primary" (click)="update()" class="ion-margin-horizontal"
+      <ion-button *ngIf="template?.permission === 'W'" fill="clear" color="primary" (click)="update()" class="ion-margin-horizontal"
                   [disabled]="!template?.name">Save
       </ion-button>
     </ion-buttons>

@@ -14,6 +14,9 @@ import {language} from "ionicons/icons";
 })
 export class TemplateGuiUtilsService {
 
+
+  private drawIoWindow: any;
+
   constructor(private templateService: TemplateService,
               private alertController: AlertController,
               private clientService: ClientService,
@@ -91,5 +94,34 @@ export class TemplateGuiUtilsService {
       }
 
     }
+  }
+
+
+  public openViewer(template: Template) {
+    var url = 'https://viewer.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1';
+
+    if (this.drawIoWindow == null || this.drawIoWindow.closed) {
+      // Implements protocol for loading and exporting with embedded XML
+      const receive = (evt: any) => {
+        if (evt.data.length > 0 && evt.source == this.drawIoWindow) {
+          var msg = JSON.parse(evt.data);
+
+          // Received if the editor is ready
+          if (msg.event == 'init') {
+            // Sends the data URI with embedded XML to editor
+            this.drawIoWindow?.postMessage(JSON.stringify(
+              {action: 'load', xml: template.xml}), '*');
+          }
+        }
+      };
+
+      // Opens the editor
+      window.addEventListener('message', receive);
+      this.drawIoWindow = window.open(url);
+    } else {
+      // Shows existing editor window
+      this.drawIoWindow?.focus();
+    }
+
   }
 }

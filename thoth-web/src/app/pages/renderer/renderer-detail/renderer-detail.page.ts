@@ -12,6 +12,7 @@ import {DataFetcher} from "../../../common/utils/service-patterns/data-fetcher";
 import {Page} from "../../../common/utils/fetchUtils";
 import {Datasource} from "../../../common/types/datasource";
 import {DataSourceService} from "../../../services/api/data-source.service";
+import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.service";
 
 @Component({
   selector: 'app-renderer-detail',
@@ -22,7 +23,6 @@ export class RendererDetailPage implements OnInit {
   renderer: Renderer | null = null;
   availableProperties: {ds: Datasource, property: {name: string, helper: string}}[] = [];
   parameters = new Set<string>();
-  private drawIoWindow: any;
 
   ref = this;
 
@@ -34,7 +34,8 @@ export class RendererDetailPage implements OnInit {
               private clientService: ClientService,
               public datasourceService: DataSourceService,
               private loadingController: LoadingController,
-              private guiUtils: GuiUtilsService) {
+              private guiUtils: GuiUtilsService,
+              private templateGuiUtils: TemplateGuiUtilsService) {
   }
 
   async ionViewWillEnter() {
@@ -210,33 +211,7 @@ export class RendererDetailPage implements OnInit {
     }
   }
 
-  public openViewer(template: Template) {
-    var url = 'https://viewer.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1';
 
-    if (this.drawIoWindow == null || this.drawIoWindow.closed) {
-      // Implements protocol for loading and exporting with embedded XML
-      const receive = (evt: any) => {
-        if (evt.data.length > 0 && evt.source == this.drawIoWindow) {
-          var msg = JSON.parse(evt.data);
-
-          // Received if the editor is ready
-          if (msg.event == 'init') {
-            // Sends the data URI with embedded XML to editor
-            this.drawIoWindow?.postMessage(JSON.stringify(
-              {action: 'load', xml: template.xml}), '*');
-          }
-        }
-      };
-
-      // Opens the editor
-      window.addEventListener('message', receive);
-      this.drawIoWindow = window.open(url);
-    } else {
-      // Shows existing editor window
-      this.drawIoWindow?.focus();
-    }
-
-  }
 
   async printRenderer() {
     if (!this.renderer) {
@@ -309,5 +284,9 @@ export class RendererDetailPage implements OnInit {
         association
       }
     }
+  }
+
+  openViewer(template: Template) {
+    this.templateGuiUtils.openViewer(template);
   }
 }
