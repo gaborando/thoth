@@ -12,6 +12,7 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
   items: {name: string}[] = [];
   selectedItems: any[] = [];
   @Input() multiple = false;
+  @Input() readonly  = false;
   title = 'Select Items';
   _value: {name: string}[] = [];
   valueText = '...'
@@ -43,6 +44,7 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
   }
 
   async loadPageData() {
+    if(this.readonly) return;
     this.page = 0;
     this.loading = true;
     this.items = [];

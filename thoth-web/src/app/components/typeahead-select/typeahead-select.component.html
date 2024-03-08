@@ -1,7 +1,7 @@
 <div>
   <ion-grid>
-    <ion-row  style="white-space: nowrap" >
-      <ion-col size="11" style="text-overflow: ellipsis; overflow: hidden; text-align: end">{{valueText}}</ion-col>
+    <ion-row style="white-space: nowrap">
+      <ion-col size="11" style="text-overflow: ellipsis; overflow: hidden; text-align: end">{{ valueText }}</ion-col>
       <ion-col size="1" class="ion-text-end">
 
         <ion-icon color="medium" name="caret-down-outline"></ion-icon>
@@ -12,55 +12,88 @@
 <div style="position: absolute; top: 0; bottom: 0; left: 0; right: 0" (click)="loadPageData(); modal.present()"></div>
 <ion-modal #modal>
   <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button (click)="modal.dismiss();">Cancel</ion-button>
-        </ion-buttons>
-        <ion-title>{{ title }}</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="confirmChanges(); modal.dismiss();">Done</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-      <ion-toolbar>
-        <ion-searchbar (ionInput)="doSearch($event)"></ion-searchbar>
-      </ion-toolbar>
-    </ion-header>
+    <ng-container *ngIf="readonly else pick">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Items</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="modal.dismiss();">Close</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+         <ion-item *ngFor="let i of _value">
+           {{i.name}}
+         </ion-item>
 
-    <ion-content>
-      <ion-list>
-        <ion-item *ngIf="loading">
-          <ion-label>Loading...</ion-label>
-          <ion-spinner></ion-spinner>
-        </ion-item>
-        <ng-container *ngIf="multiple else radio">
-          <ion-item *ngFor="let item of selectedItems">
-            <ion-checkbox (ionChange)="items.unshift(item); selectedItems = removeItem(selectedItems, item); updateText()" checked="true" justify="space-between">{{item.name}}</ion-checkbox>
-          </ion-item>
-          <ion-item *ngFor="let item of items;">
-            <ion-checkbox (ionChange)="selectedItems.unshift(item); items = removeItem(items, item); updateText();" justify="space-between">{{item.name}}</ion-checkbox>
-          </ion-item>
-        </ng-container>
-        <ng-template #radio>
+        </ion-list>
+        <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+          <ion-infinite-scroll-content>
 
-          <ion-radio-group value="true">
-            <ion-item *ngIf="selectedItems[0]">
-              <ion-radio (click)="items.unshift(selectedItems[0]); selectedItems = []" value="true"
-                         justify="space-between">{{selectedItems[0].name}}</ion-radio>
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      </ion-content>
+    </ng-container>
+    <ng-template #pick>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="modal.dismiss();">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>{{ title }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="confirmChanges(); modal.dismiss();">Done</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <ion-toolbar>
+          <ion-searchbar (ionInput)="doSearch($event)"></ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content>
+        <ion-list>
+          <ion-item *ngIf="loading">
+            <ion-label>Loading...</ion-label>
+            <ion-spinner></ion-spinner>
+          </ion-item>
+          <ng-container *ngIf="multiple else radio">
+            <ion-item *ngFor="let item of selectedItems">
+              <ion-checkbox
+                (ionChange)="items.unshift(item); selectedItems = removeItem(selectedItems, item); updateText()"
+                checked="true" justify="space-between">{{ item.name }}
+              </ion-checkbox>
             </ion-item>
-          </ion-radio-group>
-          <ion-item *ngFor="let item of items;">
-            <ion-radio (click)="selectedItems[0]? items.unshift(selectedItems[0]) : null ;selectedItems = [item]; items = removeItem(items, item); updateText();"
-                       justify="space-between">{{item.name}}</ion-radio>
-          </ion-item>
-        </ng-template>
+            <ion-item *ngFor="let item of items;">
+              <ion-checkbox (ionChange)="selectedItems.unshift(item); items = removeItem(items, item); updateText();"
+                            justify="space-between">{{ item.name }}
+              </ion-checkbox>
+            </ion-item>
+          </ng-container>
+          <ng-template #radio>
 
-      </ion-list>
-      <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
-        <ion-infinite-scroll-content>
+            <ion-radio-group value="true">
+              <ion-item *ngIf="selectedItems[0]">
+                <ion-radio (click)="items.unshift(selectedItems[0]); selectedItems = []" value="true"
+                           justify="space-between">{{ selectedItems[0].name }}
+                </ion-radio>
+              </ion-item>
+            </ion-radio-group>
+            <ion-item *ngFor="let item of items;">
+              <ion-radio
+                (click)="selectedItems[0]? items.unshift(selectedItems[0]) : null ;selectedItems = [item]; items = removeItem(items, item); updateText();"
+                justify="space-between">{{ item.name }}
+              </ion-radio>
+            </ion-item>
+          </ng-template>
 
-        </ion-infinite-scroll-content>
-      </ion-infinite-scroll>
-    </ion-content>
+        </ion-list>
+        <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+          <ion-infinite-scroll-content>
+
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      </ion-content>
+    </ng-template>
   </ng-template>
 </ion-modal>

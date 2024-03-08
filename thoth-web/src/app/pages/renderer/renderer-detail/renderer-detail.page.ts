@@ -260,6 +260,7 @@ export class RendererDetailPage implements OnInit {
   }
 
   presentPopover(popover: IonPopover, $event: MouseEvent, i: any) {
+    if(this.renderer?.permission !== 'W') return
     popover.present({...$event, target: i.el});
   }
 
