@@ -16,66 +16,100 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="datasource">
-  <ion-card >
-    <ion-card-header>
-      <ion-card-title>
-        Datasource Baisc Properties
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-label>Datasource Name</ion-label>
-        <ion-input [readonly]="datasource.permission !== 'W'" name="name" [(ngModel)]="datasource.name"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>Datasource Type</ion-label>
-        <ion-input name="type" [value]="datasource.type" readonly="true" disabled="true"></ion-input>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
-
-
-  <ng-container [ngSwitch]="datasource.type">
-    <ng-container *ngSwitchCase="'jdbc'">
-      <app-jdbc-datasource-parameters #jdbc (onInit)="dsParameters = jdbc"
-                                      [definition]="datasource"
-                                      [parameters]="datasource.parameters"
-                                      [properties]="datasource.properties"
-                                      (isValid)="validParameters = $event"></app-jdbc-datasource-parameters>
-    </ng-container>
-    <ng-container *ngSwitchCase="'rest'">
-      <app-rest-datasource-parameters #rest (onInit)="dsParameters = rest"
-                                      [definition]="datasource"
-                                      [parameters]="datasource.parameters"
-                                      [properties]="datasource.properties"
-                                      (isValid)="validParameters = $event"></app-rest-datasource-parameters>
-    </ng-container>
-  </ng-container>
-
-
-  <app-sharing-options [securedResource]="datasource"></app-sharing-options>
-  <app-backup-manager *ngIf="datasource" resourceType="DATASOURCE" [resourceId]="datasource.id"
-                      [canWrite]="datasource.permission === 'W'"
-                      (restoreEmitter)="datasource = $event"></app-backup-manager>
-
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>
-        Usages
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list *ngIf="datasource?.usages?.length else empty">
-        <ion-item lines="full" *ngFor="let r of datasource.usages" routerLink="/renderer-detail/{{r.id}}" [disabled]="r.permission === null">
-          <ion-label>{{r.name}}</ion-label>
+<ion-content>
+  <ng-container  *ngIf="datasource else loading">
+    <ion-card >
+      <ion-card-header>
+        <ion-card-title>
+          Datasource Baisc Properties
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>Datasource Name</ion-label>
+          <ion-input [readonly]="datasource.permission !== 'W'" name="name" [(ngModel)]="datasource.name"></ion-input>
         </ion-item>
-      </ion-list>
-      <ng-template #empty>
-        No usages...
-      </ng-template>
-    </ion-card-content>
-  </ion-card>
+        <ion-item>
+          <ion-label>Datasource Type</ion-label>
+          <ion-input name="type" [value]="datasource.type" readonly="true" disabled="true"></ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+
+    <ng-container [ngSwitch]="datasource.type">
+      <ng-container *ngSwitchCase="'jdbc'">
+        <app-jdbc-datasource-parameters #jdbc (onInit)="dsParameters = jdbc"
+                                        [definition]="datasource"
+                                        [parameters]="datasource.parameters"
+                                        [properties]="datasource.properties"
+                                        (isValid)="validParameters = $event"></app-jdbc-datasource-parameters>
+      </ng-container>
+      <ng-container *ngSwitchCase="'rest'">
+        <app-rest-datasource-parameters #rest (onInit)="dsParameters = rest"
+                                        [definition]="datasource"
+                                        [parameters]="datasource.parameters"
+                                        [properties]="datasource.properties"
+                                        (isValid)="validParameters = $event"></app-rest-datasource-parameters>
+      </ng-container>
+    </ng-container>
+
+
+    <app-sharing-options [securedResource]="datasource"></app-sharing-options>
+    <app-backup-manager *ngIf="datasource" resourceType="DATASOURCE" [resourceId]="datasource.id"
+                        [canWrite]="datasource.permission === 'W'"
+                        (restoreEmitter)="datasource = $event"></app-backup-manager>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          Usages
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list *ngIf="datasource?.usages?.length else empty">
+          <ion-item lines="full" *ngFor="let r of datasource.usages" routerLink="/renderer-detail/{{r.id}}" [disabled]="r.permission === null">
+            <ion-label>{{r.name}}</ion-label>
+          </ion-item>
+        </ion-list>
+        <ng-template #empty>
+          No usages...
+        </ng-template>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+  <ng-template #loading>
+    <ion-card >
+      <ion-card-header>
+        <ion-card-title>
+          Datasource Baisc Properties
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>Datasource Name</ion-label>
+          <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>Datasource Type</ion-label>
+          <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+
+    <ion-card style="height: 400px">
+      <ion-card-header>
+        <ion-card-title>
+         <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
+
 
 </ion-content>
 <ion-footer>

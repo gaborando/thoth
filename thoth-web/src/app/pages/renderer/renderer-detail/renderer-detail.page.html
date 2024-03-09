@@ -17,8 +17,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="renderer">
-
+<ion-content >
+<ng-container *ngIf="renderer else loading">
   <form>
     <ion-item>
       <ion-label>Name</ion-label>
@@ -181,6 +181,65 @@
     </ion-grid>
 
   </form>
+</ng-container>
+  <ng-template #loading>
+    <form>
+      <ion-item>
+        <ion-label>Name</ion-label>
+        <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>Template</ion-label>
+        <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>Datasource</ion-label>
+        <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+      </ion-item>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="8">
+
+            <ion-card style="height: 100%">
+              <ion-card-header>
+                <ion-card-title>Association Map</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+
+                <ion-item *ngFor="let p of [1,2,3,4]" #i>
+                  <ion-grid class="ion-no-padding">
+                    <ion-row>
+                      <ion-col size="4">
+                       <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-col>
+                      <ion-col>
+                        <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+
+                </ion-item>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="4">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-img class="ion-padding" style="height: 300px" >
+                  <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+                </ion-img>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+
+      </ion-grid>
+
+    </form>
+  </ng-template>
+
 
 
 </ion-content>
