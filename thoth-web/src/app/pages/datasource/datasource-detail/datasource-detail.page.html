@@ -70,7 +70,9 @@
         <ion-list *ngIf="datasource?.usages?.length else empty">
           <ion-item lines="full" *ngFor="let r of datasource.usages" routerLink="/renderer-detail/{{r.id}}" [disabled]="r.permission === null">
             <ion-label>{{r.name}}</ion-label>
+            <ion-icon  *ngIf="r.permission === null" slot="end" name="lock-closed-outline"></ion-icon>
           </ion-item>
+
         </ion-list>
         <ng-template #empty>
           No usages...

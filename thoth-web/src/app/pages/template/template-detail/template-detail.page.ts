@@ -16,7 +16,7 @@ import {AutocompleteProvider} from "../../../common/directives/autocomplete.dire
   styleUrls: ['./template-detail.page.scss'],
 })
 export class TemplateDetailPage implements OnInit {
-  template: Template | undefined;
+  template?: Template;
   private editor = new Editor(this.router);
   public folderAutocomplete: AutocompleteProvider
 
@@ -45,8 +45,10 @@ export class TemplateDetailPage implements OnInit {
 
   delete(template: Template) {
     return this.screenMessageService.showDeleteAlert(async () => {
-      await this.templateService.delete(template.id);
-      return this.navController.navigateBack('/template-list')
+      await this.screenMessageService.loadingWrapper(async () => {
+        await this.templateService.delete(template.id);
+        return this.navController.navigateBack('/template-list')
+      })
     });
   }
 

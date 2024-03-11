@@ -1,6 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {firstValueFrom, last, lastValueFrom} from "rxjs";
 import {environment} from "../environments/environment";
 
 @Component({
@@ -20,13 +18,16 @@ export class AppComponent implements OnInit {
 
   openAccess = true;
 
+  environment: any = {}
+
   constructor() {
   }
 
 
   async ngOnInit() {
     this.showMenu = window.location.pathname !== '/login';
-    this.openAccess = !(await environment()).oauth
+    this.environment = await environment();
+    this.openAccess = !(this.environment.oauth)
   }
 
   async logout() {
