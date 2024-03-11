@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.mysema.commons.lang.Assert;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.dto.datasource.RestDatasourceParameters;
@@ -112,6 +113,7 @@ public class DataSourceService {
 
     @PreAuthorize("@authenticationFacade.canWrite(#properties)")
     public void delete(DatasourceProperties properties) {
+        Assert.isTrue(properties.getUsages().isEmpty(), "This Datasource is currently used in " + properties.getUsages().size() + " renderers.");
         datasourcePropertiesRepository.delete(properties);
     }
 

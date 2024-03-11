@@ -1,5 +1,6 @@
 package com.thoth.server.service;
 
+import com.mysema.commons.lang.Assert;
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.model.domain.Template;
 import com.thoth.server.model.repository.TemplateRepository;
@@ -99,6 +100,7 @@ public class TemplateService {
 
     @PreAuthorize("@authenticationFacade.canWrite(#template)")
     public void delete(Template template){
+        Assert.isTrue(template.getUsages().isEmpty(), "This Template is currently used in " + template.getUsages().size() + " renderers.");
         templateRepository.delete(template);
     }
 
