@@ -40,6 +40,8 @@ export class ScreenMessageService {
       if (showError) {
         await loading.dismiss();
         await this.showError(e);
+      }else{
+        throw e;
       }
     } finally {
       await loading.dismiss();

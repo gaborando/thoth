@@ -23,9 +23,13 @@
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
+        <ion-item routerDirection="root" href="{{environment.apiUrl}}/swagger-ui/index.html" target="_blank" lines="none" detail="false" routerLinkActive="selected">
+          <ion-icon slot="start" name="document-text-outline"></ion-icon>
+          <ion-label>Api Docs</ion-label>
+        </ion-item>
         <ion-item *ngIf="!openAccess" routerDirection="root" routerLink="/api-key-list" lines="none" detail="false" routerLinkActive="selected">
           <ion-icon slot="start" name="key"></ion-icon>
-          <ion-label>ApiKeys</ion-label>
+          <ion-label>Api Keys</ion-label>
         </ion-item>
         <ion-item *ngIf="!openAccess" (click)="logout()">
           <ion-icon slot="start" name="exit"></ion-icon>

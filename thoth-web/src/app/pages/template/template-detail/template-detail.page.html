@@ -94,7 +94,7 @@
     </form>
     <ion-row *ngIf="template">
       <ion-col>
-        <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"  [canWrite]="template?.permission === 'W'"
+        <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"  [canWrite]="template.permission === 'W'"
         (restoreEmitter)="template = $event"></app-backup-manager>
       </ion-col>
     </ion-row>
@@ -110,6 +110,7 @@
             <ion-list *ngIf="template.usages.length else empty">
               <ion-item lines="full" *ngFor="let r of template.usages" routerLink="/renderer-detail/{{r.id}}" [disabled]="r.permission === null">
                 <ion-label>{{r.name}}</ion-label>
+                <ion-icon  *ngIf="r.permission === null" slot="end" name="lock-closed-outline"></ion-icon>
               </ion-item>
             </ion-list>
             <ng-template #empty>
@@ -187,7 +188,7 @@
       </form>
       <ion-row *ngIf="template">
         <ion-col>
-          <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"  [canWrite]="template?.permission === 'W'"
+          <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"  [canWrite]="template.permission === 'W'"
                               (restoreEmitter)="template = $event"></app-backup-manager>
         </ion-col>
       </ion-row>
