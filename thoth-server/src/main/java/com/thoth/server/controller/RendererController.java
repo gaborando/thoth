@@ -11,6 +11,7 @@ import com.thoth.server.model.domain.Renderer;
 import com.thoth.server.service.render.RenderService;
 import com.thoth.server.service.RendererService;
 import io.github.perplexhub.rsql.RSQLJPASupport;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -101,6 +102,7 @@ public class RendererController {
     }
 
     @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
+    @Operation(description = "All value present on the URL Query and each value present in the JSON body is passed as a parameter for the rendering")
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderPdf(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,
@@ -115,6 +117,7 @@ public class RendererController {
     }
 
     @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
+    @Operation(description = "All value present on the URL Query and each value present in the JSON body is passed as a parameter for the rendering")
     @PostMapping(value = "/render/pdf-multi", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> renderMultiPdf(@RequestBody List<RenderRequest> requests) throws Exception {
         var data = renderService.renderMultiRendererPdf(requests);
@@ -122,6 +125,7 @@ public class RendererController {
     }
 
     @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
+    @Operation(description = "All value present on the URL Query and each value present in the JSON body is passed as a parameter for the rendering")
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> renderJpeg(@RequestParam(required = false) HashMap<String, Object> p1,
                                              @RequestBody(required = false) HashMap<String, Object> p2,
@@ -136,6 +140,7 @@ public class RendererController {
     }
 
     @Secured({"ROLE_USER", "ROLE_API", "ROLE_TMP"})
+    @Operation(description = "All value present on the URL Query and each value present in the JSON body is passed as a parameter for the rendering")
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "/{identifier}/render/svg", produces = "image/svg+xml")
     public ResponseEntity<byte[]> renderSvg(@RequestParam(required = false) HashMap<String, Object> p1,
                                             @RequestBody(required = false) HashMap<String, Object> p2,
@@ -150,6 +155,7 @@ public class RendererController {
     }
 
     @Secured({"ROLE_USER", "ROLE_API"})
+    @Operation(description = "All value present on the URL Query and each value present in the JSON body is passed as a parameter for the rendering")
     @PostMapping("/{identifier}/print")
     public ResponseEntity<?> print(@RequestBody PrintRequest request, @PathVariable String identifier) throws Exception {
         renderService.printRenderer(identifier, request.getParameters(), request.getClientIdentifier(), request.getPrintService(), request.getCopies());
