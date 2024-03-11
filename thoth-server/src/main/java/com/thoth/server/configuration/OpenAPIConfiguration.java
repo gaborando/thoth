@@ -15,11 +15,10 @@ import org.springframework.context.annotation.Configuration;
                 title = "Thoth - Template and Printing Service",
                 version = "0.0.1",
                 contact = @Contact(
-                        name = "Gabor Galazzo", email = "gabor.galazzo@gmail.com", url = "https://www.gaborgalazzo.com"
+                        name = "Gabor Galazzo", email = "gabor.galazzo@gmail.com", url = "https://github.com/gaborando/thoth"
                 ),
-                description = "Design, Render and Print Document using Draw.io and Jinja",
-                summary = "# THOTH - Template and Printing Service\n" +
-                        "\n" +
+                summary = "Design, Render and Print Document using Draw.io and Jinja",
+                description=
                         "Thoth is a software to design and render documents. \n" +
                         "It is based on [Draw.io](https://www.drawio.com/) to design the document and [Jinja - The Pallets Projects.url](https://palletsprojects.com/p/jinja/) to compile dinamically the document.\n" +
                         "\n" +
