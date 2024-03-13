@@ -1,7 +1,7 @@
 package com.thoth.server.controller.dto.renderer;
 
 import com.thoth.server.controller.view.AssociationView;
-import com.thoth.server.model.domain.ResourcePermission;
+import com.thoth.server.model.domain.security.ResourcePermission;
 import lombok.Data;
 
 import java.util.List;

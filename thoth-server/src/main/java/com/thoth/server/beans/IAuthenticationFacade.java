@@ -1,9 +1,8 @@
 package com.thoth.server.beans;
 
 import com.thoth.server.configuration.security.token.ThothAuthenticationToken;
-import com.thoth.server.model.domain.SecuredResource;
+import com.thoth.server.model.domain.security.SecuredResource;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;

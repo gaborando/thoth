@@ -3,7 +3,7 @@ package com.thoth.server.model.domain.datasource;
 import com.thoth.server.controller.view.datasource.DatasourcePropertiesListItemView;
 import com.thoth.server.controller.view.datasource.DatasourcePropertiesView;
 import com.thoth.server.model.domain.Renderer;
-import com.thoth.server.model.domain.SecuredResource;
+import com.thoth.server.model.domain.security.SecuredResource;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

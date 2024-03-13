@@ -1,4 +1,4 @@
-package com.thoth.server.model.domain;
+package com.thoth.server.model.domain.security;
 
 import com.thoth.server.controller.view.ResourcePermissionView;
 import jakarta.persistence.Embeddable;

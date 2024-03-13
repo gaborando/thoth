@@ -1,13 +1,13 @@
 package com.thoth.server.model.domain;
 
 import com.thoth.server.controller.view.ClientView;
+import com.thoth.server.model.domain.security.SecuredResource;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;

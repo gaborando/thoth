@@ -1,6 +1,6 @@
 package com.thoth.server.controller.view.datasource;
 
-import com.thoth.server.model.domain.Permission;
+import com.thoth.server.model.domain.security.Permission;
 import com.thoth.server.model.domain.datasource.Property;
 import lombok.Data;
 

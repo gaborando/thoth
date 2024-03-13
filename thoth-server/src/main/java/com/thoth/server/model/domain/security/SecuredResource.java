@@ -1,4 +1,4 @@
-package com.thoth.server.model.domain;
+package com.thoth.server.model.domain.security;
 
 import com.thoth.server.controller.view.ResourcePermissionView;
 import com.thoth.server.controller.view.SecuredResourceView;
@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Getter
 @Setter

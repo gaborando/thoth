@@ -1,10 +1,8 @@
 package com.thoth.server.controller.view;
 
-import com.thoth.server.model.domain.Permission;
+import com.thoth.server.model.domain.security.Permission;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Set;

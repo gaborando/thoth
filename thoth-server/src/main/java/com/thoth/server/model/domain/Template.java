@@ -2,10 +2,10 @@ package com.thoth.server.model.domain;
 
 import com.thoth.server.controller.view.TemplateListItemView;
 import com.thoth.server.controller.view.TemplateView;
+import com.thoth.server.model.domain.security.SecuredResource;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

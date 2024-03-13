@@ -1,9 +1,6 @@
 package com.thoth.server.controller.view;
 
-import com.thoth.server.model.domain.Permission;
-import com.thoth.server.model.domain.ResourcePermission;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
+import com.thoth.server.model.domain.security.Permission;
 import lombok.Data;
 
 import java.util.List;
