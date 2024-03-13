@@ -30,7 +30,7 @@ export class RendererListPage extends ListPage<Renderer> implements OnInit {
 
   override composeSearchFilter(): string {
     if(this.search) {
-      return 'name==*' + this.search + '*'
+      return 'name==*' + this.search.replace(/ +/g, '*') + '*'
     }else{
       return '';
     }

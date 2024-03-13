@@ -83,7 +83,7 @@ export class TemplateListPage extends ListPage<Template> implements OnInit, OnDe
   override composeSearchFilter(): string {
     let filter = 'folder==/' + window.location.pathname.substring(15);
     if (this.search) {
-      filter = 'name==*' + this.search + '*'
+      filter = 'name==*' + this.search.replace(/ +/g, '*') + '*'
     }
     return filter
   }
