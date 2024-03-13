@@ -111,6 +111,10 @@ public class DataSourceService {
         return datasourcePropertiesRepository.findById(identifier);
     }
 
+    public Optional<DatasourceProperties> findByIdUnsafe(String identifier) {
+        return datasourcePropertiesRepository.findById(identifier);
+    }
+
 
 
 
@@ -150,7 +154,6 @@ public class DataSourceService {
         return value;
     }
 
-    @PreAuthorize("@authenticationFacade.canRead(#datasourceProperty) || hasRole('ROLE_TMP')")
     public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) throws JsonProcessingException {
         if (datasourceProperty instanceof JdbcDatasourceProperties j) {
             var dataSource = datasourceCache.get(j.getId());

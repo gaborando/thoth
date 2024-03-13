@@ -59,7 +59,7 @@ public class RenderService {
 
     public String renderTemplateSvg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
 
-        var template = templateService.getById(identifier).orElseThrow();
+        var template = templateService.getByIdUnsafe(identifier).orElseThrow();
         return renderTemplateSvg(template, params);
     }
 
@@ -85,14 +85,14 @@ public class RenderService {
     }
 
     public byte[] renderTemplateJpeg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
-        var template = templateService.getById(identifier).orElseThrow();
+        var template = templateService.getByIdUnsafe(identifier).orElseThrow();
         return renderTemplateJpeg(template, params);
 
 
     }
 
     public byte[] renderTemplatePdf(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
-        var template = templateService.getById(identifier).orElseThrow();
+        var template = templateService.getByIdUnsafe(identifier).orElseThrow();
         return renderTemplatePdf(template, params);
     }
 
@@ -130,7 +130,7 @@ public class RenderService {
 
 
     public String renderRendererSvg(String identifier, HashMap<String, Object> params) throws Exception {
-        var renderer = rendererService.findById(identifier).orElseThrow();
+        var renderer = rendererService.findByIdUnsafe(identifier).orElseThrow();
         return renderRendererSvg(renderer, params);
     }
 
@@ -152,7 +152,7 @@ public class RenderService {
                 if (e.getValue().getType().equals("datasource")) {
                     if (!dsDataMap.containsKey(e.getValue().getId())) {
                         dsDataMap.put(e.getValue().getId(), dataSourceService.fetchData(
-                                dataSourceService.findById(e.getValue().getId()).orElseThrow()
+                                dataSourceService.findByIdUnsafe(e.getValue().getId()).orElseThrow()
                                 , params));
                     }
                     var dsData = dsDataMap.get(e.getValue().getId());
@@ -172,7 +172,7 @@ public class RenderService {
             if (e.getValue().getType().equals("datasource")) {
                 if (!dsDataMap.containsKey(e.getValue().getId())) {
                     dsDataMap.put(e.getValue().getId(), dataSourceService.fetchData(
-                            dataSourceService.findById(e.getValue().getId()).orElseThrow(),
+                            dataSourceService.findByIdUnsafe(e.getValue().getId()).orElseThrow(),
                             params));
                 }
                 var dsData = dsDataMap.get(e.getValue().getId());
@@ -187,7 +187,7 @@ public class RenderService {
     }
 
     public byte[] renderRendererJpeg(String identifier, HashMap<String, Object> params) throws Exception {
-        var renderer = rendererService.findById(identifier).orElseThrow();
+        var renderer = rendererService.findByIdUnsafe(identifier).orElseThrow();
         return renderRendererJpeg(renderer, params);
     }
 
