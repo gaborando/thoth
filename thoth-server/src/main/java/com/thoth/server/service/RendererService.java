@@ -64,6 +64,10 @@ public class RendererService {
         return rendererRepository.findById(identifier);
     }
 
+    public Optional<Renderer> findByIdUnsafe(String identifier) {
+        return rendererRepository.findById(identifier);
+    }
+
 
 
     @PreAuthorize("@authenticationFacade.canWrite(#original)")

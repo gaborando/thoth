@@ -135,6 +135,11 @@ public class TemplateService {
         return templateRepository.findById(identifier);
     }
 
+
+    public Optional<Template> getByIdUnsafe(String identifier) {
+        return templateRepository.findById(identifier);
+    }
+
     public List<String> getFolders() {
         return templateRepository.getFolders(authenticationFacade.getUserSID(), authenticationFacade.getOrganizationSID());
     }
