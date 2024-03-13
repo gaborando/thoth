@@ -130,7 +130,7 @@ public class TemplateService {
         return templateRepository.save(template);
     }
 
-    @PostAuthorize("@authenticationFacade.canRead(returnObject) || hasRole('ROLE_TMP')")
+    @PostAuthorize("@authenticationFacade.canRead(returnObject)")
     public Optional<Template> getById(String identifier) {
         return templateRepository.findById(identifier);
     }

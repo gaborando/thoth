@@ -59,7 +59,7 @@ public class RendererService {
         rendererRepository.delete(renderer);
     }
 
-    @PostAuthorize("@authenticationFacade.canRead(returnObject) || hasRole('ROLE_TMP')")
+    @PostAuthorize("@authenticationFacade.canRead(returnObject)")
     public Optional<Renderer> findById(String identifier) {
         return rendererRepository.findById(identifier);
     }
