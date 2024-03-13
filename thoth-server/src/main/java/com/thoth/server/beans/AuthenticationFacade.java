@@ -1,8 +1,8 @@
 package com.thoth.server.beans;
 
 import com.thoth.server.configuration.security.token.ThothAuthenticationToken;
-import com.thoth.server.model.domain.Permission;
-import com.thoth.server.model.domain.SecuredResource;
+import com.thoth.server.model.domain.security.Permission;
+import com.thoth.server.model.domain.security.SecuredResource;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;

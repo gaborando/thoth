@@ -3,6 +3,8 @@ package com.thoth.server.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.thoth.server.model.domain.*;
+import com.thoth.server.model.domain.security.Permission;
+import com.thoth.server.model.domain.security.SecuredResource;
 import com.thoth.server.model.repository.BackupRepository;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
 import com.thoth.server.model.repository.RendererRepository;

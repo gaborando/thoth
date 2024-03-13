@@ -3,7 +3,7 @@ package com.thoth.server.service;
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.view.AssociationView;
 import com.thoth.server.model.domain.Renderer;
-import com.thoth.server.model.domain.ResourcePermission;
+import com.thoth.server.model.domain.security.ResourcePermission;
 import com.thoth.server.model.repository.DatasourcePropertiesRepository;
 import com.thoth.server.model.repository.RendererRepository;
 import com.thoth.server.model.repository.TemplateRepository;

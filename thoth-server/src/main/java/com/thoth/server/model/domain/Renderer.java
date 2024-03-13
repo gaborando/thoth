@@ -4,6 +4,7 @@ import com.thoth.server.controller.view.AssociationView;
 import com.thoth.server.controller.view.RendererListItemView;
 import com.thoth.server.controller.view.RendererView;
 import com.thoth.server.model.domain.datasource.DatasourceProperties;
+import com.thoth.server.model.domain.security.SecuredResource;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @Setter
-public class Renderer extends SecuredResource{
+public class Renderer extends SecuredResource {
 
     @Id
     @NotBlank

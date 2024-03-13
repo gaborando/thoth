@@ -60,7 +60,11 @@ const routes: Routes = [
   {
     path: 'auth-hook',
     loadChildren: () => import('./pages/auth-hook/auth-hook.module').then( m => m.AuthHookPageModule)
+  },  {
+    path: 'secret-list',
+    loadChildren: () => import('./pages/secret/secret-list/secret-list.module').then( m => m.SecretListPageModule)
   }
+
 
 ];
 

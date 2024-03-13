@@ -33,6 +33,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class DataSourceService {
@@ -42,20 +44,24 @@ public class DataSourceService {
     private final DatasourcePropertiesRepository datasourcePropertiesRepository;
 
     private final IAuthenticationFacade facade;
-    private HashMap<String, DataSource> datasourceCache = new HashMap<>();
+    private final HashMap<String, DataSource> datasourceCache = new HashMap<>();
 
-    public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository, IAuthenticationFacade facade) {
+    private final SecretService secretService;
+
+    public DataSourceService(ObjectMapper objectMapper, DatasourcePropertiesRepository datasourcePropertiesRepository, IAuthenticationFacade facade, SecretService secretService) {
         this.objectMapper = objectMapper;
         this.datasourcePropertiesRepository = datasourcePropertiesRepository;
         this.facade = facade;
+        this.secretService = secretService;
     }
 
 
     public Set<Property> checkJdbc(String url, String username, String password, String query, HashMap<String, Object> parameters) {
         var dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.url(url);
-        dataSourceBuilder.username(username);
-        dataSourceBuilder.password(password);
+        dataSourceBuilder.url(compileSecrets(url, true));
+        dataSourceBuilder.username(compileSecrets(username, true));
+        dataSourceBuilder.password(compileSecrets(password, true));
+        query = compileSecrets(query, true);
         var dataSource = dataSourceBuilder.build();
         for (String k : parameters.keySet()) {
             query = query.replace("{{" + k + "}}", ':' + k);
@@ -129,6 +135,17 @@ public class DataSourceService {
         return true;
     }
 
+    private String compileSecrets(String value, boolean checkAuth){
+        Pattern pattern = Pattern.compile("\\$\\{([^}]+)\\}");
+        Matcher matcher = pattern.matcher(value);
+
+        while (matcher.find()) {
+            String variable = matcher.group(1);
+            value = value.replace("${" + variable + "}", secretService.getValue(variable, checkAuth));
+        }
+        return value;
+    }
+
     @PreAuthorize("@authenticationFacade.canRead(#datasourceProperty) || hasRole('ROLE_TMP')")
     public HashMap<String, Object> fetchData(DatasourceProperties datasourceProperty, HashMap<String, Object> parameters) throws JsonProcessingException {
         if (datasourceProperty instanceof JdbcDatasourceProperties j) {
@@ -136,9 +153,9 @@ public class DataSourceService {
 
             if (dataSource == null) {
                 var dataSourceBuilder = DataSourceBuilder.create();
-                dataSourceBuilder.url(j.getUrl());
-                dataSourceBuilder.username(j.getUsername());
-                dataSourceBuilder.password(j.getPassword());
+                dataSourceBuilder.url(compileSecrets(j.getUrl(), false));
+                dataSourceBuilder.username(compileSecrets(j.getUsername(), false));
+                dataSourceBuilder.password(compileSecrets(j.getPassword(), false));
                 dataSource = dataSourceBuilder.build();
                 datasourceCache.put(j.getId(), dataSource);
             }
@@ -149,7 +166,8 @@ public class DataSourceService {
                 localParameters.put(e.getKey(), isNumeric(e.getValue()) ? toNumeric(e.getValue().toString()) : e.getValue());
             }
 
-            var query = j.getQuery();
+            var query = compileSecrets(j.getQuery(), false);
+
             for (String k : j.getParameters()) {
                 query = query.replace("{{" + k + "}}", ':' + k);
             }
@@ -173,7 +191,8 @@ public class DataSourceService {
             request.setMethod(j.getMethod());
             request.setQueryParameters(j.getQueryParameters());
             request.setJsonQuery(j.getJsonQuery());
-            var strBody = objectMapper.writeValueAsString(request);
+            var strBody = compileSecrets(objectMapper.writeValueAsString(request), false);
+
             for (Map.Entry<String, Object> e : parameters.entrySet()) {
                 strBody = strBody.replace("{{" + e.getKey() + "}}", e.getValue().toString());
             }
@@ -214,7 +233,10 @@ public class DataSourceService {
 
 
     public Set<Property> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
-        var strBody = objectMapper.writeValueAsString(request);
+        var strBody = compileSecrets(objectMapper.writeValueAsString(request), true);
+
+
+
         for (Map.Entry<String, String> e : parameters.entrySet()) {
             strBody = strBody.replace("{{" + e.getKey() + "}}", e.getValue());
         }
