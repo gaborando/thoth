@@ -30,6 +30,10 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -230,12 +234,26 @@ public class DataSourceService {
     }
 
 
+    public static String addParameterToURL(String urlString, String paramName, String paramValue) throws URISyntaxException {
+        URI uri = new URI(urlString);
+
+        // Check if the URL already has query parameters
+        String query = uri.getQuery();
+        if (query == null) {
+            query = paramName + "=" + paramValue;
+        } else {
+            query += "&" + paramName + "=" + paramValue;
+        }
+
+        // Construct the new URI with updated query parameters
+        URI newUri = new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), query, uri.getFragment());
+
+        return newUri.toString();
+    }
 
 
-    public Set<Property> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException {
+    public Set<Property> checkRest(RestDatasourceParameters request, HashMap<String, String> parameters) throws JsonProcessingException, MalformedURLException, URISyntaxException {
         var strBody = compileSecrets(objectMapper.writeValueAsString(request), true);
-
-
 
         for (Map.Entry<String, String> e : parameters.entrySet()) {
             strBody = strBody.replace("{{" + e.getKey() + "}}", e.getValue());
@@ -244,9 +262,13 @@ public class DataSourceService {
         var restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         request.getHeaders().forEach(headers::set);
+        var url = request.getUrl();
+        for (Map.Entry<String, String> e : request.getQueryParameters().entrySet()) {
+            url = addParameterToURL(url, e.getKey(), e.getValue());
+        }
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
         var resp = restTemplate.exchange(
-                request.getUrl(),
+                url,
                 HttpMethod.valueOf(request.getMethod()),
                 requestEntity,
                 String.class,

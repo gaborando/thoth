@@ -17,61 +17,83 @@
           <ion-select-option value="POST">POST</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item-divider>
-        Query Parameters
-      </ion-item-divider>
-      <ion-item>
-        <ion-input #queryKey placeholder="Key"></ion-input>
-        <ion-input #queryValue placeholder="Value"></ion-input>
-        <ion-button slot="end"
-                    (click)="addQueryParam(queryKey.value, queryValue.value); queryKey.value = null; queryValue.value = null">
-          <ion-icon slot="icon-only" name="add"></ion-icon>
-        </ion-button>
-      </ion-item>
-      <ion-item lines="full" *ngFor="let q of obj.keys(definition.queryParameters)">
-        <ion-label>{{q}}</ion-label>
-        <ion-label>{{definition.queryParameters[q]}}</ion-label>
-        <ion-button color="warning" slot="end" (click)="removeQueryParam(q)">
-          <ion-icon slot="icon-only" name="remove"></ion-icon>
-        </ion-button>
-      </ion-item>
-      <ion-item-divider>
-        Headers
-      </ion-item-divider>
-      <ion-item>
-        <ion-input #headerKey placeholder="Header"></ion-input>
-        <ion-input #headerValue placeholder="Value"></ion-input>
-        <ion-button slot="end"
-                    (click)="addHeader(headerKey.value, headerValue.value); headerKey.value = null; headerValue.value = null">
-          <ion-icon slot="icon-only" name="add"></ion-icon>
-        </ion-button>
-      </ion-item>
-      <ion-item lines="full" *ngFor="let h of obj.keys(definition.headers)">
-        <ion-label>{{h}}</ion-label>
-        <ion-label>{{definition.headers?.[h]}}</ion-label>
-        <ion-button color="warning" slot="end" (click)="removeHeader(h)">
-          <ion-icon slot="icon-only" name="remove"></ion-icon>
-        </ion-button>
-      </ion-item>
+      <ion-card style="margin-right: 0; margin-left: 0">
+        <ion-card-header>
+          <ion-card-subtitle>
+
+            Query Parameters
+          </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-input #queryKey placeholder="Key"></ion-input>
+            <ion-input #queryValue placeholder="Value"></ion-input>
+            <ion-button slot="end"
+                        (click)="addQueryParam(queryKey.value, queryValue.value); queryKey.value = null; queryValue.value = null">
+              <ion-icon slot="icon-only" name="add"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <ion-item lines="full" *ngFor="let q of obj.keys(definition.queryParameters)">
+            <ion-label>{{ q }}</ion-label>
+            <ion-label>{{ definition.queryParameters[q] }}</ion-label>
+            <ion-button color="warning" slot="end" (click)="removeQueryParam(q)">
+              <ion-icon slot="icon-only" name="remove"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card style="margin-right: 0; margin-left: 0">
+        <ion-card-header>
+          <ion-card-subtitle>
+            Headers
+          </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-input #headerKey placeholder="Header"></ion-input>
+            <ion-input #headerValue placeholder="Value"></ion-input>
+            <ion-button slot="end"
+                        (click)="addHeader(headerKey.value, headerValue.value); headerKey.value = null; headerValue.value = null">
+              <ion-icon slot="icon-only" name="add"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <ion-item lines="full" *ngFor="let h of obj.keys(definition.headers)">
+            <ion-label>{{ h }}</ion-label>
+            <ion-label>{{ definition.headers?.[h] }}</ion-label>
+            <ion-button color="warning" slot="end" (click)="removeHeader(h)">
+              <ion-icon slot="icon-only" name="remove"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
       <ng-container *ngIf="['POST','PUT'].includes(definition.method)">
-        <ion-item-divider>
-          Body
-        </ion-item-divider>
-        <ion-item>
-          <ion-input #bodyKey placeholder="Key"></ion-input>
-          <ion-input #bodyValue placeholder="Value"></ion-input>
-          <ion-button slot="end"
-                      (click)="addBody(bodyKey.value, bodyValue.value); bodyKey.value = null; bodyValue.value = null">
-            <ion-icon slot="icon-only" name="add"></ion-icon>
-          </ion-button>
-        </ion-item>
-        <ion-item lines="full" *ngFor="let b of obj.keys(definition.body)">
-          <ion-label>{{b}}</ion-label>
-          <ion-label>{{definition.body[b]}}</ion-label>
-          <ion-button color="warning" slot="end" (click)="removeBodyItem(b)">
-            <ion-icon slot="icon-only" name="remove"></ion-icon>
-          </ion-button>
-        </ion-item>
+        <ion-card style="margin-right: 0; margin-left: 0">
+          <ion-card-header>
+            <ion-card-subtitle>
+
+              Body
+            </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-input #bodyKey placeholder="Key"></ion-input>
+              <ion-input #bodyValue placeholder="Value"></ion-input>
+              <ion-button slot="end"
+                          (click)="addBody(bodyKey.value, bodyValue.value); bodyKey.value = null; bodyValue.value = null">
+                <ion-icon slot="icon-only" name="add"></ion-icon>
+              </ion-button>
+            </ion-item>
+            <ion-item lines="full" *ngFor="let b of obj.keys(definition.body)">
+              <ion-label>{{ b }}</ion-label>
+              <ion-label>{{ definition.body[b] }}</ion-label>
+              <ion-button color="warning" slot="end" (click)="removeBodyItem(b)">
+                <ion-icon slot="icon-only" name="remove"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
       </ng-container>
       <ion-item>
         <ion-label>
@@ -85,11 +107,11 @@
   </ion-card-content>
   <ion-note slot="helper" *ngIf="checkError">
     <ion-text color="danger">
-      {{checkError}}
+      {{ checkError }}
     </ion-text>
   </ion-note>
   <div class="ion-margin">
-    <ion-note>Detected parameters:  {{!parameters.length ? ' --- ' : parameters.join(",")}}</ion-note>
+    <ion-note>Detected parameters:  {{ !parameters.length ? ' --- ' : parameters.join(",") }}</ion-note>
   </div>
 </ion-card>
 
@@ -102,8 +124,8 @@
   <ion-card-content>
     <ion-grid>
       <ion-row>
-        <ion-col (click)="editProperty(p)" size="4" *ngFor="let p of properties"><h2>{{p.name}}</h2>
-          <small >{{p.helper}}</small>
+        <ion-col (click)="editProperty(p)" size="4" *ngFor="let p of properties"><h2>{{ p.name }}</h2>
+          <small>{{ p.helper }}</small>
         </ion-col>
       </ion-row>
     </ion-grid>

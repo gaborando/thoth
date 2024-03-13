@@ -21,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Set;
 
@@ -47,7 +49,7 @@ public class DataSourceController {
     }
 
     @PostMapping(value = "/check/rest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Set<Property>> checkRestParameters(@RequestBody RestDatasourceParametersCheckRequest parameters) throws SQLException, JsonProcessingException {
+    public ResponseEntity<Set<Property>> checkRestParameters(@RequestBody RestDatasourceParametersCheckRequest parameters) throws SQLException, JsonProcessingException, MalformedURLException, URISyntaxException {
         return ResponseEntity.ok(dataSourceService.checkRest(
                 parameters,
                 parameters.getParameters()
