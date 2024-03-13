@@ -61,6 +61,7 @@ public class SecretService {
         return new String(decryptedBytes);
     }
     public Secret create(String name, String value) {
+        Assert.isTrue(!secretRepository.existsById(name), "Secret with this name already exists");
         var secret = new Secret();
         secret.setName(name);
         secret.setSalt(UUID.randomUUID().toString());
