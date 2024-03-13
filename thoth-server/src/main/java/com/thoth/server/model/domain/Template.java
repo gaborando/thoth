@@ -1,5 +1,6 @@
 package com.thoth.server.model.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thoth.server.controller.view.TemplateListItemView;
 import com.thoth.server.controller.view.TemplateView;
 import com.thoth.server.model.domain.security.SecuredResource;
@@ -47,6 +48,7 @@ public class Template extends SecuredResource {
     private String folder;
 
     @OneToMany(mappedBy = "template")
+    @JsonIgnore
     private List<Renderer> usages;
 
     public TemplateView toView(String uSid, String oSid){

@@ -1,5 +1,6 @@
 package com.thoth.server.model.domain.datasource;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thoth.server.controller.view.datasource.DatasourcePropertiesListItemView;
 import com.thoth.server.controller.view.datasource.DatasourcePropertiesView;
 import com.thoth.server.model.domain.Renderer;
@@ -41,6 +42,7 @@ public abstract class DatasourceProperties extends SecuredResource {
     private Set<Property> properties;
 
     @ManyToMany(mappedBy = "datasourceProperties")
+    @JsonIgnore
     private List<Renderer> usages;
 
     @Override
