@@ -54,7 +54,7 @@ export class TypeaheadSelectComponent extends SearchComponent implements OnInit 
 
   override composeSearchFilter(): string {
     if (this.search) {
-      return 'name==*' + this.search + '*';
+      return 'name==*' + this.search.replace(/ +/g, '*') + '*';
     }
     return ''
   }

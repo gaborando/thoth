@@ -15,7 +15,7 @@ export class DatasourceListPage extends ListPage<Datasource> implements OnInit {
 
   override composeSearchFilter(): string {
     if (this.search)
-      return 'name==*' + this.search + '*'
+      return 'name==*' + this.search.replace(/ +/g, '*') + '*'
     else return ''
   }
 
