@@ -71,6 +71,7 @@ public class Template extends SecuredResource {
         view.setId(id);
         view.setName(name);
         view.setImg(img);
+        view.setMarkers(markers);
         view.setPermission(checkPermission(uSid, oSid));
         return view;
     }
