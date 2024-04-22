@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {environment} from "../environments/environment";
+import {version} from "../environments/version";
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ export class AppComponent implements OnInit {
   openAccess = true;
 
   environment: any = {}
+  v = version;
 
   constructor() {
   }
