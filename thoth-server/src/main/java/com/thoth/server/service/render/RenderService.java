@@ -85,14 +85,14 @@ public class RenderService {
     }
 
     public byte[] renderTemplateJpeg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
-        var template = templateService.getByIdUnsafe(identifier).orElseThrow();
+        var template = templateService.getById(identifier).orElseThrow();
         return renderTemplateJpeg(template, params);
 
 
     }
 
     public byte[] renderTemplatePdf(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
-        var template = templateService.getByIdUnsafe(identifier).orElseThrow();
+        var template = templateService.getById(identifier).orElseThrow();
         return renderTemplatePdf(template, params);
     }
 
