@@ -38,7 +38,12 @@ public class ClientService {
         c.setCreatedBy(ownerSID);
         c.setPrintServices(printServices);
         c.setCreatedAt(Instant.now());
-        return repository.save(c);
+        try {
+            return repository.save(c);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @PreAuthorize("@authenticationFacade.canWrite(#client)")
