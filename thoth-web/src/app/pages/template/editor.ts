@@ -61,35 +61,39 @@ export class Editor {
 
 
   constructor(private router: Router) {
-    window.addEventListener('beforeunload', ()=> {
+    window.addEventListener('beforeunload', () => {
       if (this.drawIoWindow != null) {
         this.drawIoWindow?.close();
       }
     });
   }
 
-  openEditor(template: Template,
-             templateService: TemplateService) {
-    var sub = this.router.events.subscribe(change => {
-      if (this.drawIoWindow != null) {
-        this.drawIoWindow?.close();
-      }
-      if(sub) {
-        sub.unsubscribe();
-      }
-    })
-    var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1&configure=1&template=' + template.id;
+  close() {
     if (this.drawIoWindow != null) {
       this.drawIoWindow?.close();
     }
     if (this.currentListener != null) {
-      window.removeEventListener('message', this.currentListener)
+      window.removeEventListener('message', this.currentListener);
+      this.currentListener = null;
     }
+  }
+
+  openEditor(template: Template,
+             templateService: TemplateService) {
+    var sub = this.router.events.subscribe(change => {
+      this.close();
+      if (sub) {
+        sub.unsubscribe();
+      }
+    });
+    var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1&configure=1&template=' + template.id;
+    this.close();
 
     // Implements protocol for loading and exporting with embedded XML
     this.currentListener = (evt: any) => {
-      if (evt.data.length > 0 && this.currentTemplate == template.id) {
-        var msg = JSON.parse(evt.data);
+      const sameOrigin = evt.srcElement.location.pathname.includes(template.id)
+      if (evt.data.length > 0 && (this.currentTemplate == template.id) && sameOrigin) {
+        const msg = JSON.parse(evt.data);
         if (msg.event === 'configure') {
           this.drawIoWindow?.postMessage(JSON.stringify({
             action: 'configure',
@@ -160,7 +164,7 @@ export class Editor {
           template.markers = [...new Set(template.markers)];
           if (!template.markers.includes('block**')) {
             const toFill = template.markers.filter(m => m.startsWith("_"))
-            if(toFill.length) {
+            if (toFill.length) {
               for (let string of toFill) {
                 this.drawIoWindow?.postMessage(JSON.stringify(
                   {
@@ -171,7 +175,7 @@ export class Editor {
                     markerToFill: string
                   }), '*');
               }
-            }else {
+            } else {
               this.save(template, templateService);
             }
             /*
@@ -212,8 +216,8 @@ export class Editor {
           const node: any = diagrams[0].children.item(0)?.outerHTML;
           console.log(msg);
           // @ts-ignore
-          if(msg.message.markerToFill){
-            const n = node.replaceAll('{{'+msg.message.markerToFill+'}}', msg.value);
+          if (msg.message.markerToFill) {
+            const n = node.replaceAll('{{' + msg.message.markerToFill + '}}', msg.value);
             this.drawIoWindow?.postMessage(JSON.stringify(
               {action: 'merge', xml: n}), '*');
           }
@@ -241,6 +245,11 @@ export class Editor {
           this.drawIoWindow?.close();
           this.drawIoWindow = null;
           templateService.update(template).finally();
+        }
+      } else if (!sameOrigin) {
+        this.close();
+        if (sub) {
+          sub.unsubscribe();
         }
       }
     };
