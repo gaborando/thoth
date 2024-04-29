@@ -5,6 +5,7 @@ import {environment} from "../../../environments/environment";
 import {AuthenticatedService} from "./authenticated.service";
 import {DataFetcher} from "../../common/utils/service-patterns/data-fetcher";
 import {Secret} from "../../common/types/secret";
+import {SecuredResource} from "../../common/types/secured-resource";
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +50,22 @@ export class SecretService  extends AuthenticatedService implements DataFetcher<
     return fetch((await environment()).apiUrl + '/secret/' + id, {
       method: 'DELETE',
       headers: this.getHeaders(),
+    }).then(async r => {
+      if (!r.ok) {
+        throw await r.json()
+      }
+      return await r.text()
+    });
+  }
+
+  async updateSecrets(secret: Secret) {
+    return fetch((await environment()).apiUrl + '/secret/' + secret.name, {
+      method: 'PUT',
+      headers: this.postHeaders(),
+      body: JSON.stringify({
+        allowedUserList: secret.allowedUserList,
+        allowedOrganizationList: secret.allowedOrganizationList,
+      })
     }).then(async r => {
       if (!r.ok) {
         throw await r.json()
