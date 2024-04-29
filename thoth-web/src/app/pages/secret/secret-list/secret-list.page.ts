@@ -13,6 +13,7 @@ import {SecretService} from "../../../services/api/secret.service";
   styleUrls: ['./secret-list.page.scss'],
 })
 export class SecretListPage extends ListPage<Secret> implements OnInit {
+  selectedSecret?: Secret;
 
 
   constructor(
@@ -44,4 +45,15 @@ export class SecretListPage extends ListPage<Secret> implements OnInit {
   }
 
 
+  updateSharingOptions(modal: IonModal) {
+    if(!this.selectedSecret){
+      return ;
+    }
+    const c = this.selectedSecret;
+    return this.screenMessageService.loadingWrapper(async () => {
+      await this.secretService.updateSecrets(c);
+      await this.screenMessageService.showDone();
+      return modal.dismiss();
+    })
+  }
 }

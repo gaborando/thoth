@@ -58,7 +58,7 @@ public class SecretController {
 
     @PutMapping(value = "/{identifier}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured({"ROLE_USER"})
-    public ResponseEntity<SecretView> update(@RequestBody SecuredResource resource,
+    public ResponseEntity<SecretView> update(@RequestBody Secret resource,
                                                @PathVariable String identifier,
                                                AuthenticationFacade facade) throws ParserConfigurationException {
         return ResponseEntity.ok(secretService.update(
