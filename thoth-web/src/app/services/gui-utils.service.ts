@@ -39,17 +39,23 @@ export class GuiUtilsService {
     return await m.onDidDismiss();
   }
 
-  async selectApiKey() {
+  async selectApiKeyAndPassword() {
 
     const alert = await this.alertController.create({
-      header: 'Insert API Key',
-      message: 'Insert the API Key to use. Check if the user associated to the API Key has access to this resource.',
+      header: 'Insert API Key and Password',
+      message: 'Insert the API Key to use and a password to protect access. Check if the user associated to the API Key has access to this resource.',
       inputs:[
         {
           label: 'API KEY',
           type: 'text',
           name: 'apiKey',
           placeholder: 'Enter API Key'
+        },
+        {
+          label: 'Password',
+          type: 'password',
+          name: 'password',
+          placeholder: 'Enter a Password'
         }
       ],
             buttons: [
@@ -64,6 +70,6 @@ export class GuiUtilsService {
     });
     await alert.present();
     const resp = await alert.onDidDismiss()
-    return resp.data.values.apiKey
+    return {apiKey: resp.data.values.apiKey, password: resp.data.values.password}
   }
 }
