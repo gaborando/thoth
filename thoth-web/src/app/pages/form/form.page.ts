@@ -5,6 +5,7 @@ import {TemplateGuiUtilsService} from "../../services/template-gui-utils.service
 import {environment} from "../../../environments/environment";
 import {AlertController} from "@ionic/angular";
 import * as CryptoJS from "crypto-js";
+import {alert} from "ionicons/icons";
 
 @Component({
   selector: 'app-form',
@@ -22,39 +23,54 @@ export class FormPage implements OnInit {
   }
 
   async ngOnInit() {
-    const alert = await this.alertController.create({
-      header: 'Insert Password',
-      message: 'This page is password protected.',
-      inputs:[
-        {
-          label: 'Password',
-          type: 'password',
-          name: 'password',
-          placeholder: 'Enter a Password'
+    let hasError = false;
+    do {
+      const alert = await this.alertController.create({
+        header: 'Insert Password',
+        message: 'This page is password protected.',
+        inputs: [
+          {
+            label: 'Password',
+            type: 'password',
+            name: 'password',
+            placeholder: 'Enter a Password'
+          }
+        ],
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          },
+          {
+            text: 'OK'
+          }
+        ]
+      });
+      await alert.present();
+      const resp = await alert.onDidDismiss()
+      const password = resp.data.values.password;
+      const enc = this.route.snapshot.queryParamMap.get('j');
+      try {
+        if (password && enc) {
+          const dec = CryptoJS.AES.decrypt(enc, password).toString(CryptoJS.enc.Utf8);
+          this.form = JSON.parse(dec);
+          const last = localStorage.getItem("last_form_" + this.form?.id);
+          if (last) {
+            this.data = JSON.parse(last);
+          }
+          hasError = false;
         }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        },
-        {
-          text: 'OK'
-        }
-      ]
-    });
-    await alert.present();
-    const resp = await alert.onDidDismiss()
-    const password = resp.data.values.password;
-    const enc = this.route.snapshot.queryParamMap.get('j');
-    if(password && enc){
-      const dec = CryptoJS.AES.decrypt(enc, password).toString(CryptoJS.enc.Utf8);
-      this.form = JSON.parse(dec);
-      const last = localStorage.getItem("last_form_" + this.form?.id);
-      if (last) {
-        this.data = JSON.parse(last);
+      } catch (e) {
+        hasError = true;
+        const err = await this.alertController.create({
+          header: 'Error',
+          message: 'Invalid password or encrypted data',
+          buttons: ['OK']
+        })
+        await err.present();
+        await err.onDidDismiss();
       }
-    }
+    }while (hasError);
 
 
   }
