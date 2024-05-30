@@ -9,6 +9,7 @@ import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.serv
 import {ActivatedRoute, Router} from "@angular/router";
 import {Editor} from "../editor";
 import {AutocompleteProvider} from "../../../common/directives/autocomplete.directive";
+import {Form} from "../../../common/types/form";
 
 @Component({
   selector: 'app-template-detail',
@@ -28,9 +29,10 @@ export class TemplateDetailPage implements OnInit {
               private router: Router,
               private navController: NavController,
               private templateGuiUtils: TemplateGuiUtilsService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private guiUtils: GuiUtilsService) {
     this.folderAutocomplete = {
-      async fetch(txt: string){
+      async fetch(txt: string) {
         return templateService.getFolders().then(s => s.filter(ss => ss.startsWith(txt)));
       }
     }
@@ -122,5 +124,21 @@ export class TemplateDetailPage implements OnInit {
 
   back() {
     window.history.back();
+  }
+
+  async toForm() {
+    const api_key = await this.guiUtils.selectApiKey()
+    console.log(api_key);
+    if(api_key) {
+      const form: Form = {
+        type: 'template',
+        id: this.template!.id,
+        name: this.template!.name,
+        fields: this.template!.markers,
+        token: api_key
+
+      }
+      window.open(location.origin + '/form?j=' + JSON.stringify(form), '_blank');
+    }
   }
 }

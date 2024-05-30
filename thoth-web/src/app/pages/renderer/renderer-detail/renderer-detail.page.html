@@ -5,6 +5,9 @@
     </ion-buttons>
     <ion-title>Renderer</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="toForm()" [disabled]="!renderer?.name">
+        <ion-icon slot="icon-only" name="create-outline" color="tertiary"></ion-icon>
+      </ion-button>
       <ion-button (click)="clone()" [disabled]="!renderer?.name">
         <ion-icon slot="icon-only" name="copy" color="secondary"></ion-icon>
       </ion-button>

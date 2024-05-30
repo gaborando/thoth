@@ -14,8 +14,8 @@ export class ApiKeyService extends AuthenticatedService implements DataFetcher<A
     super()
   }
 
-  async findAll(page = 0, filter = '', signal: AbortSignal): Promise<Page<ApiKey>>{
-    return fetch((await environment()).apiUrl + '/api-key/?page=' + page, {
+  async findAll(page = 0, filter = '', signal: AbortSignal,  size = 10): Promise<Page<ApiKey>>{
+    return fetch((await environment()).apiUrl + '/api-key/?page=' + page + '&size=' + size, {
       method: 'GET',
       headers: this.getHeaders(),
       signal

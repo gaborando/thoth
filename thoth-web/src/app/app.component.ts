@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {environment} from "../environments/environment";
 import {version} from "../environments/version";
+import {NavigationEnd, NavigationStart, Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -15,19 +16,24 @@ export class AppComponent implements OnInit {
     {title: 'Renderers', url: '/renderer-list', icon: 'document-text'},
     {title: 'Clients', url: '/client-list', icon: 'print'},
   ];
-  showMenu = false;
+  showMenu = true;
 
   openAccess = true;
 
   environment: any = {}
   v = version;
 
-  constructor() {
+  constructor(private router: Router) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.showMenu = !event.url.startsWith('/form') && event.url !== '/login';
+        console.log(this.showMenu)
+      }
+    });
   }
 
 
   async ngOnInit() {
-    this.showMenu = window.location.pathname !== '/login';
     this.environment = await environment();
     this.openAccess = !(this.environment.oauth)
   }

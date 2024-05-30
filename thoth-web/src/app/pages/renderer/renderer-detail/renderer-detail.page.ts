@@ -13,6 +13,7 @@ import {Page} from "../../../common/utils/fetchUtils";
 import {Datasource} from "../../../common/types/datasource";
 import {DataSourceService} from "../../../services/api/data-source.service";
 import {TemplateGuiUtilsService} from "../../../services/template-gui-utils.service";
+import {Form} from "../../../common/types/form";
 
 @Component({
   selector: 'app-renderer-detail',
@@ -289,5 +290,21 @@ export class RendererDetailPage implements OnInit {
 
   openViewer(template: Template) {
     this.templateGuiUtils.openViewer(template);
+  }
+
+  async toForm() {
+    const api_key = await this.guiUtils.selectApiKey()
+    console.log(this.renderer!.parametersMap)
+    if(api_key) {
+      const form: Form = {
+        type: 'renderer',
+        id: this.renderer!.id,
+        name: this.renderer!.name,
+        fields: Object.keys(this.renderer!.parametersMap).filter(f => this.renderer!.parametersMap[f].type === 'parameter'),
+        token: api_key
+
+      }
+      window.open(location.origin + '/form?j=' + JSON.stringify(form), '_blank');
+    }
   }
 }

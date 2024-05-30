@@ -26,43 +26,47 @@ export class TemplateGuiUtilsService {
               private guiUtils: GuiUtilsService) {
   }
 
+  async renderTemplateDirect(templateId: string, data: any, tokenType: 'access_token' | 'API_KEY', token: string | null) {
+    var query = new URLSearchParams();
+    query.append("json", JSON.stringify(data));
+    if (token) {
+      query.append(tokenType, token);
+    }
+    const alert = await this.alertController.create({
+      header: 'Type',
+      inputs: [
+        {
+          label: 'PDF',
+          type: 'radio',
+          value: 'pdf'
+        },
+        {
+          label: 'JPEG',
+          type: 'radio',
+          value: 'jpeg'
+        },
+        {
+          label: 'SVG',
+          type: 'radio',
+          value: 'svg'
+        }
+      ],
+      buttons: [
+        {text: 'Cancel', role: 'cancel'},
+        {
+          text: 'OK', handler: async (e) =>
+            window.open((await environment()).apiUrl + '/template/' + templateId + '/render/' + e + '?' + query.toString())
+        }
+      ]
+    });
+    await alert.present();
+  }
+
   async renderTemplate(t: Template) {
     const resp = await this.guiUtils.parametersFormModal("Render a Template", new Set<string>(t.markers), t.id);
     if (!resp.role) {
-      var query = new URLSearchParams();
-      query.append("json", JSON.stringify(resp.data));
       const accessToken = localStorage.getItem("access_token");
-      if (accessToken) {
-        query.append("access_token", accessToken);
-      }
-      const alert = await this.alertController.create({
-        header: 'Type',
-        inputs: [
-          {
-            label: 'PDF',
-            type: 'radio',
-            value: 'pdf'
-          },
-          {
-            label: 'JPEG',
-            type: 'radio',
-            value: 'jpeg'
-          },
-          {
-            label: 'SVG',
-            type: 'radio',
-            value: 'svg'
-          }
-        ],
-        buttons: [
-          {text: 'Cancel', role: 'cancel'},
-          {
-            text: 'OK', handler: async (e) =>
-              window.open((await environment()).apiUrl + '/template/' + t.id + '/render/' + e + '?' + query.toString())
-          }
-        ]
-      });
-      await alert.present();
+     return this.renderTemplateDirect(t.id, resp.data, 'access_token', accessToken)
     }
   }
 
