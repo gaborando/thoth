@@ -7,6 +7,9 @@
     </ion-buttons>
     <ion-title>Template</ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="toForm()" [disabled]="!template?.name">
+        <ion-icon slot="icon-only" name="create-outline" color="tertiary"></ion-icon>
+      </ion-button>
       <ion-button (click)="clone()" [disabled]="!template?.name">
         <ion-icon slot="icon-only" name="copy" color="secondary"></ion-icon>
       </ion-button>
@@ -107,7 +110,7 @@
             </ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <ion-list *ngIf="template.usages.length else empty">
+            <ion-list *ngIf="template?.usages?.length else empty">
               <ion-item lines="full" *ngFor="let r of template.usages" routerLink="/renderer-detail/{{r.id}}" [disabled]="r.permission === null">
                 <ion-label>{{r.name}}</ion-label>
                 <ion-icon  *ngIf="r.permission === null" slot="end" name="lock-closed-outline"></ion-icon>
