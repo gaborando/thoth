@@ -4,6 +4,7 @@ import {Form} from "../../common/types/form";
 import {TemplateGuiUtilsService} from "../../services/template-gui-utils.service";
 import {environment} from "../../../environments/environment";
 import {AlertController} from "@ionic/angular";
+import * as CryptoJS from "crypto-js";
 
 @Component({
   selector: 'app-form',
@@ -20,12 +21,41 @@ export class FormPage implements OnInit {
               private alertController: AlertController) {
   }
 
-  ngOnInit() {
-    this.form = JSON.parse(this.route.snapshot.queryParamMap.get('j') || '{}')
-    const last = localStorage.getItem("last_form_" + this.form?.id);
-    if (last) {
-      this.data = JSON.parse(last);
+  async ngOnInit() {
+    const alert = await this.alertController.create({
+      header: 'Insert Password',
+      message: 'This page is password protected.',
+      inputs:[
+        {
+          label: 'Password',
+          type: 'password',
+          name: 'password',
+          placeholder: 'Enter a Password'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'OK'
+        }
+      ]
+    });
+    await alert.present();
+    const resp = await alert.onDidDismiss()
+    const password = resp.data.values.password;
+    const enc = this.route.snapshot.queryParamMap.get('j');
+    if(password && enc){
+      const dec = CryptoJS.AES.decrypt(enc, password).toString(CryptoJS.enc.Utf8);
+      this.form = JSON.parse(dec);
+      const last = localStorage.getItem("last_form_" + this.form?.id);
+      if (last) {
+        this.data = JSON.parse(last);
+      }
     }
+
 
   }
 

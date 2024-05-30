@@ -10,6 +10,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Editor} from "../editor";
 import {AutocompleteProvider} from "../../../common/directives/autocomplete.directive";
 import {Form} from "../../../common/types/form";
+import * as CryptoJS from 'crypto-js';
 
 @Component({
   selector: 'app-template-detail',
@@ -127,18 +128,19 @@ export class TemplateDetailPage implements OnInit {
   }
 
   async toForm() {
-    const api_key = await this.guiUtils.selectApiKey()
-    console.log(api_key);
-    if(api_key) {
+    const {apiKey, password} = await this.guiUtils.selectApiKeyAndPassword()
+    if(apiKey && password) {
       const form: Form = {
         type: 'template',
         id: this.template!.id,
         name: this.template!.name,
         fields: this.template!.markers,
-        token: api_key
+        token: apiKey
 
       }
-      window.open(location.origin + '/form?j=' + JSON.stringify(form), '_blank');
+      const longText = JSON.stringify(form);
+      const c = CryptoJS.AES.encrypt(longText, password).toString();
+      window.open(location.origin + '/form?j=' + encodeURIComponent(c), '_blank');
     }
   }
 }
