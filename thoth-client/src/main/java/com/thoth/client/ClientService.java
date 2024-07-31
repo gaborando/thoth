@@ -22,6 +22,7 @@ import javax.print.attribute.standard.MediaPrintableArea;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterJob;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,19 +59,20 @@ public class ClientService {
     public boolean printSvg(PrintRequest printRequest) {
         printCount++;
         printCount = printCount % 1000000;
-        logger.debug("Print Request Received ({})", printCount);
-        logger.debug("Requested Printer: " + printRequest.getPrintService());
+        var requestId = UUID.randomUUID().toString();
+        logger.debug("{} - Print Request Received ({})",requestId, printCount);
+        logger.debug("{} - Requested Printer: " + printRequest.getPrintService(), requestId);
         if ("NONE".equalsIgnoreCase(printRequest.getPrintService())) {
-            logger.debug("Document Skipped");
+            logger.debug("{} - Document Skipped", requestId);
             return true;
         }
         try {
             PrintService printService = Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
                     .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
-            logger.debug("Starting PDF Generation");
-            var img = Svg2Jpeg.convert(printRequest.getSvg());
+            logger.debug("{} - Starting PDF Generation", requestId);
+            var img = Svg2Jpeg.convert(printRequest.getSvg(), requestId);
             var pdf = Jpeg2Pdf.convert(img);
-            logger.debug("PDF Generated");
+            logger.debug("{} - PDF Generated", requestId);
             PDDocument document = Loader.loadPDF(pdf);
             PrinterJob job = PrinterJob.getPrinterJob();
             job.setPrintService(printService);
@@ -85,12 +87,12 @@ public class ClientService {
             }
             job.setPrintable(new PDFPrintable(document), pf);
             job.setCopies(printRequest.getCopies());
-            logger.debug("Sending Printing Request...");
+            logger.debug("{} - Sending Printing Request...", requestId);
             job.print(attr);
-            logger.debug("Document Printed");
+            logger.debug("{} - Document Printed", requestId);
             return true;
         } catch (Exception e) {
-            logger.error("Error on document printing", e);
+            logger.error(requestId+ " - Error on document printing", e);
             return false;
         }
     }

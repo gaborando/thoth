@@ -1,5 +1,6 @@
 package com.thoth.client;
 
+import com.thoth.common.Svg2Jpeg;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.CommandLineRunner;
@@ -25,6 +26,7 @@ public class ThothClientApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
+		Svg2Jpeg.warmup();
 		logger.info("Thoth Client Starting");
 		logger.info("Thoth Client Registering");
 		clientService.register();

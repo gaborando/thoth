@@ -14,18 +14,32 @@ public class Svg2Jpeg {
 
     public static final Logger logger = LogManager.getLogger(Svg2Jpeg.class);
 
-    public static byte[] convert(String svg) {
+
+    public static void warmup(){
+        logger.info("Warming up Playwright");
+        try(var p = Playwright.create()){
+            logger.info("Playwright Warm-up - Playwright created");
+            try (Browser browser = p.chromium().launch()) {
+                logger.info("Playwright Warm-up - Browser created");
+                try (var page = browser.newPage()){
+                    logger.info("Playwright Warm-up - Page created {}", page);
+                }
+            }
+        }
+    }
+
+    public static byte[] convert(String svg, String requestId) {
         for(int i = 0; i<3; i++) {
-            logger.debug("{} - Convert attempt ({})", svg.hashCode(), i+1);
+            logger.debug("{} - Convert attempt ({})", requestId, i+1);
             try {
                 try (Playwright playwright = Playwright.create()) {
-                    logger.debug("{} - Playwright created {}", svg.hashCode(), playwright.toString());
+                    logger.debug("{} - Playwright created {}", requestId, playwright.toString());
                     try (Browser browser = playwright.chromium().launch()) {
-                        logger.debug("{} - Playwright {} - browser launched {}", svg.hashCode(), playwright.toString(), browser);
+                        logger.debug("{} - Playwright {} - browser launched {}", requestId, playwright.toString(), browser);
                         try (var page = browser.newPage()) {
-                            logger.debug("{} - Playwright {} - browser {} - page created {}", svg.hashCode(), playwright.toString(), browser, page);
+                            logger.debug("{} - Playwright {} - browser {} - page created {}", requestId, playwright.toString(), browser, page);
                             page.setContent(svg);
-                            logger.debug("{} - Playwright {} - browser {} - page  {} - Content set!", svg.hashCode(), playwright.toString(), browser, page);
+                            logger.debug("{} - Playwright {} - browser {} - page  {} - Content set!", requestId, playwright.toString(), browser, page);
                             page.evaluate("""
                                     () => {
                                         var scale = 2;
@@ -45,25 +59,25 @@ public class Svg2Jpeg {
                                         svg.style.setProperty('height', (iHeight * scale) + 'px',  'important');
                                     }
                                     """);
-                            logger.debug("{} - Playwright {} - browser {} - page  {} - Before rendering script Executed!", svg.hashCode(), playwright.toString(), browser, page);
+                            logger.debug("{} - Playwright {} - browser {} - page  {} - Before rendering script Executed!", requestId, playwright.toString(), browser, page);
                             // Wait for the DOMContentLoaded event
                             page.waitForLoadState(LoadState.DOMCONTENTLOADED);
-                            logger.debug("{} - Playwright {} - browser {} - page  {} - DOM content is loaded.", svg.hashCode(), playwright.toString(), browser, page);
+                            logger.debug("{} - Playwright {} - browser {} - page  {} - DOM content is loaded.", requestId, playwright.toString(), browser, page);
 
                             // Optionally, wait for the network to be idle (all network requests are finished)
                             page.waitForLoadState(LoadState.NETWORKIDLE);
-                            logger.debug("{} - Playwright {} - browser {} - page  {} - Network is idle.", svg.hashCode(), playwright.toString(), browser, page);
+                            logger.debug("{} - Playwright {} - browser {} - page  {} - Network is idle.", requestId, playwright.toString(), browser, page);
 
                             // Wait for all images to be completely loaded
                             page.waitForFunction("() => Array.from(document.images).every(img => img.complete && img.naturalHeight !== 0)");
-                            logger.debug("{} - Playwright {} - browser {} - page  {} - All Images Loaded.", svg.hashCode(), playwright.toString(), browser, page);
+                            logger.debug("{} - Playwright {} - browser {} - page  {} - All Images Loaded.", requestId, playwright.toString(), browser, page);
 
-                            logger.debug("{} - Playwright {} - browser {} - page  {} - Rendering Done!", svg.hashCode(), playwright.toString(), browser, page);
+                            logger.debug("{} - Playwright {} - browser {} - page  {} - Rendering Done!", requestId, playwright.toString(), browser, page);
                             var resp =  page.locator("svg")
                                     .screenshot(new Locator.ScreenshotOptions()
                                     .setType(ScreenshotType.JPEG)
                                     .setQuality(100));
-                            logger.debug("{} - Playwright {} - browser {} - page  {} - Screenshot Taken!", svg.hashCode(), playwright.toString(), browser, page);
+                            logger.debug("{} - Playwright {} - browser {} - page  {} - Screenshot Taken!", requestId, playwright.toString(), browser, page);
                             return resp;
                         }
                     }

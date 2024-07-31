@@ -78,7 +78,7 @@ public class RenderService {
     }
 
     private byte[] renderTemplateJpeg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
-        return Svg2Jpeg.convert(renderTemplateSvg(template, params));
+        return Svg2Jpeg.convert(renderTemplateSvg(template, params), UUID.randomUUID().toString());
     }
 
     public byte[] renderTemplateJpeg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
