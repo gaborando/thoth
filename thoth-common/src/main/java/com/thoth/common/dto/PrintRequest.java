@@ -1,4 +1,4 @@
-package org.thoth.common.dto;
+package com.thoth.common.dto;
 
 public class PrintRequest {
     private String printService;

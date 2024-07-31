@@ -3,7 +3,7 @@ package com.thoth.server.receiver;
 import com.thoth.server.service.ClientService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
-import org.thoth.common.dto.RegisterClientRequest;
+import com.thoth.common.dto.RegisterClientRequest;
 
 @Service
 public class ClientReceiver {

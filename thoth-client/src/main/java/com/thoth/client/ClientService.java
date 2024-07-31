@@ -10,10 +10,10 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.thoth.common.Jpeg2Pdf;
-import org.thoth.common.Svg2Jpeg;
-import org.thoth.common.dto.PrintRequest;
-import org.thoth.common.dto.RegisterClientRequest;
+import com.thoth.common.Jpeg2Pdf;
+import com.thoth.common.Svg2Jpeg;
+import com.thoth.common.dto.PrintRequest;
+import com.thoth.common.dto.RegisterClientRequest;
 
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
@@ -37,12 +37,7 @@ public class ClientService {
 
     private long printCount = 0;
 
-
-    @Value("${thoth.render.delay}")
-    private long renderDelay;
-
     private final String[] exclude;
-
 
     public ClientService(RabbitTemplate rabbitTemplate,
                          @Value("${thoth.client.name}") String clientName,
@@ -73,7 +68,7 @@ public class ClientService {
             PrintService printService = Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
                     .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
             logger.debug("Starting PDF Generation");
-            var img = Svg2Jpeg.convert(printRequest.getSvg(), renderDelay);
+            var img = Svg2Jpeg.convert(printRequest.getSvg());
             var pdf = Jpeg2Pdf.convert(img);
             logger.debug("PDF Generated");
             PDDocument document = Loader.loadPDF(pdf);
@@ -115,6 +110,6 @@ public class ClientService {
         for (String printService : request.getPrintServices()) {
             logger.info(" -   " + printService);
         }
-        rabbitTemplate.convertSendAndReceive(serverExchange.getName(), "rpc", request);
+        rabbitTemplate.convertAndSend(serverExchange.getName(), "rpc", request);
     }
 }

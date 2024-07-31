@@ -1,4 +1,4 @@
-package org.thoth.common.dto;
+package com.thoth.common.dto;
 
 import java.io.Serializable;
 import java.util.List;

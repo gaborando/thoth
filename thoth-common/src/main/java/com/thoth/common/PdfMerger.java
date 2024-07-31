@@ -1,4 +1,4 @@
-package org.thoth.common;
+package com.thoth.common;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
