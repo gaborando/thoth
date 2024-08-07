@@ -49,7 +49,7 @@ export class FormPage implements OnInit {
       await alert.present();
       const resp = await alert.onDidDismiss()
       const password = resp.data.values.password;
-      const enc = this.route.snapshot.queryParamMap.get('j');
+      const enc = atob(this.route.snapshot.queryParamMap.get('j') || '');
       try {
         if (password && enc) {
           const dec = CryptoJS.AES.decrypt(enc, password).toString(CryptoJS.enc.Utf8);
@@ -61,6 +61,7 @@ export class FormPage implements OnInit {
           hasError = false;
         }
       } catch (e) {
+        console.error(e);
         hasError = true;
         const err = await this.alertController.create({
           header: 'Error',

@@ -305,7 +305,8 @@ export class RendererDetailPage implements OnInit {
 
       }
       const c = CryptoJS.AES.encrypt(JSON.stringify(form), password);
-      window.open(location.origin + '/form?j=' + c.toString(), '_blank');
+      const enc = btoa(c.toString());
+      window.open(location.origin + '/form?j=' + enc, '_blank');
     }
   }
 }
