@@ -5,6 +5,7 @@ import {ListPage} from "../../../common/utils/ui-patterns/list-page";
 import {ScreenMessageService} from "../../../services/screen-message.service";
 import {IonModal, ModalController} from "@ionic/angular";
 import {SharingOptionsComponent} from "../../../components/sharing-options/sharing-options.component";
+import {GuiUtilsService} from "../../../services/gui-utils.service";
 
 @Component({
   selector: 'app-client-list',
@@ -16,7 +17,8 @@ export class ClientListPage extends ListPage<Client> implements OnInit {
 
   constructor(private clientService: ClientService,
               private screenMessageService: ScreenMessageService,
-              private modalController: ModalController) {
+              private modalController: ModalController,
+              public guiUtils: GuiUtilsService) {
     super(clientService)
   }
 
@@ -41,4 +43,6 @@ export class ClientListPage extends ListPage<Client> implements OnInit {
       return modal.dismiss();
     })
   }
+
+    protected readonly navigator = navigator;
 }

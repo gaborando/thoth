@@ -47,6 +47,15 @@
                            appAutocomplete [autocompleteProvider]="folderAutocomplete">
                 </ion-input>
               </ion-item>
+              <ion-item>
+                <ion-label>Id</ion-label>
+                {{template.id}}
+                <ion-button slot="end" fill="clear" (click)="navigator.clipboard.writeText(template.id); guiUtils.copied()">
+                  <ion-icon slot="icon-only" name="copy" tappable="true" >
+                  </ion-icon>
+                </ion-button>
+
+              </ion-item>
             </ion-card-content>
           </ion-card>
         </ion-col>
@@ -145,6 +154,11 @@
                 <ion-item>
                   <ion-label>Folder</ion-label>
                   <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+                </ion-item>
+                <ion-item>
+                  <ion-label>Id</ion-label>
+                  <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+                  <ion-icon slot="end" name="copy" tappable="true"></ion-icon>
                 </ion-item>
               </ion-card-content>
             </ion-card>

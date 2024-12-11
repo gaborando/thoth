@@ -20,184 +20,224 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content >
-<ng-container *ngIf="renderer else loading">
-  <form>
-    <ion-item>
-      <ion-label>Name</ion-label>
-      <ion-input [readonly]="renderer.permission !== 'W'" name="name" [(ngModel)]="renderer.name"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label>Template</ion-label>
-      <ion-input [readonly]="renderer.permission !== 'W'"  name="template" [(ngModel)]="renderer.template.name" readonly="true"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label>Datasource</ion-label>
-      <app-typeahead-select [readonly]="renderer.permission !== 'W'"  slot="end" [multiple]="true" [fetcher]="datasourceService"
-                            [value]="renderer.datasourceProperties"
-                            (confirm)="renderer.datasourceProperties = $event; updateAvailableAssociations($event)"></app-typeahead-select>
-    </ion-item>
-    <ion-grid>
-      <ion-row>
-        <ion-col size="8">
+<ion-content>
+  <ng-container *ngIf="renderer else loading">
+    <form>
+      <ion-item>
+        <ion-label>Name</ion-label>
+        <ion-input [readonly]="renderer.permission !== 'W'" name="name" [(ngModel)]="renderer.name"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Template</ion-label>
+        <ion-input [readonly]="renderer.permission !== 'W'" name="template" [(ngModel)]="renderer.template.name"
+                   readonly="true"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Id</ion-label>
+        {{ renderer.id }}
+        <ion-button slot="end" fill="clear" (click)="navigator.clipboard.writeText(renderer.id); guiUtils.copied()">
+          <ion-icon slot="icon-only" name="copy" tappable="true">
+          </ion-icon>
+        </ion-button>
 
-          <ion-card style="height: 100%">
-            <ion-card-header>
-              <ion-card-title>Association Map</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
+      </ion-item>
+      <ion-item>
+        <ion-label>Datasource</ion-label>
+        <app-typeahead-select [readonly]="renderer.permission !== 'W'" slot="end" [multiple]="true"
+                              [fetcher]="datasourceService"
+                              [value]="renderer.datasourceProperties"
+                              (confirm)="renderer.datasourceProperties = $event; updateAvailableAssociations($event)"></app-typeahead-select>
+      </ion-item>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="8">
 
-              <ion-item *ngFor="let p of renderer.template.markers.sort()" #i
-                        (click)="presentPopover(popover, $event, i)">
-                <ion-grid class="ion-no-padding" (click)="$event.preventDefault()">
-                  <ion-row>
-                    <ion-col size="4">{{p}}</ion-col>
-                    <ion-col>
-                      <ng-container *ngIf="renderer.associationMap[p]?.association else empty">
-                        <ng-container *ngIf="renderer.associationMap[p]?.association?.ds else parameter">
-                          {{renderer.associationMap[p].association.ds.name}}
-                          - {{renderer.associationMap[p].association.property.name}}
-                        </ng-container>
-                        <ng-template #parameter>
-                          Parameter
-                        </ng-template>
-                      </ng-container>
-                      <ng-template #empty>
-                        Empty
-                      </ng-template>
-                    </ion-col>
-                  </ion-row>
-                </ion-grid>
-                <ion-popover #popover>
-                  <ng-template>
-                    <ion-content style="max-height: 350px;">
-                      <ion-item>
-                        <ion-searchbar #sb></ion-searchbar>
-                      </ion-item>
-                      <ion-item (click)="updateAssociationMap(p, null); popover.dismiss()" tappable="true">Empty
-                      </ion-item>
-                      <ion-item (click)="updateAssociationMap(p, 'parameter'); popover.dismiss()">Parameter</ion-item>
-                      <ng-container *ngFor="let ap of availableProperties">
-                        <ion-item
-                          *ngIf="ap.ds.name.toLowerCase().includes(sb.value?.toLowerCase() + '') || ap.property.name.toLowerCase().includes(sb.value?.toLowerCase() + '')"
-                          tappable="true" (click)="updateAssociationMap(p, ap); popover.dismiss()">
-                          {{ap.ds.name}}
-                          - {{ap.property.name}} ({{ap.property.helper}})
-                        </ion-item>
-                      </ng-container>
+            <ion-card style="height: 100%">
+              <ion-card-header>
+                <ion-card-title>Association Map</ion-card-title>
+                <ion-buttons style="position: absolute;
+    right: 6px;
+    top: 6px;">
+                  <ion-button (click)="importFromClipboard()">
+                    <ion-icon name="download-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  <ion-button (click)="copyToClipboard(renderer)">
+                    <ion-icon name="copy" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-card-header>
+              <ion-card-content>
 
-                    </ion-content>
-
-                  </ng-template>
-                </ion-popover>
-                <!--
-                <ion-select style="max-width: 100%" #s interface="popover" (ionChange)="updateAssociationMap(p, s.value)" [value]="oldAssoc[p]"
-                            placeholder="Datasource">
-                  <ion-select-option [value]="null"><ion-text color="light">Empty</ion-text></ion-select-option>
-                  <ion-select-option value="parameter">Parameter</ion-select-option>
-                  <ion-select-option *ngFor="let p of availableProperties" [value]="p">{{p.ds.name}}
-                    - {{p.property.name}} ({{p.property.helper}})</ion-select-option>
-                </ion-select>-->
-
-              </ion-item>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-        <ion-col size="4">
-          <ion-card>
-            <ion-card-header>
-              <ion-card-title>{{renderer.template.name}}</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <ion-img class="ion-padding" style="height: 300px" [src]="renderer.template.img"></ion-img>
-            </ion-card-content>
-            <ion-button *ngIf="renderer.template.permission !== 'W' else edit" fill="clear" color="secondary" (click)="openViewer(renderer.template)">View</ion-button>
-            <ng-template #edit>
-              <ion-button  fill="clear" color="secondary" routerLink="/template-detail/{{renderer.template.id}}">Edit</ion-button>
-            </ng-template>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-      <ion-row *ngIf="this.renderer?.datasourceProperties?.length">
-        <ion-col>
-          <ion-card>
-            <ion-card-header>
-              <ion-card-title>Parameters</ion-card-title>
-            </ion-card-header>
-            <ion-card-content>
-              <ng-container *ngFor="let p of this.parameters">
-                <ion-item #i (click)="presentPopover(paramPopover, $event, i)">
+                <ion-item *ngFor="let p of renderer.template.markers.sort()" #i
+                          (click)="presentPopover(popover, $event, i)">
                   <ion-grid class="ion-no-padding" (click)="$event.preventDefault()">
                     <ion-row>
-                      <ion-col size="4">{{p}}</ion-col>
+                      <ion-col size="4">{{ p }}</ion-col>
                       <ion-col>
-                        <ng-container *ngIf="renderer.parametersMap[p]?.association?.ds else parameter">
-                          {{renderer.parametersMap[p].association.ds.name}}
-                          - {{renderer.parametersMap[p].association.property.name}}
+                        <ng-container *ngIf="renderer.associationMap[p]?.association else empty">
+                          <ng-container *ngIf="renderer.associationMap[p]?.association?.ds else parameter">
+                            {{ renderer.associationMap[p].association.ds.name }}
+                            - {{ renderer.associationMap[p].association.property.name }}
+                          </ng-container>
+                          <ng-template #parameter>
+                            Parameter
+                          </ng-template>
                         </ng-container>
-                        <ng-template #parameter>
-                          Parameter
+                        <ng-template #empty>
+                          Empty
                         </ng-template>
                       </ion-col>
                     </ion-row>
                   </ion-grid>
-                </ion-item>
-                <ion-popover #paramPopover>
-                  <ng-template>
-                    <ion-content style="max-height: 350px;">
-                      <ion-item>
-                        <ion-searchbar #sb></ion-searchbar>
-                      </ion-item>
-                      <ion-item (click)="updateParameterMap(p, 'parameter'); paramPopover.dismiss()">Parameter
-                      </ion-item>
-                      <ng-container *ngFor="let ap of availableProperties">
-                        <ion-item
-                          *ngIf="ap.ds.name.toLowerCase().includes(sb.value?.toLowerCase() + '') || ap.property.name.toLowerCase().includes(sb.value?.toLowerCase() + '')"
-                          tappable="true"
-                          (click)="updateParameterMap(p, ap); paramPopover.dismiss()">
-                          {{ap.ds.name}}
-                          - {{ap.property.name}} ({{ap.property.helper}})
+                  <ion-popover #popover>
+                    <ng-template>
+                      <ion-content style="max-height: 350px;">
+                        <ion-item>
+                          <ion-searchbar #sb></ion-searchbar>
                         </ion-item>
-                      </ng-container>
+                        <ion-item (click)="updateAssociationMap(p, null); popover.dismiss()" tappable="true">Empty
+                        </ion-item>
+                        <ion-item (click)="updateAssociationMap(p, 'parameter'); popover.dismiss()">Parameter</ion-item>
+                        <ng-container *ngFor="let ap of availableProperties">
+                          <ion-item
+                            *ngIf="ap.ds.name.toLowerCase().includes(sb.value?.toLowerCase() + '') || ap.property.name.toLowerCase().includes(sb.value?.toLowerCase() + '')"
+                            tappable="true" (click)="updateAssociationMap(p, ap); popover.dismiss()">
+                            {{ ap.ds.name }}
+                            - {{ ap.property.name }} ({{ ap.property.helper }})
+                          </ion-item>
+                        </ng-container>
 
-                    </ion-content>
+                      </ion-content>
 
-                  </ng-template>
-                </ion-popover>
-              </ng-container>
-            </ion-card-content>
-          </ion-card>
+                    </ng-template>
+                  </ion-popover>
+                  <!--
+                  <ion-select style="max-width: 100%" #s interface="popover" (ionChange)="updateAssociationMap(p, s.value)" [value]="oldAssoc[p]"
+                              placeholder="Datasource">
+                    <ion-select-option [value]="null"><ion-text color="light">Empty</ion-text></ion-select-option>
+                    <ion-select-option value="parameter">Parameter</ion-select-option>
+                    <ion-select-option *ngFor="let p of availableProperties" [value]="p">{{p.ds.name}}
+                      - {{p.property.name}} ({{p.property.helper}})</ion-select-option>
+                  </ion-select>-->
 
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <app-sharing-options [securedResource]="renderer"></app-sharing-options>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <app-backup-manager *ngIf="renderer" resourceType="RENDERER" [resourceId]="renderer.id" [canWrite]="renderer.permission === 'W'"
-                              (restoreEmitter)="init($event)"></app-backup-manager>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+                </ion-item>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col size="4">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>{{ renderer.template.name }}</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-img class="ion-padding" style="height: 300px" [src]="renderer.template.img"></ion-img>
+              </ion-card-content>
+              <ion-button *ngIf="renderer.template.permission !== 'W' else edit" fill="clear" color="secondary"
+                          (click)="openViewer(renderer.template)">View
+              </ion-button>
+              <ng-template #edit>
+                <ion-button fill="clear" color="secondary" routerLink="/template-detail/{{renderer.template.id}}">Edit
+                </ion-button>
+              </ng-template>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="this.renderer?.datasourceProperties?.length">
+          <ion-col>
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Parameters</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ng-container *ngFor="let p of this.parameters">
+                  <ion-item #i (click)="presentPopover(paramPopover, $event, i)">
+                    <ion-grid class="ion-no-padding" (click)="$event.preventDefault()">
+                      <ion-row>
+                        <ion-col size="4">{{ p }}</ion-col>
+                        <ion-col>
+                          <ng-container *ngIf="renderer.parametersMap[p]?.association?.ds else parameter">
+                            {{ renderer.parametersMap[p].association.ds.name }}
+                            - {{ renderer.parametersMap[p].association.property.name }}
+                          </ng-container>
+                          <ng-template #parameter>
+                            Parameter
+                          </ng-template>
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                  </ion-item>
+                  <ion-popover #paramPopover>
+                    <ng-template>
+                      <ion-content style="max-height: 350px;">
+                        <ion-item>
+                          <ion-searchbar #sb></ion-searchbar>
+                        </ion-item>
+                        <ion-item (click)="updateParameterMap(p, 'parameter'); paramPopover.dismiss()">Parameter
+                        </ion-item>
+                        <ng-container *ngFor="let ap of availableProperties">
+                          <ion-item
+                            *ngIf="ap.ds.name.toLowerCase().includes(sb.value?.toLowerCase() + '') || ap.property.name.toLowerCase().includes(sb.value?.toLowerCase() + '')"
+                            tappable="true"
+                            (click)="updateParameterMap(p, ap); paramPopover.dismiss()">
+                            {{ ap.ds.name }}
+                            - {{ ap.property.name }} ({{ ap.property.helper }})
+                          </ion-item>
+                        </ng-container>
 
-  </form>
-</ng-container>
+                      </ion-content>
+
+                    </ng-template>
+                  </ion-popover>
+                </ng-container>
+              </ion-card-content>
+            </ion-card>
+
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <app-sharing-options [securedResource]="renderer"></app-sharing-options>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <app-backup-manager *ngIf="renderer" resourceType="RENDERER" [resourceId]="renderer.id"
+                                [canWrite]="renderer.permission === 'W'"
+                                (restoreEmitter)="init($event)"></app-backup-manager>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+    </form>
+  </ng-container>
   <ng-template #loading>
     <form>
       <ion-item>
         <ion-label>Name</ion-label>
-        <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+        <ion-label>
+          <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+        </ion-label>
       </ion-item>
       <ion-item>
         <ion-label>Template</ion-label>
-        <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+        <ion-label>
+          <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>Id</ion-label>
+        <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+        <ion-button slot="end" fill="clear" [disabled]="true">
+          <ion-icon slot="icon-only" name="copy" tappable="true">
+          </ion-icon>
+        </ion-button>
+
       </ion-item>
       <ion-item>
         <ion-label>Datasource</ion-label>
-        <ion-label><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-label>
+        <ion-label>
+          <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+        </ion-label>
       </ion-item>
       <ion-grid>
         <ion-row>
@@ -213,7 +253,8 @@
                   <ion-grid class="ion-no-padding">
                     <ion-row>
                       <ion-col size="4">
-                       <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-col>
+                        <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+                      </ion-col>
                       <ion-col>
                         <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
                       </ion-col>
@@ -227,10 +268,12 @@
           <ion-col size="4">
             <ion-card>
               <ion-card-header>
-                <ion-card-title><ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text></ion-card-title>
+                <ion-card-title>
+                  <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
               </ion-card-header>
               <ion-card-content>
-                <ion-img class="ion-padding" style="height: 300px" >
+                <ion-img class="ion-padding" style="height: 300px">
                   <ion-skeleton-text animated="true" style="width: 80%"></ion-skeleton-text>
                 </ion-img>
               </ion-card-content>
@@ -242,7 +285,6 @@
 
     </form>
   </ng-template>
-
 
 
 </ion-content>
@@ -257,7 +299,8 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <ion-button *ngIf="renderer?.permission === 'W'" fill="clear" color="primary" (click)="updateRenderer()" class="ion-margin-horizontal"
+      <ion-button *ngIf="renderer?.permission === 'W'" fill="clear" color="primary" (click)="updateRenderer()"
+                  class="ion-margin-horizontal"
                   [disabled]="!renderer?.name">Save
       </ion-button>
     </ion-buttons>

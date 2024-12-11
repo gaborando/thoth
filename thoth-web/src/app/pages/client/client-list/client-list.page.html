@@ -38,7 +38,11 @@
             <ion-card-title>
               {{c.name}}
             </ion-card-title>
+            <ion-card-subtitle>
+              {{c.identifier}} <ion-icon name="copy" tappable="true" (click)="navigator.clipboard.writeText(c.identifier); guiUtils.copied()"></ion-icon>
+            </ion-card-subtitle>
           </ion-card-header>
+
           <ion-card-content>
             <ul>
               <li *ngFor="let s of c.printServices">

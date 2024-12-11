@@ -23,7 +23,7 @@ import * as CryptoJS from "crypto-js";
 })
 export class RendererDetailPage implements OnInit {
   renderer: Renderer | null = null;
-  availableProperties: {ds: Datasource, property: {name: string, helper: string}}[] = [];
+  availableProperties: { ds: Datasource, property: { name: string, helper: string } }[] = [];
   parameters = new Set<string>();
 
   ref = this;
@@ -36,7 +36,7 @@ export class RendererDetailPage implements OnInit {
               private clientService: ClientService,
               public datasourceService: DataSourceService,
               private loadingController: LoadingController,
-              private guiUtils: GuiUtilsService,
+              public guiUtils: GuiUtilsService,
               private templateGuiUtils: TemplateGuiUtilsService) {
   }
 
@@ -46,10 +46,10 @@ export class RendererDetailPage implements OnInit {
 
   }
 
-  init(resp: Renderer){
+  init(resp: Renderer) {
     this.availableProperties = [];
     this.parameters = new Set<string>();
-    const tmp: {ds: Datasource, property: {name: string, helper: string}}[] = [];
+    const tmp: { ds: Datasource, property: { name: string, helper: string } }[] = [];
     for (const d of resp.datasourceProperties) {
       for (const p of d.properties) {
         tmp.push({
@@ -59,7 +59,7 @@ export class RendererDetailPage implements OnInit {
       }
       for (const p of d.parameters) {
         this.parameters.add(p);
-        if(!resp.parametersMap[p]){
+        if (!resp.parametersMap[p]) {
           resp.parametersMap[p] = {
             type: 'parameter',
             id: null,
@@ -102,7 +102,7 @@ export class RendererDetailPage implements OnInit {
       }
       for (const p of d.parameters) {
         this.parameters.add(p);
-        if(!this.renderer?.parametersMap[p] && this.renderer){
+        if (!this.renderer?.parametersMap[p] && this.renderer) {
           this.renderer.parametersMap[p] = {
             type: 'parameter',
             id: null,
@@ -203,7 +203,7 @@ export class RendererDetailPage implements OnInit {
           {text: 'Cancel', role: 'cancel'},
           {
             text: 'OK', handler: async (e) =>
-              window.open((await environment()).apiUrl + '/renderer/' + this.renderer?.id + '/render/'+e+'?' + query.toString())
+              window.open((await environment()).apiUrl + '/renderer/' + this.renderer?.id + '/render/' + e + '?' + query.toString())
           }
         ]
       });
@@ -212,7 +212,6 @@ export class RendererDetailPage implements OnInit {
 
     }
   }
-
 
 
   async printRenderer() {
@@ -262,7 +261,7 @@ export class RendererDetailPage implements OnInit {
   }
 
   presentPopover(popover: IonPopover, $event: MouseEvent, i: any) {
-    if(this.renderer?.permission !== 'W') return
+    if (this.renderer?.permission !== 'W') return
     popover.present({...$event, target: i.el});
   }
 
@@ -295,7 +294,7 @@ export class RendererDetailPage implements OnInit {
 
   async toForm() {
     const {apiKey, password} = await this.guiUtils.selectApiKeyAndPassword()
-    if(apiKey && password) {
+    if (apiKey && password) {
       const form: Form = {
         type: 'renderer',
         id: this.renderer!.id,
@@ -307,6 +306,31 @@ export class RendererDetailPage implements OnInit {
       const c = CryptoJS.AES.encrypt(JSON.stringify(form), password);
       const enc = btoa(c.toString());
       window.open(location.origin + '/form?j=' + enc, '_blank');
+    }
+  }
+
+  protected readonly navigator = navigator;
+
+  async copyToClipboard(renderer: Renderer) {
+    await navigator.clipboard.writeText(JSON.stringify({
+      datasourceProperties: renderer.datasourceProperties,
+      associationMap: renderer.associationMap
+    }));
+    return this.guiUtils.copied();
+  }
+
+  async importFromClipboard() {
+    const clipboard = await navigator.clipboard.readText();
+    const renderer = JSON.parse(clipboard);
+    const already = this.renderer!.datasourceProperties.map(ds => ds.id);
+    for (let ds of renderer.datasourceProperties) {
+      if(ds.id && !already.includes(ds.id)){
+        this.renderer!.datasourceProperties.push(ds);
+      }
+    }
+    const keys = Object.keys(this.renderer!.associationMap);
+    for (let key of keys) {
+      this.renderer!.associationMap[key] = renderer.associationMap[key];
     }
   }
 }

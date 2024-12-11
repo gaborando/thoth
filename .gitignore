@@ -42,3 +42,4 @@ tunnel_mysql.bat
 tunnel_rabbitmq.bat
 
 docker/thoth-local
+scripts

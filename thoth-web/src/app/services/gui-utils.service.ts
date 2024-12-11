@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {AlertController, ModalController} from "@ionic/angular";
+import {AlertController, ModalController, ToastController} from "@ionic/angular";
 import {PrintRequestModalComponent} from "../components/modals/print-request-modal/print-request-modal.component";
 import {ParametersFormComponent} from "../components/modals/parameters-form/parameters-form.component";
 import {Template} from "../common/types/template";
@@ -16,7 +16,8 @@ export class GuiUtilsService {
   constructor(private modalController: ModalController,
               private alertController: AlertController,
               private apiKeyService: ApiKeyService,
-              private screenMessageService: ScreenMessageService) { }
+              private screenMessageService: ScreenMessageService,
+              private toastController: ToastController) { }
 
   async printRequestModal(){
     const modal = await this.modalController.create({
@@ -71,5 +72,14 @@ export class GuiUtilsService {
     await alert.present();
     const resp = await alert.onDidDismiss()
     return {apiKey: resp.data.values.apiKey, password: resp.data.values.password}
+  }
+
+  async copied() {
+    const toast = await this.toastController.create({
+      message: 'Copied in clipboard!',
+      duration: 2000,
+      color: 'success'
+    });
+    return toast.present();
   }
 }

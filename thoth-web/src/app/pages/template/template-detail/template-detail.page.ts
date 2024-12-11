@@ -31,7 +31,7 @@ export class TemplateDetailPage implements OnInit {
               private navController: NavController,
               private templateGuiUtils: TemplateGuiUtilsService,
               private route: ActivatedRoute,
-              private guiUtils: GuiUtilsService) {
+              public guiUtils: GuiUtilsService) {
     this.folderAutocomplete = {
       async fetch(txt: string) {
         return templateService.getFolders().then(s => s.filter(ss => ss.startsWith(txt)));
@@ -143,4 +143,7 @@ export class TemplateDetailPage implements OnInit {
       window.open(location.origin + '/form?j=' + encodeURIComponent(c), '_blank');
     }
   }
+
+  protected readonly window = window;
+  protected readonly navigator = navigator;
 }
