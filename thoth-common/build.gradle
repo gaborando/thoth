@@ -15,10 +15,19 @@ dependencies {
 
 
     // https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
-    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.0-alpha2'
     implementation 'com.microsoft.playwright:playwright:1.45.1'
     implementation 'org.apache.logging.log4j:log4j-api:2.23.1'
     implementation 'org.apache.logging.log4j:log4j-core:2.23.1'
+
+
+
+    // https://mvnrepository.com/artifact/com.openhtmltopdf/openhtmltopdf-pdfbox
+    implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
+
+
+
+
+
 }
 
 test {

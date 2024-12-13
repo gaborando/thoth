@@ -61,14 +61,16 @@ public class ClientService {
         printCount = printCount % 1000000;
         var requestId = UUID.randomUUID().toString();
         logger.debug("{} - Print Request Received ({})",requestId, printCount);
-        logger.debug("{} - Requested Printer: " + printRequest.getPrintService(), requestId);
+        logger.debug("{} - Requested Printer: {}", requestId, printRequest.getPrintService());
         if ("NONE".equalsIgnoreCase(printRequest.getPrintService())) {
             logger.debug("{} - Document Skipped", requestId);
             return true;
         }
         try {
             PrintService printService = Arrays.stream(PrintServiceLookup.lookupPrintServices(null, null))
-                    .filter(s -> s.getName().equals(printRequest.getPrintService())).findFirst().orElseThrow();
+                    .filter(s -> s.getName().equals(printRequest.getPrintService()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Print service not found: " + printRequest.getPrintService()));
             logger.debug("{} - Starting PDF Generation", requestId);
             var img = Svg2Jpeg.convert(printRequest.getSvg(), requestId);
             var pdf = Jpeg2Pdf.convert(img);
@@ -107,10 +109,10 @@ public class ClientService {
                 .filter(n -> Arrays.stream(exclude).noneMatch(e -> e.equals(n)))
                 .collect(Collectors.toList()));
         request.getPrintServices().add("NONE");
-        logger.info("Registering client " + request.getName() + " [" + request.getIdentifier() + "]");
+        logger.info("Registering client {} [{}]", request.getName(), request.getIdentifier());
         logger.info("Detected PrintServices:");
         for (String printService : request.getPrintServices()) {
-            logger.info(" -   " + printService);
+            logger.info(" -   {}", printService);
         }
         rabbitTemplate.convertAndSend(serverExchange.getName(), "rpc", request);
     }
