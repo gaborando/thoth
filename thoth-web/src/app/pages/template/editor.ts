@@ -101,6 +101,8 @@ export class Editor {
               defaultLibraries: "general;thoth-elements",
               enableCustomLibraries: true,
               enabledLibraries: ["general", "thoth-elements"],
+              enableCssDarkMode: false,
+              defaultAdaptiveColors: "none",
               libraries: [{
                 "title": {
                   "main": "THOTH"
