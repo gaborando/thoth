@@ -27,7 +27,7 @@ public class ThothClientApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		Svg2Jpeg.warmup();
-		logger.info("Thoth Client Starting");
+		logger.info("Thoth Client Starting (v1.0.14)");
 		logger.info("Thoth Client Registering");
 		clientService.register();
 		logger.info("Thoth Client Registered");
