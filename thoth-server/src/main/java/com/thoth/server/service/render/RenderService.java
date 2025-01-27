@@ -1,7 +1,6 @@
 package com.thoth.server.service.render;
 
 import com.hubspot.jinjava.Jinjava;
-import com.thoth.common.MxGraph2Any;
 import com.thoth.server.configuration.security.SecuredTimestampService;
 import com.thoth.server.controller.dto.RenderRequest;
 import com.thoth.server.controller.view.AssociationView;
@@ -15,8 +14,11 @@ import com.thoth.server.service.render.pipes.DatePipe;
 import com.thoth.server.service.render.pipes.NumberPipe;
 import com.thoth.server.service.render.pipes.PaddingPipe;
 import com.thoth.server.service.render.pipes.TrimPipe;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.thoth.common.Jpeg2Pdf;
 import com.thoth.common.PdfMerger;
+import com.thoth.common.Svg2Jpeg;
 
 import java.io.IOException;
 import java.util.*;
@@ -59,6 +61,7 @@ public class RenderService {
     }
 
     public String renderTemplateSvg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
+
         var allParams = new  HashMap<String, Object>();
         for (String marker : template.getMarkers()) {
             allParams.put(marker, "");
@@ -74,26 +77,8 @@ public class RenderService {
         return jinjava.render(svg, allParams);
     }
 
-    private String renderTemplateXml(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
-
-        var allParams = new  HashMap<String, Object>();
-        for (String marker : template.getMarkers()) {
-            allParams.put(marker, "");
-        }
-        allParams.putAll(params);
-        var tmpKey = securedTimestampService.generate();
-        var svg = template.getXml().replace("&#39;","'");
-        // Image Embedding Correction
-        svg = svg.replace("https://embed.diagrams.net/{{", "{{");
-        svg = svg.replace("utils/barcode?", "utils/barcode?TMP_KEY=" + tmpKey + "&amp;");
-        svg = svg.replace("utils/qrcode?", "utils/qrcode?TMP_KEY=" + tmpKey + "&amp;");
-
-        return jinjava.render(svg, allParams);
-    }
-
-
     private byte[] renderTemplateJpeg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
-        return MxGraph2Any.convertDrawIoToJpeg(renderTemplateXml(template, params));
+        return Svg2Jpeg.convert(renderTemplateSvg(template, params), UUID.randomUUID().toString());
     }
 
     public byte[] renderTemplateJpeg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
@@ -109,9 +94,8 @@ public class RenderService {
     }
 
     public byte[] renderTemplatePdf(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
-        return MxGraph2Any.convertDrawIoToPdf(
-                renderTemplateXml(template, params)
-        );
+        var img = renderTemplateJpeg(template, params);
+        return Jpeg2Pdf.convert(img);
     }
 
     public byte[] renderMultiTemplatePdf(List<RenderRequest> requests) throws Exception {
@@ -126,12 +110,8 @@ public class RenderService {
     }
 
     public byte[] renderRendererPdf(String identifier, HashMap<String, Object> params) throws Exception {
-        var renderer = rendererService.findByIdUnsafe(identifier).orElseThrow();
-        return renderRendererPdf(renderer, params);
-    }
-
-    public byte[] renderRendererPdf(Renderer renderer, HashMap<String, Object> params) throws Exception {
-        return renderTemplatePdf(renderer.getTemplate(), generateParams(renderer, params));
+        var img = renderRendererJpeg(identifier, params);
+        return Jpeg2Pdf.convert(img);
     }
 
     public byte[] renderMultiRendererPdf(List<RenderRequest> requests) throws Exception {
