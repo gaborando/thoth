@@ -1,5 +1,6 @@
 package com.thoth.server.receiver;
 
+import com.thoth.common.dto.ClientQueueMode;
 import com.thoth.server.service.ClientService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,6 @@ public class ClientReceiver {
     @RabbitListener(queues = "thoth.server.rpc.requests")
     public void register(RegisterClientRequest request) {
         clientService.register(request.getIdentifier(), request.getName(), request.getOwnerSID(),
-                request.getPrintServices());
+                request.getPrintServices(), ClientQueueMode.AMQP, request.getOwnerSID());
     }
 }

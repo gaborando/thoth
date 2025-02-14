@@ -38,4 +38,5 @@ out/
 
 
 /src/main/resources/application-local.properties
+/src/main/resources/application-local-thoth.properties
 out

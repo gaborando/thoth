@@ -1,6 +1,7 @@
 package com.thoth.common.dto;
 
 public class PrintRequest {
+    private String identifier;
     private String printService;
     private String svg;
 
@@ -28,5 +29,13 @@ public class PrintRequest {
 
     public void setCopies(Integer copies) {
         this.copies = copies;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 }

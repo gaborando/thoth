@@ -193,10 +193,12 @@ public class RenderService {
     }
 
     public void printRenderer(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService, Integer copies) throws Exception {
-        clientService.printSvg(clientIdentifier, printService, renderRendererSvg(identifier, parameters), copies);
+        var renderer = rendererService.findByIdUnsafe(identifier).orElseThrow();
+        clientService.printSvg(clientIdentifier, printService, renderRendererSvg(renderer, parameters), copies, renderer, parameters);
     }
 
     public void printTemplate(String identifier, HashMap<String, Object> parameters, String clientIdentifier, String printService, Integer copies) throws IOException, InterruptedException {
-        clientService.printSvg(clientIdentifier, printService, renderTemplateSvg(identifier, parameters), copies);
+        var template = templateService.getByIdUnsafe(identifier).orElseThrow();
+        clientService.printSvg(clientIdentifier, printService, renderTemplateSvg(identifier, parameters), copies, template, parameters);
     }
 }
