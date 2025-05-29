@@ -1,15 +1,8 @@
 package com.thoth.common.dto;
 
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Playwright;
-import com.microsoft.playwright.options.LoadState;
-import com.microsoft.playwright.options.ScreenshotType;
-import com.thoth.common.Svg2Jpeg;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.*;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 

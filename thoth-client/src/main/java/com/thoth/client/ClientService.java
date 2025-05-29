@@ -6,14 +6,10 @@ import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPrintable;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import com.thoth.common.Jpeg2Pdf;
-import com.thoth.common.Svg2Jpeg;
+import com.thoth.common.Svg2File;
 import com.thoth.common.dto.PrintRequest;
 import com.thoth.common.dto.RegisterClientRequest;
 
@@ -22,7 +18,6 @@ import javax.print.PrintServiceLookup;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.standard.MediaPrintableArea;
 import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -78,8 +73,7 @@ public class ClientService {
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Print service not found: " + printRequest.getPrintService()));
             logger.debug("{} - Starting PDF Generation", requestId);
-            var img = Svg2Jpeg.convert(printRequest.getSvg(), requestId);
-            var pdf = Jpeg2Pdf.convert(img);
+            var pdf = Svg2File.convertToPdf(printRequest.getSvg(), requestId);
             logger.debug("{} - PDF Generated", requestId);
             PDDocument document = Loader.loadPDF(pdf);
             logger.debug("{} - PDF Document loaded", requestId);

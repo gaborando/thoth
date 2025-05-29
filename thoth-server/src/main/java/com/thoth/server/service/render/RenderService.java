@@ -14,11 +14,9 @@ import com.thoth.server.service.render.pipes.DatePipe;
 import com.thoth.server.service.render.pipes.NumberPipe;
 import com.thoth.server.service.render.pipes.PaddingPipe;
 import com.thoth.server.service.render.pipes.TrimPipe;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import com.thoth.common.Jpeg2Pdf;
 import com.thoth.common.PdfMerger;
-import com.thoth.common.Svg2Jpeg;
+import com.thoth.common.Svg2File;
 
 import java.io.IOException;
 import java.util.*;
@@ -78,7 +76,7 @@ public class RenderService {
     }
 
     private byte[] renderTemplateJpeg(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
-        return Svg2Jpeg.convert(renderTemplateSvg(template, params), UUID.randomUUID().toString());
+        return Svg2File.convertToJpeg(renderTemplateSvg(template, params), UUID.randomUUID().toString());
     }
 
     public byte[] renderTemplateJpeg(String identifier, HashMap<String, Object> params) throws IOException, InterruptedException {
@@ -94,14 +92,13 @@ public class RenderService {
     }
 
     public byte[] renderTemplatePdf(Template template, HashMap<String, Object> params) throws IOException, InterruptedException {
-        var img = renderTemplateJpeg(template, params);
-        return Jpeg2Pdf.convert(img);
+        return Svg2File.convertToPdf(renderTemplateSvg(template, params), UUID.randomUUID().toString());
     }
 
     public byte[] renderMultiTemplatePdf(List<RenderRequest> requests) throws Exception {
         return PdfMerger.merge(requests.stream().map(r -> {
             try {
-                return renderTemplateJpeg(r.getIdentifier(), r.getParameters());
+                return renderTemplatePdf(r.getIdentifier(), r.getParameters());
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -110,14 +107,14 @@ public class RenderService {
     }
 
     public byte[] renderRendererPdf(String identifier, HashMap<String, Object> params) throws Exception {
-        var img = renderRendererJpeg(identifier, params);
-        return Jpeg2Pdf.convert(img);
+        var img = renderTemplateSvg(identifier, params);
+        return Svg2File.convertToPdf(img, UUID.randomUUID().toString());
     }
 
     public byte[] renderMultiRendererPdf(List<RenderRequest> requests) throws Exception {
         return PdfMerger.merge(requests.stream().map(r -> {
             try {
-                return renderRendererJpeg(r.getIdentifier(), r.getParameters());
+                return renderRendererPdf(r.getIdentifier(), r.getParameters());
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
