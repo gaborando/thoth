@@ -31,7 +31,7 @@ public class ApiKeyController {
     public ResponseEntity<Page<ApiKey>> findAll(
             @RequestParam(defaultValue = "0") int page
     ) {
-        return ResponseEntity.ok(apiKeyService.search(Specification.where(null),
+        return ResponseEntity.ok(apiKeyService.search(Specification.allOf(),
                 PageRequest.of(page, 10, Sort.by(Sort.Order.asc("createdAt")))).map(k -> {
                     k.setApiKey(null);
                     return k;

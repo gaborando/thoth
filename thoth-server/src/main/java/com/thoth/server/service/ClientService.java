@@ -1,6 +1,5 @@
 package com.thoth.server.service;
 
-import com.thoth.common.dto.ClientQueueMode;
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.controller.view.PrintingRequestView;
 import com.thoth.server.model.domain.*;
@@ -8,7 +7,6 @@ import com.thoth.server.model.domain.security.Permission;
 import com.thoth.server.model.domain.security.ResourcePermission;
 import com.thoth.server.model.repository.ClientRepository;
 import com.thoth.server.model.repository.PrintingRequestRepository;
-import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -17,7 +15,6 @@ import org.springframework.integration.support.locks.LockRegistry;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import com.thoth.common.dto.PrintRequest;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;

@@ -1,6 +1,5 @@
 package com.thoth.server.controller;
 
-import com.thoth.common.dto.ClientQueueMode;
 import com.thoth.common.dto.RegisterClientRequest;
 import com.thoth.server.beans.AuthenticationFacade;
 import com.thoth.server.beans.IAuthenticationFacade;
@@ -37,7 +36,7 @@ public class ClientController {
             @RequestParam(defaultValue = "0") int page,
             AuthenticationFacade facade
     ) {
-        return ResponseEntity.ok(clientService.search(Specification.where(null),
+        return ResponseEntity.ok(clientService.search(Specification.allOf(),
                 PageRequest.of(page, 30, Sort.by(Sort.Order.desc("createdAt")))).map(u -> u.toView(
                         facade.getUserSID(),
                 facade.getOrganizationSID()
@@ -69,7 +68,6 @@ public class ClientController {
                 request.getName(),
                 request.getOwnerSID(),
                 request.getPrintServices(),
-                ClientQueueMode.THOTH,
                 facade.getUserSID()
         ).toView(facade.getUserSID(), facade.getOrganizationSID()));
     }
