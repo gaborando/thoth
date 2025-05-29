@@ -25,7 +25,6 @@ public class PrintingRequest extends SecuredResource {
     private Renderer renderer;
 
     private ZonedDateTime createdAt;
-    private String createdBy;
 
     @Enumerated(EnumType.STRING)
     private PrintingRequestStatus status;
@@ -47,7 +46,7 @@ public class PrintingRequest extends SecuredResource {
         v.setRenderer(renderer == null ? null : renderer.toListItemView(uSid, oSid));
 
         v.setCreatedAt(createdAt);
-        v.setCreatedBy(createdBy);
+        v.setCreatedBy(getCreatedBy() != null ? getCreatedBy().getUsername() : null);
         v.setStatus(status);
         v.setErrorMessage(errorMessage);
         v.setDequeuedAt(dequeuedAt);

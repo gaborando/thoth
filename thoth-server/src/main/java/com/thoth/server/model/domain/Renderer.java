@@ -52,7 +52,7 @@ public class Renderer extends SecuredResource {
         RendererListItemView view = new RendererListItemView();
         view.setId(this.id);
         view.setName(this.name);
-        view.setPermission(checkPermission(uSid, oSid));
+        view.setPermission(checkPermission(uSid, oSid, false));
         return view;
     }
 

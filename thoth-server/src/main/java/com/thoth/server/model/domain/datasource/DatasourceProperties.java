@@ -66,7 +66,7 @@ public abstract class DatasourceProperties extends SecuredResource {
         listItem.setType(this.type);
         listItem.setParameters(this.parameters);
         listItem.setProperties(this.properties);
-        listItem.setPermission(checkPermission(uSid, oSid));
+        listItem.setPermission(checkPermission(uSid, oSid, false));
         return listItem;
     }
 

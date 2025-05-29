@@ -36,7 +36,7 @@ public class BackupService {
     public List<BackupListItem> getBackups(ResourceType resourceType, String resourceId, String uSid, String oSid) throws IllegalAccessException {
         var object = getResource(resourceType, resourceId);
         if(object instanceof SecuredResource sr){
-            if(sr.checkPermission(uSid, oSid) == null){
+            if(sr.checkPermission(uSid, oSid, false) == null){
                 throw new IllegalAccessException("You do not have the permission to backup this resource");
             }
         }
@@ -64,7 +64,7 @@ public class BackupService {
 
         var object = getResource(resourceType, resourceId);
         if(object instanceof SecuredResource sr){
-            if(sr.checkPermission(uSid, oSid) != Permission.W){
+            if(sr.checkPermission(uSid, oSid, false) != Permission.W){
                 throw new IllegalAccessException("You do not have the permission to backup this resource");
             }
         }
@@ -77,7 +77,7 @@ public class BackupService {
         var b =  backupRepository.findById(backupId).orElseThrow();
         var object = getResource(b.getResourceType(), b.getResourceId());
         if(object instanceof SecuredResource sr){
-            if(sr.checkPermission(uSid, oSid) == null){
+            if(sr.checkPermission(uSid, oSid, false) == null){
                 throw new IllegalAccessException("You do not have the permission to backup this resource");
             }
         }

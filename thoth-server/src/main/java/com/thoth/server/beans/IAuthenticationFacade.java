@@ -14,6 +14,10 @@ public interface IAuthenticationFacade {
 
     String getOrganizationSID();
 
+    boolean isOrganizationAdmin();
+
+    Long getUserOrganizationId();
+
     boolean canRead(Optional<? extends SecuredResource> securedResource);
     boolean canWrite(Optional<? extends SecuredResource> securedResource);
 

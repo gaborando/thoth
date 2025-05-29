@@ -72,7 +72,7 @@ public class Template extends SecuredResource {
         view.setName(name);
         view.setImg(img);
         view.setMarkers(markers);
-        view.setPermission(checkPermission(uSid, oSid));
+        view.setPermission(checkPermission(uSid, oSid, false));
         return view;
     }
 }

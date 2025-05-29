@@ -5,8 +5,10 @@ import com.thoth.server.controller.view.PrintingRequestView;
 import com.thoth.server.model.domain.*;
 import com.thoth.server.model.domain.security.Permission;
 import com.thoth.server.model.domain.security.ResourcePermission;
+import com.thoth.server.model.domain.security.User;
 import com.thoth.server.model.repository.ClientRepository;
 import com.thoth.server.model.repository.PrintingRequestRepository;
+import com.thoth.server.model.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -32,11 +34,16 @@ public class ClientService {
 
     private final LockRegistry lockRegistry;
 
-    public ClientService(ClientRepository repository, PrintingRequestRepository printingRequestRepository, IAuthenticationFacade authenticationFacade, LockRegistry lockRegistry) {
+    private final UserRepository userRepository;
+
+    public ClientService(ClientRepository repository, PrintingRequestRepository printingRequestRepository, 
+                        IAuthenticationFacade authenticationFacade, LockRegistry lockRegistry,
+                        UserRepository userRepository) {
         this.repository = repository;
         this.printingRequestRepository = printingRequestRepository;
         this.authenticationFacade = authenticationFacade;
         this.lockRegistry = lockRegistry;
+        this.userRepository = userRepository;
     }
 
     public Client register(String identifier, String name, String ownerSID, List<String> printServices, String userSID) {
@@ -47,7 +54,10 @@ public class ClientService {
         });
         c.setName(name);
         c.setIdentifier(identifier);
-        c.setCreatedBy(ownerSID);
+        // Find the owner user by username
+        User ownerUser = userRepository.findByUsername(ownerSID)
+                .orElseThrow(() -> new RuntimeException("Owner user not found: " + ownerSID));
+        c.setCreatedBy(ownerUser);
         c.setPrintServices(printServices);
         c.setCreatedAt(Instant.now());
         if (c.getAllowedUserList().stream().noneMatch(p -> p.getSid().equals(userSID))
@@ -74,7 +84,10 @@ public class ClientService {
         pr.setPrintService(printingService);
         pr.setClient(repository.findById(clientIdentifier).orElseThrow());
         pr.setCreatedAt(ZonedDateTime.now());
-        pr.setCreatedBy(authenticationFacade.getUserSID());
+        // Find the current user by username
+        User currentUser = userRepository.findByUsername(authenticationFacade.getUserSID())
+                .orElseThrow(() -> new RuntimeException("Current user not found: " + authenticationFacade.getUserSID()));
+        pr.setCreatedBy(currentUser);
         pr.setStatus(PrintingRequestStatus.PENDING);
         pr.setCopies(copies);
         pr.setSvg(svg);
