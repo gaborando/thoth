@@ -1,11 +1,6 @@
 package com.thoth.server.controller.view;
 
-import com.thoth.common.dto.ClientQueueMode;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,6 +18,4 @@ public class ClientView extends SecuredResourceView {
     private Instant createdAt;
 
     private List<String> printServices;
-
-    private ClientQueueMode queueMode;
 }

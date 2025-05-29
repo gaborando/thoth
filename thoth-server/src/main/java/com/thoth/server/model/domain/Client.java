@@ -1,6 +1,5 @@
 package com.thoth.server.model.domain;
 
-import com.thoth.common.dto.ClientQueueMode;
 import com.thoth.server.controller.view.ClientView;
 import com.thoth.server.model.domain.security.SecuredResource;
 import jakarta.persistence.*;
@@ -34,8 +33,6 @@ public class Client extends SecuredResource {
     @NotEmpty
     private List<@NotBlank @Size(min = 3, max = 256)String> printServices;
 
-    @Enumerated(EnumType.STRING)
-    private ClientQueueMode queueMode;
 
     public ClientView toView(String uSid, String oSid){
         ClientView view = new ClientView();
@@ -43,7 +40,6 @@ public class Client extends SecuredResource {
         view.setName(name);
         view.setCreatedAt(createdAt);
         view.setPrintServices(printServices);
-        view.setQueueMode(queueMode);
         setView(view, uSid, oSid);
         return view;
     }

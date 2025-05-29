@@ -9,8 +9,6 @@ import com.thoth.server.model.domain.security.ResourcePermission;
 import com.thoth.server.model.repository.ClientRepository;
 import com.thoth.server.model.repository.PrintingRequestRepository;
 import jakarta.persistence.EntityManager;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -31,26 +29,20 @@ public class ClientService {
     private final ClientRepository repository;
 
 
-    private final EntityManager entityManager;
-
-    private final RabbitTemplate rabbitTemplate;
-
     private final PrintingRequestRepository printingRequestRepository;
 
     private final IAuthenticationFacade authenticationFacade;
 
     private final LockRegistry lockRegistry;
 
-    public ClientService(ClientRepository repository, RabbitTemplate rabbitTemplate, PrintingRequestRepository printingRequestRepository, IAuthenticationFacade authenticationFacade, LockRegistry lockRegistry, EntityManager entityManager) {
+    public ClientService(ClientRepository repository, PrintingRequestRepository printingRequestRepository, IAuthenticationFacade authenticationFacade, LockRegistry lockRegistry) {
         this.repository = repository;
-        this.rabbitTemplate = rabbitTemplate;
         this.printingRequestRepository = printingRequestRepository;
         this.authenticationFacade = authenticationFacade;
         this.lockRegistry = lockRegistry;
-        this.entityManager = entityManager;
     }
 
-    public Client register(String identifier, String name, String ownerSID, List<String> printServices, ClientQueueMode queueMode, String userSID) {
+    public Client register(String identifier, String name, String ownerSID, List<String> printServices, String userSID) {
         var c = repository.findById(identifier).orElseGet(() -> {
             var cc = new Client();
             cc.setAllowedUserList(new ArrayList<>());
@@ -61,7 +53,6 @@ public class ClientService {
         c.setCreatedBy(ownerSID);
         c.setPrintServices(printServices);
         c.setCreatedAt(Instant.now());
-        c.setQueueMode(queueMode);
         if (c.getAllowedUserList().stream().noneMatch(p -> p.getSid().equals(userSID))
                 && !ownerSID.equals(userSID)) {
             var p = new ResourcePermission();
@@ -81,48 +72,36 @@ public class ClientService {
 
         var client = repository.findById(clientIdentifier).orElseThrow();
         var requestId = clientIdentifier + '_' + UUID.randomUUID();
-        if (client.getQueueMode() == ClientQueueMode.AMQP) {
-            var request = new PrintRequest();
-            request.setIdentifier(requestId);
-            request.setPrintService(printingService);
-            request.setSvg(svg);
-            request.setCopies(copies);
-            var ex = new DirectExchange("thoth." + clientIdentifier + ".rpc");
-            rabbitTemplate.convertSendAndReceive(ex.getName(), "rpc", request);
-        } else if (client.getQueueMode() == ClientQueueMode.THOTH) {
-            var pr = new PrintingRequest();
-            pr.setIdentifier(requestId);
-            pr.setPrintService(printingService);
-            pr.setClient(repository.findById(clientIdentifier).orElseThrow());
-            pr.setCreatedAt(ZonedDateTime.now());
-            pr.setCreatedBy(authenticationFacade.getUserSID());
-            pr.setStatus(PrintingRequestStatus.PENDING);
-            pr.setCopies(copies);
-            pr.setSvg(svg);
-            if (resource instanceof Template t) {
-                pr.setTemplate(t);
-            } else if (resource instanceof Renderer r) {
-                pr.setRenderer(r);
-            } else {
-                throw new RuntimeException("Resource must be either a Template or a Renderer");
-            }
-            printingRequestRepository.save(pr);
-            while (true) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                var status = printingRequestRepository.getStatus(pr.getIdentifier());
-                if (status == PrintingRequestStatus.COMPLETED) {
-                    return;
-                } else if (status == PrintingRequestStatus.FAILED) {
-                    var error = printingRequestRepository.getError(pr.getIdentifier());
-                    throw new RuntimeException(error);
-                }
-            }
+        var pr = new PrintingRequest();
+        pr.setIdentifier(requestId);
+        pr.setPrintService(printingService);
+        pr.setClient(repository.findById(clientIdentifier).orElseThrow());
+        pr.setCreatedAt(ZonedDateTime.now());
+        pr.setCreatedBy(authenticationFacade.getUserSID());
+        pr.setStatus(PrintingRequestStatus.PENDING);
+        pr.setCopies(copies);
+        pr.setSvg(svg);
+        if (resource instanceof Template t) {
+            pr.setTemplate(t);
+        } else if (resource instanceof Renderer r) {
+            pr.setRenderer(r);
         } else {
-            throw new RuntimeException("Queue mode not supported");
+            throw new RuntimeException("Resource must be either a Template or a Renderer");
+        }
+        printingRequestRepository.save(pr);
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            var status = printingRequestRepository.getStatus(pr.getIdentifier());
+            if (status == PrintingRequestStatus.COMPLETED) {
+                return;
+            } else if (status == PrintingRequestStatus.FAILED) {
+                var error = printingRequestRepository.getError(pr.getIdentifier());
+                throw new RuntimeException(error);
+            }
         }
     }
 
@@ -145,9 +124,6 @@ public class ClientService {
 
     @PreAuthorize("@authenticationFacade.canWrite(#client)")
     public List<PrintingRequestView> consumePendingRequests(Client client) {
-        if (client.getQueueMode() != ClientQueueMode.THOTH) {
-            throw new RuntimeException("Queue mode not supported");
-        }
         var lock = lockRegistry.obtain("client_"  +client.getIdentifier() + "_lock");
         lock.lock();
         try{
@@ -166,9 +142,6 @@ public class ClientService {
 
     @PreAuthorize("@authenticationFacade.canWrite(#client)")
     public PrintingRequestView setPrintingRequestStatus(Client client, String request, boolean hasError, String errorMessage) {
-        if (client.getQueueMode() != ClientQueueMode.THOTH) {
-            throw new RuntimeException("Queue mode not supported");
-        }
         var pr = printingRequestRepository.findById(request).orElseThrow();
         pr.setStatus(hasError ? PrintingRequestStatus.FAILED : PrintingRequestStatus.COMPLETED);
         pr.setExecutedAt(ZonedDateTime.now());
