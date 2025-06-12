@@ -2,8 +2,6 @@ package com.thoth.server.service;
 
 import com.thoth.server.beans.IAuthenticationFacade;
 import com.thoth.server.configuration.security.JwtService;
-import com.thoth.server.configuration.security.token.JwtAuthenticationToken;
-import com.thoth.server.controller.dto.auth.AuthResponse;
 import com.thoth.server.model.domain.security.Permission;
 import com.thoth.server.model.domain.security.RefreshToken;
 import com.thoth.server.model.domain.security.ResourcePermission;
@@ -57,7 +55,7 @@ public class UserService {
         user.setEnabled(true);
         user.setRoles(roles != null ? roles : new HashSet<>(Set.of("ROLE_USER")));
         user.setAllowedUserList(new ArrayList<>());
-        user.setAllowedOrganizationList(new ArrayList<>());
+        user.setAllowedGroupList(new ArrayList<>());
 
         // Set the creator to the user itself (for the first user) or the current user
         String creatorSid = authenticationFacade.getUserSID();
@@ -75,7 +73,7 @@ public class UserService {
             // Add permission for the creator if it's not the same user
             if (!username.equals(creatorSid)) {
                 ResourcePermission permission = new ResourcePermission();
-                permission.setSid(creatorSid);
+                permission.setIdentifier(creatorSid);
                 permission.setPermission(Permission.W);
                 user.getAllowedUserList().add(permission);
             }
@@ -108,7 +106,7 @@ public class UserService {
         user.setOauthProvider(oauthProvider);
         user.setOauthId(oauthId);
         user.setAllowedUserList(new ArrayList<>());
-        user.setAllowedOrganizationList(new ArrayList<>());
+        user.setAllowedGroupList(new ArrayList<>());
 
         // Set the creator to the user itself
         // This creates a circular reference, but it's saved after the user is created
@@ -244,7 +242,7 @@ public class UserService {
         original.setEnabled(update.isEnabled());
         original.setRoles(update.getRoles());
         original.setAllowedUserList(update.getAllowedUserList());
-        original.setAllowedOrganizationList(update.getAllowedOrganizationList());
+        original.setAllowedGroupList(update.getAllowedGroupList());
 
         // Only update password if it's provided
         if (update.getPassword() != null && !update.getPassword().isEmpty()) {

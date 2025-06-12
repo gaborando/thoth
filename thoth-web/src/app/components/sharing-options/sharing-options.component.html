@@ -44,7 +44,7 @@
               </ion-col>
             </ion-row>
             <ion-row *ngIf="!securedResource?.allowedOrganizationList?.length">
-              Not shared with any organization
+              Not shared with any group
             </ion-row>
           </ion-col>
         </ion-row>
@@ -79,7 +79,7 @@
           <ion-label>Type</ion-label>
           <ion-select #type (ionChange)="sid.value = null; autocompleteData = []" value="user">
             <ion-select-option value="user">User</ion-select-option>
-            <ion-select-option value="organization">Organization</ion-select-option>
+            <ion-select-option value="group">Organization</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>

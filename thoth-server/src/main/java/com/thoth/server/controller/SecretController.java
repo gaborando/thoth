@@ -3,11 +3,7 @@ package com.thoth.server.controller;
 import com.thoth.server.beans.AuthenticationFacade;
 import com.thoth.server.controller.dto.secret.SecretCreateRequest;
 import com.thoth.server.controller.view.SecretView;
-import com.thoth.server.controller.view.SecuredResourceView;
-import com.thoth.server.controller.view.TemplateView;
 import com.thoth.server.model.domain.Secret;
-import com.thoth.server.model.domain.Template;
-import com.thoth.server.model.domain.security.SecuredResource;
 import com.thoth.server.service.SecretService;
 import io.github.perplexhub.rsql.RSQLJPASupport;
 import org.springframework.data.domain.Page;
@@ -64,7 +60,7 @@ public class SecretController {
         return ResponseEntity.ok(secretService.update(
                         secretService.getById(identifier).orElseThrow(),
                         resource.getAllowedUserList(),
-                        resource.getAllowedOrganizationList())
+                        resource.getAllowedGroupList())
                 .toView(facade.getUserSID(), facade.getOrganizationSID()));
     }
 

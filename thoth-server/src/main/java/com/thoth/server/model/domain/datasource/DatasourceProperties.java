@@ -10,6 +10,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.*;
@@ -35,10 +37,12 @@ public abstract class DatasourceProperties extends SecuredResource {
     @Column(updatable = false)
     private Instant createdAt;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Set<@NotBlank @Size(min = 1, max = 256) String> parameters;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Set<Property> properties;
 
     @ManyToMany(mappedBy = "datasourceProperties")

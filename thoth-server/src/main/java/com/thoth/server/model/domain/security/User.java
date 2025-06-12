@@ -7,10 +7,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
 
 @Entity
 @Getter
@@ -18,13 +20,10 @@ import java.util.Set;
 @Table(name = "users")
 public class User extends SecuredResource {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @NotBlank
     @Size(min = 3, max = 50)
     @Column(unique = true)
+    @Id
     private String username;
 
     @NotBlank
@@ -46,46 +45,29 @@ public class User extends SecuredResource {
     @Column
     private boolean enabled = true;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    private Set<String> roles = new HashSet<>();
 
     // OAuth2 related fields
-    @Column
-    private String oauthProvider;
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private HashMap<String, String> oauthProviderIdentityMap;
 
-    @Column
-    private String oauthId;
-
-    // Organization reference
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "organization_id")
-    private Organization organization;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<UserGroupAssociation> groups;
 
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();
     }
 
-    public UserView toView(String uSid, String oSid) {
+    public UserView toView(User user) {
         UserView view = new UserView();
-        view.setId(id);
         view.setUsername(username);
         view.setEmail(email);
         view.setCreatedAt(createdAt);
         view.setLastLoginAt(lastLoginAt);
         view.setEnabled(enabled);
-        view.setRoles(roles);
-        view.setOauthProvider(oauthProvider);
 
-        // Set organization information if available
-        if (organization != null) {
-            view.setOrganizationId(organization.getId());
-            view.setOrganizationName(organization.getName());
-        }
-
-        setView(view, uSid, oSid);
+        setView(view, user);
         return view;
     }
 }

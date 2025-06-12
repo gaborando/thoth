@@ -11,6 +11,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.Map;
@@ -42,10 +44,12 @@ public class Renderer extends SecuredResource {
     @Column(updatable = false)
     private Instant createdAt;
 
-    @ElementCollection
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Map<@NotBlank @Size(min = 1, max = 256) String, @NotNull AssociationView> associationMap;
 
-    @ElementCollection
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Map<@NotBlank @Size(min = 1, max = 256) String, @NotNull AssociationView> parametersMap;
 
     public RendererListItemView toListItemView(String uSid, String oSid){

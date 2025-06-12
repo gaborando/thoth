@@ -1,9 +1,6 @@
 package com.thoth.server.model.domain.datasource;
 
-import com.thoth.server.controller.view.datasource.DatasourcePropertiesView;
-import com.thoth.server.controller.view.datasource.JdbcDatasourcePropertiesView;
 import com.thoth.server.controller.view.datasource.RestDatasourcePropertiesView;
-import com.thoth.server.model.converters.JpaConverterJson;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
@@ -12,8 +9,9 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,15 +29,17 @@ public class RestDatasourceProperties extends DatasourceProperties {
 
 
     @Size(max = 100)
-    @ElementCollection
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Map<@NotEmpty @Size(max = 256) String, @NotEmpty @Size(max = 256) String> queryParameters;
 
     @Size(max = 100)
-    @ElementCollection
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Map<@NotEmpty @Size(max = 256) String, @NotEmpty @Size(max = 256) String> headers;
 
-    @Column(columnDefinition = "JSON")
-    @Convert(converter = JpaConverterJson.class)
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     private Map<@NotEmpty @Size(max = 256) String, Object> body;
 
 

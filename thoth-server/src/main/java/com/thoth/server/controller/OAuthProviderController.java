@@ -7,7 +7,6 @@ import com.thoth.server.model.repository.OAuthProviderRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -113,7 +112,7 @@ public class OAuthProviderController {
 
         // Update permissions
         providerToUpdate.setAllowedUserList(provider.getAllowedUserList());
-        providerToUpdate.setAllowedOrganizationList(provider.getAllowedOrganizationList());
+        providerToUpdate.setAllowedGroupList(provider.getAllowedGroupList());
 
         OAuthProvider updatedProvider = providerRepository.save(providerToUpdate);
         return ResponseEntity.ok(updatedProvider.toView(

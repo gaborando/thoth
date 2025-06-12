@@ -9,14 +9,9 @@ import java.util.Set;
 @Getter
 @Setter
 public class UserView extends SecuredResourceView {
-    private Long id;
     private String username;
     private String email;
     private Instant createdAt;
     private Instant lastLoginAt;
     private boolean enabled;
-    private Set<String> roles;
-    private String oauthProvider;
-    private Long organizationId;
-    private String organizationName;
 }

@@ -10,8 +10,7 @@ import java.time.Instant;
  */
 @Getter
 @Setter
-public class OrganizationView extends SecuredResourceView {
-    private Long id;
+public class GroupView extends SecuredResourceView {
     private String name;
     private String description;
     private Instant createdAt;

@@ -10,12 +10,12 @@ import lombok.Setter;
 @Setter
 public class ResourcePermission {
 
-    private String sid;
+    private String identifier;
     private Permission permission;
 
     public ResourcePermissionView toView(){
         ResourcePermissionView view = new ResourcePermissionView();
-        view.setSid(this.sid);
+        view.setIdentifier(this.identifier);
         view.setPermission(this.permission);
         return view;
     }

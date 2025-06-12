@@ -8,6 +8,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.List;
@@ -29,7 +31,8 @@ public class Client extends SecuredResource {
     @Column(updatable = false)
     private Instant createdAt;
 
-    @ElementCollection
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     @NotEmpty
     private List<@NotBlank @Size(min = 3, max = 256)String> printServices;
 

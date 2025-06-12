@@ -2,11 +2,8 @@ package com.thoth.server.service;
 
 import com.mysema.commons.lang.Assert;
 import com.thoth.server.beans.IAuthenticationFacade;
-import com.thoth.server.controller.view.SecuredResourceView;
 import com.thoth.server.model.domain.Secret;
-import com.thoth.server.model.domain.Template;
 import com.thoth.server.model.domain.security.ResourcePermission;
-import com.thoth.server.model.domain.security.SecuredResource;
 import com.thoth.server.model.repository.SecretRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,8 +16,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.*;
 
@@ -83,7 +78,7 @@ public class SecretService {
     @PreAuthorize("@authenticationFacade.canWrite(#secret)")
     public Secret update(Secret secret, List<ResourcePermission> allowedUserList, List<ResourcePermission> allowedOrganizationList){
         secret.setAllowedUserList(allowedUserList);
-        secret.setAllowedOrganizationList(allowedOrganizationList);
+        secret.setAllowedGroupList(allowedOrganizationList);
         return secretRepository.save(secret);
     }
 

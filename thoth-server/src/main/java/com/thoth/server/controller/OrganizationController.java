@@ -1,8 +1,8 @@
 package com.thoth.server.controller;
 
 import com.thoth.server.beans.IAuthenticationFacade;
-import com.thoth.server.controller.view.OrganizationView;
-import com.thoth.server.model.domain.security.Organization;
+import com.thoth.server.controller.view.GroupView;
+import com.thoth.server.model.domain.security.Group;
 import com.thoth.server.model.domain.security.User;
 import com.thoth.server.model.repository.OrganizationRepository;
 import com.thoth.server.model.repository.UserRepository;
@@ -45,11 +45,11 @@ public class OrganizationController {
      * @return Page of organizations
      */
     @GetMapping("/")
-    public ResponseEntity<Page<OrganizationView>> findAll(
+    public ResponseEntity<Page<GroupView>> findAll(
             @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(organizationRepository.findAll(
-                authenticationFacade.securedSpecification(Specification.allOf(), Organization.class),
+                authenticationFacade.securedSpecification(Specification.allOf(), Group.class),
                 PageRequest.of(page, 30, Sort.by(Sort.Order.asc("name"))))
                 .map(p -> p.toView(
                         authenticationFacade.getUserSID(),
@@ -64,10 +64,10 @@ public class OrganizationController {
      * @return The organization if found
      */
     @GetMapping("/{id}")
-    public ResponseEntity<OrganizationView> findById(
+    public ResponseEntity<GroupView> findById(
             @PathVariable Long id
     ) {
-        Optional<Organization> organization = organizationRepository.findById(id);
+        Optional<Group> organization = organizationRepository.findById(id);
         return organization.map(p -> ResponseEntity.ok(p.toView(
                         authenticationFacade.getUserSID(),
                         authenticationFacade.getOrganizationSID())))
@@ -77,19 +77,19 @@ public class OrganizationController {
     /**
      * Create a new organization
      * 
-     * @param organization The organization to create
+     * @param group The organization to create
      * @return The created organization
      */
     @PostMapping("/")
     @Secured("ROLE_ADMIN") // Only admins can create organizations
-    public ResponseEntity<OrganizationView> create(
-            @RequestBody Organization organization
+    public ResponseEntity<GroupView> create(
+            @RequestBody Group group
     ) {
         // Set created by
-        authenticationFacade.fillSecuredResource(organization);
+        authenticationFacade.fillSecuredResource(group);
 
-        Organization savedOrganization = organizationRepository.save(organization);
-        return ResponseEntity.ok(savedOrganization.toView(
+        Group savedGroup = organizationRepository.save(group);
+        return ResponseEntity.ok(savedGroup.toView(
                 authenticationFacade.getUserSID(),
                 authenticationFacade.getOrganizationSID()));
     }
@@ -98,36 +98,36 @@ public class OrganizationController {
      * Update an organization
      * 
      * @param id Organization ID
-     * @param organization The updated organization
+     * @param group The updated organization
      * @return The updated organization
      */
     @PutMapping("/{id}")
     @Secured({"ROLE_ADMIN", "ROLE_ORGANIZATION_ADMIN"}) // Admins and org admins can update organizations
-    public ResponseEntity<OrganizationView> update(
+    public ResponseEntity<GroupView> update(
             @PathVariable Long id,
-            @RequestBody Organization organization
+            @RequestBody Group group
     ) {
-        Optional<Organization> existingOrganization = organizationRepository.findById(id);
+        Optional<Group> existingOrganization = organizationRepository.findById(id);
         if (existingOrganization.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         // Check if user has permission to update this organization
-        Organization orgToUpdate = existingOrganization.get();
+        Group orgToUpdate = existingOrganization.get();
         if (!authenticationFacade.canWrite(orgToUpdate)) {
             return ResponseEntity.status(403).build();
         }
 
         // Update fields
-        orgToUpdate.setName(organization.getName());
-        orgToUpdate.setDescription(organization.getDescription());
+        orgToUpdate.setIdentifier(group.getIdentifier());
+        orgToUpdate.setDescription(group.getDescription());
 
         // Update permissions
-        orgToUpdate.setAllowedUserList(organization.getAllowedUserList());
-        orgToUpdate.setAllowedOrganizationList(organization.getAllowedOrganizationList());
+        orgToUpdate.setAllowedUserList(group.getAllowedUserList());
+        orgToUpdate.setAllowedGroupList(group.getAllowedGroupList());
 
-        Organization updatedOrganization = organizationRepository.save(orgToUpdate);
-        return ResponseEntity.ok(updatedOrganization.toView(
+        Group updatedGroup = organizationRepository.save(orgToUpdate);
+        return ResponseEntity.ok(updatedGroup.toView(
                 authenticationFacade.getUserSID(),
                 authenticationFacade.getOrganizationSID()));
     }
@@ -141,13 +141,13 @@ public class OrganizationController {
     @DeleteMapping("/{id}")
     @Secured("ROLE_ADMIN") // Only admins can delete organizations
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        Optional<Organization> organization = organizationRepository.findById(id);
+        Optional<Group> organization = organizationRepository.findById(id);
         if (organization.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         // Check if organization has users
-        Organization orgToDelete = organization.get();
+        Group orgToDelete = organization.get();
         if (!orgToDelete.getUsers().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -165,11 +165,11 @@ public class OrganizationController {
      */
     @PostMapping("/{organizationId}/users/{userId}")
     @Secured({"ROLE_ADMIN", "ROLE_ORGANIZATION_ADMIN"}) // Admins and org admins can add users
-    public ResponseEntity<OrganizationView> addUser(
+    public ResponseEntity<GroupView> addUser(
             @PathVariable Long organizationId,
             @PathVariable Long userId
     ) {
-        Optional<Organization> organization = organizationRepository.findById(organizationId);
+        Optional<Group> organization = organizationRepository.findById(organizationId);
         Optional<User> user = userRepository.findById(userId);
 
         if (organization.isEmpty() || user.isEmpty()) {
@@ -177,7 +177,7 @@ public class OrganizationController {
         }
 
         // Check if user has permission to update this organization
-        Organization orgToUpdate = organization.get();
+        Group orgToUpdate = organization.get();
         if (!authenticationFacade.canWrite(orgToUpdate)) {
             return ResponseEntity.status(403).build();
         }
@@ -201,11 +201,11 @@ public class OrganizationController {
      */
     @DeleteMapping("/{organizationId}/users/{userId}")
     @Secured({"ROLE_ADMIN", "ROLE_ORGANIZATION_ADMIN"}) // Admins and org admins can remove users
-    public ResponseEntity<OrganizationView> removeUser(
+    public ResponseEntity<GroupView> removeUser(
             @PathVariable Long organizationId,
             @PathVariable Long userId
     ) {
-        Optional<Organization> organization = organizationRepository.findById(organizationId);
+        Optional<Group> organization = organizationRepository.findById(organizationId);
         Optional<User> user = userRepository.findById(userId);
 
         if (organization.isEmpty() || user.isEmpty()) {
@@ -213,7 +213,7 @@ public class OrganizationController {
         }
 
         // Check if user has permission to update this organization
-        Organization orgToUpdate = organization.get();
+        Group orgToUpdate = organization.get();
         if (!authenticationFacade.canWrite(orgToUpdate)) {
             return ResponseEntity.status(403).build();
         }
@@ -241,13 +241,13 @@ public class OrganizationController {
     public ResponseEntity<List<User>> getUsers(
             @PathVariable Long organizationId
     ) {
-        Optional<Organization> organization = organizationRepository.findById(organizationId);
+        Optional<Group> organization = organizationRepository.findById(organizationId);
         if (organization.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         // Check if user has permission to read this organization
-        Organization org = organization.get();
+        Group org = organization.get();
         if (!authenticationFacade.canRead(org)) {
             return ResponseEntity.status(403).build();
         }

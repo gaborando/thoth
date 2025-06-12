@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class ResourcePermissionView {
-    private String sid;
+    private String identifier;
     private Permission permission;
 }

@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class SecuredResourceView {
     private String createdBy;
-    private Long organizationId;
+    private String organizationId;
     private List<ResourcePermissionView> allowedUserList;
     private List<ResourcePermissionView> allowedOrganizationList;
     private Permission permission;

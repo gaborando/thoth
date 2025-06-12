@@ -60,11 +60,11 @@ public class ClientService {
         c.setCreatedBy(ownerUser);
         c.setPrintServices(printServices);
         c.setCreatedAt(Instant.now());
-        if (c.getAllowedUserList().stream().noneMatch(p -> p.getSid().equals(userSID))
+        if (c.getAllowedUserList().stream().noneMatch(p -> p.getIdentifier().equals(userSID))
                 && !ownerSID.equals(userSID)) {
             var p = new ResourcePermission();
             p.setPermission(Permission.W);
-            p.setSid(userSID);
+            p.setIdentifier(userSID);
             c.getAllowedUserList().add(p);
         }
         return repository.save(c);
@@ -128,7 +128,7 @@ public class ClientService {
     @PreAuthorize("@authenticationFacade.canWrite(#original)")
     public Client update(Client original, Client update) {
         original.setAllowedUserList(update.getAllowedUserList());
-        original.setAllowedOrganizationList(update.getAllowedOrganizationList());
+        original.setAllowedGroupList(update.getAllowedGroupList());
         return repository.save(original);
     }
 

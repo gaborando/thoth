@@ -79,7 +79,7 @@ public class RendererService {
                 new HashSet<>(datasourcePropertiesRepository
                         .findAllById(datasource)));
         original.setName(name);
-        original.setAllowedOrganizationList(allowedOrganizationList);
+        original.setAllowedGroupList(allowedOrganizationList);
         original.setAllowedUserList(allowedUserList);
         return rendererRepository.save(original);
     }

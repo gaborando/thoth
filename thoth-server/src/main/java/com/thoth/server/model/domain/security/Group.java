@@ -1,6 +1,6 @@
 package com.thoth.server.model.domain.security;
 
-import com.thoth.server.controller.view.OrganizationView;
+import com.thoth.server.controller.view.GroupView;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -18,17 +18,13 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "organizations")
-public class Organization extends SecuredResource {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Group extends SecuredResource {
 
     @NotBlank
     @Size(min = 3, max = 100)
     @Column(unique = true)
-    private String name;
+    @Id
+    private String identifier;
 
     @Size(max = 500)
     private String description;
@@ -36,21 +32,20 @@ public class Organization extends SecuredResource {
     @Column(updatable = false)
     private Instant createdAt;
 
-    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserGroupAssociation> users = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();
     }
 
-    public OrganizationView toView(String uSid, String oSid) {
-        OrganizationView view = new OrganizationView();
-        view.setId(id);
-        view.setName(name);
+    public GroupView toView(User user) {
+        GroupView view = new GroupView();
+        view.setName(identifier);
         view.setDescription(description);
         view.setCreatedAt(createdAt);
-        setView(view, uSid, oSid);
+        setView(view, user);
         return view;
     }
 }
