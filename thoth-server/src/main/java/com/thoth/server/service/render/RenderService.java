@@ -107,7 +107,7 @@ public class RenderService {
     }
 
     public byte[] renderRendererPdf(String identifier, HashMap<String, Object> params) throws Exception {
-        var img = renderTemplateSvg(identifier, params);
+        var img = renderRendererSvg(identifier, params);
         return Svg2File.convertToPdf(img, UUID.randomUUID().toString());
     }
 
