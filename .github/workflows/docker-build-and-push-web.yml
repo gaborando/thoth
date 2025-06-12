@@ -19,8 +19,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build the Docker image
-        run: docker build . --file docker/thoth-web/Dockerfile --tag gaborando/thoth-web:latest
+        run: docker build . --file docker/thoth-web/Dockerfile --tag gaborando/thoth-web:latest2
 
       - name: Push the Docker image
-        run: docker push gaborando/thoth-web:latest
+        run: docker push gaborando/thoth-web:latest2
 

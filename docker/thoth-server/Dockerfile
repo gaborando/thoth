@@ -1,6 +1,7 @@
 FROM gradle:8.0-jdk17-alpine AS build
 COPY --chown=gradle:gradle . /thoth
 WORKDIR /thoth
+RUN gradle :thoth-server:clean --no-daemon
 RUN gradle :thoth-server:bootJar --no-daemon
 
 FROM mcr.microsoft.com/playwright/java:v1.39.0-jammy
