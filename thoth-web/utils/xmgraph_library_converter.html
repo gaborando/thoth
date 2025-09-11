@@ -17,7 +17,6 @@
                 var images = JSON.parse(doc.documentElement.textContent);
                 for(const i of images){
                     var data = i.xml;
-                    console.log(data);
                     data = encodeURIComponent(data);
                     data = String.fromCharCode.apply(null, new Uint8Array(pako.deflateRaw(data)));
                     data = btoa(data);

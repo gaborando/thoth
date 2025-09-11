@@ -216,7 +216,6 @@ export class Editor {
           var xmlDoc = new DOMParser().parseFromString(template.xml || '', 'application/xml');
           var diagrams = xmlDoc.getElementsByTagName('diagram');
           const node: any = diagrams[0].children.item(0)?.outerHTML;
-          console.log(msg);
           // @ts-ignore
           if (msg.message.markerToFill) {
             const n = node.replaceAll('{{' + msg.message.markerToFill + '}}', msg.value);

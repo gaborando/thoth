@@ -116,7 +116,6 @@ export class TemplateDetailPage implements OnInit {
   }
 
   showAutocomplete($event: any) {
-    console.log($event);
   }
 
   openViewer() {

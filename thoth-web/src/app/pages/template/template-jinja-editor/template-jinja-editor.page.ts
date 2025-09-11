@@ -27,7 +27,6 @@ export class TemplateJinjaEditorPage implements OnInit {
     this.id = this.route.snapshot.paramMap.get('identifier');
     if (this.id) {
       this.template = await this.templateService.findById(this.id)
-      console.log(this.template);
       this.html = this.template?.svg;
       const last = localStorage.getItem("last_form_" + this.id) || "{}";
       const data = JSON.parse(last);

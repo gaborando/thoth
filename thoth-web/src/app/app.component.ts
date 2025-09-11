@@ -26,8 +26,7 @@ export class AppComponent implements OnInit {
   constructor(private router: Router) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        this.showMenu = !event.url.startsWith('/form') && event.url !== '/login';
-        console.log(this.showMenu)
+        this.showMenu = !event.url.startsWith('/form') && event.url !== '/login'
       }
     });
   }

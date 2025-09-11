@@ -257,7 +257,6 @@ export class RendererDetailPage implements OnInit {
   }
 
   ku($event: KeyboardEvent) {
-    console.log($event);
   }
 
   presentPopover(popover: IonPopover, $event: MouseEvent, i: any) {
@@ -314,7 +313,8 @@ export class RendererDetailPage implements OnInit {
   async copyToClipboard(renderer: Renderer) {
     await navigator.clipboard.writeText(JSON.stringify({
       datasourceProperties: renderer.datasourceProperties,
-      associationMap: renderer.associationMap
+      associationMap: renderer.associationMap,
+      parametersMap: renderer.parametersMap
     }));
     return this.guiUtils.copied();
   }
@@ -323,14 +323,20 @@ export class RendererDetailPage implements OnInit {
     const clipboard = await navigator.clipboard.readText();
     const renderer = JSON.parse(clipboard);
     const already = this.renderer!.datasourceProperties.map(ds => ds.id);
+    const prev: Datasource[] = [...this.renderer!.datasourceProperties];
     for (let ds of renderer.datasourceProperties) {
       if(ds.id && !already.includes(ds.id)){
-        this.renderer!.datasourceProperties.push(ds);
+        prev.push(ds);
       }
     }
-    const keys = Object.keys(this.renderer!.associationMap);
+    this.renderer!.datasourceProperties = prev;
+    this.updateAvailableAssociations(this.renderer!.datasourceProperties);
+    const keys = this.renderer!.template.markers;
     for (let key of keys) {
       this.renderer!.associationMap[key] = renderer.associationMap[key];
+    }
+    for(const o of Object.keys(this.renderer!.parametersMap)){
+      this.renderer!.parametersMap[o] = renderer.parametersMap[o];
     }
   }
 }

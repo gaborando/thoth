@@ -41,7 +41,6 @@ export class RestDatasourceParametersComponent extends DatasourceParametersCompo
 
   ngOnInit() {
     this.onInit.emit(this);
-    console.log(this.properties);
   }
 
   addQueryParam(key: any, value: any) {
