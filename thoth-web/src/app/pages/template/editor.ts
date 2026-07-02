@@ -101,6 +101,17 @@ export class Editor {
               defaultLibraries: "general;thoth-elements",
               enableCustomLibraries: true,
               enabledLibraries: ["general", "thoth-elements"],
+              // Keep sidebar palettes collapsed on load. Newer diagrams.net
+              // builds construct auto-expanded custom-library palettes during
+              // `new Sidebar(...)`, before `EditorUi.sidebar` is assigned, so
+              // the inline "Thoth Elements" library hits
+              // `editorUi.addLibraryEntries` -> `editorUi.sidebar` (undefined)
+              // and throws "Cannot read properties of undefined
+              // (reading 'createVertexTemplateFromCells')". Deferring palette
+              // content to the fold handler (user click) runs it after the
+              // sidebar exists. See jgraph/drawio Sidebar.addPalette gate:
+              // `e && this.expandLibraries`.
+              expandLibraries: false,
               enableCssDarkMode: false,
               defaultAdaptiveColors: "none",
               libraries: [{
