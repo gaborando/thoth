@@ -1,6 +1,7 @@
 import {Template} from "../../common/types/template";
 import {TemplateService} from "../../services/api/template.service";
 import {Router} from "@angular/router";
+import {environment} from "../../../environments/environment";
 
 export const library = [
   {
@@ -78,7 +79,7 @@ export class Editor {
     }
   }
 
-  openEditor(template: Template,
+  async openEditor(template: Template,
              templateService: TemplateService) {
     var sub = this.router.events.subscribe(change => {
       this.close();
@@ -86,7 +87,11 @@ export class Editor {
         sub.unsubscribe();
       }
     });
-    var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1&configure=1&template=' + template.id;
+    // Base URL of the drawio editor. Defaults to the self-hosted, version-pinned
+    // instance served at /drawio (see docker/thoth-web). Override via the
+    // `drawioUrl` environment field (e.g. https://embed.diagrams.net for dev).
+    const drawioBase = ((await environment()).drawioUrl || '/drawio').replace(/\/+$/, '');
+    var url = drawioBase + '/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json&hide-pages=1&configure=1&template=' + template.id;
     this.close();
 
     // Implements protocol for loading and exporting with embedded XML

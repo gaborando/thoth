@@ -1,5 +1,6 @@
 {
   "production": true,
   "apiUrl": "http://localhost:8080",
-  "oauth": null
+  "oauth": null,
+  "drawioUrl": "/drawio"
 }
