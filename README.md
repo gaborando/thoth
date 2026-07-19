@@ -1,5 +1,11 @@
 # THOTH - Template and Printing Service
 
+> [!IMPORTANT]
+> **⚠️ This project is no longer maintained.**
+>
+> Development has moved to the enterprise version: **[Thoth Studio](https://www.thoth-studio.com)** (www.thoth-studio.com).
+> This repository is kept available for reference only and will not receive further updates, bug fixes, or support.
+
 Thoth is a software to design and render documents. 
 It is based on [Draw.io](https://www.drawio.com/) to design the document and [Jinja - The Pallets Projects.url](https://palletsprojects.com/p/jinja/) to compile dinamically the document.
 
