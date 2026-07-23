@@ -46,6 +46,19 @@ export class TemplateDetailPage implements OnInit {
   ngOnInit() {
   }
 
+  onRestore(data: Template) {
+    if (!this.template) {
+      return;
+    }
+    this.template = {
+      ...this.template,
+      ...data,
+      permission: this.template.permission,
+      allowedUserList: this.template.allowedUserList,
+      allowedOrganizationList: this.template.allowedOrganizationList,
+    };
+  }
+
   delete(template: Template) {
     return this.screenMessageService.showDeleteAlert(async () => {
       await this.screenMessageService.loadingWrapper(async () => {

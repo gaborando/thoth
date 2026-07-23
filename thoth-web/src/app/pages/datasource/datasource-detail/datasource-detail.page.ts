@@ -31,6 +31,19 @@ export class DatasourceDetailPage implements OnInit {
     this.datasource = await this.datasourceService.findById(this.route.snapshot.paramMap.get('identifier'))
   }
 
+  onRestore(data: Datasource) {
+    if (!this.datasource) {
+      return;
+    }
+    this.datasource = {
+      ...this.datasource,
+      ...data,
+      permission: this.datasource.permission,
+      allowedUserList: this.datasource.allowedUserList,
+      allowedOrganizationList: this.datasource.allowedOrganizationList,
+    };
+  }
+
   async saveParameters(): Promise<any> {
     return this.screenMessageService.loadingWrapper(async () => {
       this.datasource = await this.dsParameters?.updateParameters();

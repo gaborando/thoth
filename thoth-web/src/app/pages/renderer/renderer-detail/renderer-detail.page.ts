@@ -46,6 +46,15 @@ export class RendererDetailPage implements OnInit {
 
   }
 
+  onRestore(resp: Renderer) {
+    if (this.renderer) {
+      resp.permission = this.renderer.permission;
+      resp.allowedUserList = this.renderer.allowedUserList;
+      resp.allowedOrganizationList = this.renderer.allowedOrganizationList;
+    }
+    this.init(resp);
+  }
+
   init(resp: Renderer) {
     this.availableProperties = [];
     this.parameters = new Set<string>();

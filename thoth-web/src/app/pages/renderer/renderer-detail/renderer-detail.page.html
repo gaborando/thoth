@@ -203,7 +203,7 @@
           <ion-col>
             <app-backup-manager *ngIf="renderer" resourceType="RENDERER" [resourceId]="renderer.id"
                                 [canWrite]="renderer.permission === 'W'"
-                                (restoreEmitter)="init($event)"></app-backup-manager>
+                                (restoreEmitter)="onRestore($event)"></app-backup-manager>
           </ion-col>
         </ion-row>
       </ion-grid>

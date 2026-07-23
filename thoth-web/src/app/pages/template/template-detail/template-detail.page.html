@@ -107,7 +107,7 @@
     <ion-row *ngIf="template">
       <ion-col>
         <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"  [canWrite]="template.permission === 'W'"
-        (restoreEmitter)="template = $event"></app-backup-manager>
+        (restoreEmitter)="onRestore($event)"></app-backup-manager>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -206,7 +206,7 @@
       <ion-row *ngIf="template">
         <ion-col>
           <app-backup-manager resourceType="TEMPLATE" [resourceId]="template.id"  [canWrite]="template.permission === 'W'"
-                              (restoreEmitter)="template = $event"></app-backup-manager>
+                              (restoreEmitter)="onRestore($event)"></app-backup-manager>
         </ion-col>
       </ion-row>
       <ion-row>
